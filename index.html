@@ -1374,6 +1374,10 @@ window.v12TogglePassword=function(id,btn){const e=document.getElementById(id);if
     window._bkfExamReportType=type;
     const label=type==='TASHIH'?'Tashih':'Pra Tashih';
     const reportElId='examReport';
+    const roles=Array.isArray(state?.roles)?state.roles:[];
+    const canReview=roles.includes('KETUA')||roles.includes('SEKRETARIS');
+    const canFinalize=canReview;
+    const canLock=roles.includes('KETUA');
     area.innerHTML=`<div class="card" id="examReportPrintArea"><div class="row"><div><h3>Rekap Hasil Ujian ${label}</h3><div class="small muted">Rincian mengikuti aturan ujian pada sesi peserta. Seluruh materi aturan ditampilkan, termasuk materi yang belum dinilai.</div></div><div class="compact-actions no-print"><button class="btn secondary" type="button" onclick="showExamReportsV32()">← Pilih Tahap</button>${type==='TASHIH'?'<button class="btn danger" type="button" onclick="showTashihFailedParticipants()">Peserta Tashih Gagal</button><button class="btn info" type="button" onclick="window.bkfOpenTashihRekapExportV373()">Download PDF / Excel</button>':''}${canLock?`<button class="btn gold" type="button" data-exam-type="${type}" onclick="v11LockFinalizedExamResultsCollectively(this.dataset.examType)">🔒 Kunci Nilai yang Sudah Ditetapkan</button>`:''}${printButton}</div></div><div class="field no-print" style="margin-top:10px"><label for="examReportSearch">Cari peserta</label><input id="examReportSearch" type="search" placeholder="Cari nama, NIS, atau nomor ujian..." autocomplete="off" oninput="filterExamReportsV32(this.value)"></div><div id="${reportElId}" class="list"><p class="muted">Memuat seluruh peserta...</p></div></div>`;
     const reportEl=()=>document.getElementById(reportElId);
     const setError=m=>{const el=reportEl();if(el)el.innerHTML=`<p class="error">${_E(m||'Rekap peserta belum dapat dimuat.')}</p>`};
@@ -1447,10 +1451,6 @@ window.v12TogglePassword=function(id,btn){const e=document.getElementById(id);if
       if(mediaIds.length)media=await fetchAll(()=>sb.from('participant_media').select('id,storage_path').in('id',mediaIds).order('id',{ascending:true}),'Pemuatan foto peserta');
       const mediaMap=new Map(media.map(x=>[x.id,x.storage_path]));
       const mediaUrl=path=>{const u=String(path||'');if(!u)return '';if(/^https?:/i.test(u))return u;try{return sb.storage.from('bkfuspaq-media').getPublicUrl(u).data?.publicUrl||''}catch(_){return ''}};
-      const roles=Array.isArray(state?.roles)?state.roles:[];
-      const canReview=roles.includes('KETUA')||roles.includes('SEKRETARIS');
-      const canFinalize=canReview;
-      const canLock=roles.includes('KETUA');
       const rows=[...participantMap.values()].filter(p=>registrationMap.has(p.exam_registration_id)).sort((a,b)=>String(a.name||'').localeCompare(String(b.name||''),'id',{sensitivity:'base'}));
       if(!rows.length){reportEl().innerHTML=`<div class="empty">Belum ada peserta terdaftar untuk ujian ${label} pada cakupan akun ini.</div>`;return}
       reportEl().innerHTML=rows.map((participant,index)=>{
