@@ -1,4 +1,4 @@
-<!-- BK-FUSPAQ-NU V370: Sentralisasi konfigurasi aturan ujian dan penugasan penguji; baseline V369 diperiksa dan dirapikan. -->
+<!-- BK-FUSPAQ-NU V395: Tampilkan gelombang peserta pada daftar Pengujian dan form Penilaian. Baseline V394; hanya alur display/query wave yang diperbaiki. -->
 <!-- BK-FUSPAQ-NU V332: Konsistensi identitas transaksi lembaga + item + keterangan + nominal + status; menggantikan jalur display V331. -->
 <!-- V236: Penetapan batas minimal nilai ujian terhubung langsung dari Pengaturan. Referensi Pengujian dipertahankan. -->
 <!-- V232: Restore per-material exam minimum display and live result refresh after examiner scoring. -->
@@ -93,8 +93,7 @@ button[aria-label*="hapus" i] svg,button[title*="hapus" i] svg,button[aria-label
 .v227-data-item strong{display:block;line-height:1.35;overflow-wrap:anywhere}
 @media(max-width:700px){.v227-scroll-list{max-height:58vh}.v227-data-item{padding:11px}.v227-data-item .row{gap:8px;align-items:flex-start}.v227-data-item .status{flex:0 0 auto}}
 </style>
-<style id="v228-friendly-data-lists">.v228-data-list{display:flex;flex-direction:column;border-top:1px solid var(--line);background:transparent}.v228-data-row{padding:13px 4px;border-bottom:1px solid var(--line);background:transparent}.v228-data-row:last-child{border-bottom:0}.v228-data-row strong{display:block;line-height:1.35;overflow-wrap:anywhere}.v228-data-row .v228-main{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}.v228-data-row .v228-main>div:first-child{min-width:0;flex:1}.v228-data-row .v228-meta{margin-top:4px;color:var(--muted);font-size:12px;line-height:1.45}.v228-data-row .v228-amount{margin-top:5px;font-weight:800}.v228-section{padding:0 2px}.paid-stamp{display:inline-block;border:2px solid #28734a;color:#28734a;font-weight:900;font-size:16px;letter-spacing:2px;padding:4px 9px;transform:rotate(-4deg);border-radius:4px}.v228-paid-stamp{display:inline-flex;align-items:center;justify-content:center;border:2px solid #28734a;color:#28734a;font-weight:900;font-size:11px;letter-spacing:.8px;padding:4px 7px;transform:rotate(-3deg);border-radius:4px;white-space:nowrap}@media(max-width:600px){.v228-data-row{padding:12px 2px}.v228-data-row .v228-main{gap:8px}.v228-paid-stamp{font-size:10px;padding:3px 6px}}</style></meta><style id="bkf-network-error-v396">#bkfNetworkError{position:fixed;inset:0;z-index:100000;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(15,42,27,.52);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px)}#bkfNetworkError.show{display:flex}#bkfNetworkError .bkf-network-card{width:min(430px,100%);background:var(--app-card,#fff);border:1px solid var(--line,#dce5df);border-radius:18px;padding:24px 20px 20px;box-shadow:0 18px 45px rgba(13,55,32,.22);text-align:center}#bkfNetworkError .bkf-network-icon{width:62px;height:62px;margin:0 auto 15px;border-radius:18px;display:grid;place-items:center;background:linear-gradient(135deg,#eaf5ee,#f7efd8);border:1px solid #d8e5db;color:var(--primary-dark,var(--green,#176b3a));font-size:30px;font-weight:900;box-shadow:0 6px 16px rgba(20,55,37,.10)}#bkfNetworkError h2{margin:0;color:var(--primary-dark,var(--green,#176b3a));font-size:20px;line-height:1.25;font-weight:850}#bkfNetworkError .bkf-network-stopped{margin-top:4px;color:var(--text-main,var(--text,#18231d));font-size:16px;font-weight:750}#bkfNetworkError .bkf-network-message{margin:16px 0 20px;color:var(--muted,#66756d);font-size:14px;line-height:1.55}#bkfNetworkError .bkf-network-retry{width:100%;min-height:46px;border:0;border-radius:11px;padding:10px 16px;background:linear-gradient(135deg,var(--primary-dark,var(--green2,#0f542d)),var(--primary,var(--green,#176b3a)),var(--primary-light,#3b8b5a));color:#fff;font-size:14px;font-weight:800;cursor:pointer;box-shadow:0 5px 14px rgba(22,107,59,.18)}#bkfNetworkError .bkf-network-retry:active{transform:scale(.985)}#bkfNetworkError .bkf-network-hint{margin-top:10px;color:var(--muted,#66756d);font-size:11px;line-height:1.4}@media(max-width:480px){#bkfNetworkError{padding:14px}#bkfNetworkError .bkf-network-card{padding:22px 16px 17px;border-radius:16px}#bkfNetworkError .bkf-network-icon{width:56px;height:56px;font-size:27px;margin-bottom:13px}}</style>
-</head><body><div id="app"></div><!-- V238: Loader aturan ujian memuat rincian rule sekali, bukan query detail per tahap. -->
+<style id="v228-friendly-data-lists">.v228-data-list{display:flex;flex-direction:column;border-top:1px solid var(--line);background:transparent}.v228-data-row{padding:13px 4px;border-bottom:1px solid var(--line);background:transparent}.v228-data-row:last-child{border-bottom:0}.v228-data-row strong{display:block;line-height:1.35;overflow-wrap:anywhere}.v228-data-row .v228-main{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}.v228-data-row .v228-main>div:first-child{min-width:0;flex:1}.v228-data-row .v228-meta{margin-top:4px;color:var(--muted);font-size:12px;line-height:1.45}.v228-data-row .v228-amount{margin-top:5px;font-weight:800}.v228-section{padding:0 2px}.paid-stamp{display:inline-block;border:2px solid #28734a;color:#28734a;font-weight:900;font-size:16px;letter-spacing:2px;padding:4px 9px;transform:rotate(-4deg);border-radius:4px}.v228-paid-stamp{display:inline-flex;align-items:center;justify-content:center;border:2px solid #28734a;color:#28734a;font-weight:900;font-size:11px;letter-spacing:.8px;padding:4px 7px;transform:rotate(-3deg);border-radius:4px;white-space:nowrap}@media(max-width:600px){.v228-data-row{padding:12px 2px}.v228-data-row .v228-main{gap:8px}.v228-paid-stamp{font-size:10px;padding:3px 6px}}</style></meta></head><body><div id="app"></div><!-- V238: Loader aturan ujian memuat rincian rule sekali, bukan query detail per tahap. -->
 <script id="bk-supabase-loader">
 window.BKF_CONFIG={supabaseUrl:'https://yhxetkdsuogbehxnarhk.supabase.co',supabasePublishableKey:'sb_publishable_ZnikYPnzJtTD_H8wUq2aiw_4hecYQW_'};
 (function(){
@@ -248,19 +247,19 @@ function openParticipant(p){
    const passed=existing!=null&&min!=null&&existing>=min;
    return `<div class="material" data-minimum="${min??''}" data-score-status="${esc(m.score_status||'BELUM_DINILAI')}">
      <div class="row"><div><strong>${esc(m.name)}</strong><div class="small muted">Batas minimal: <strong>${min!=null?min:'-'}</strong></div></div><span class="status ${passed?'ok':''} material-status">${existing!=null?(passed?'MEMENUHI':'BELUM MEMENUHI'):'BELUM DINILAI'}</span></div>
-     ${sh?`<div class="component-grid"><div class="field"><label>Gerakan</label><input class="score comp" data-material="${esc(m.material_id)}" data-code="GERAKAN" type="number" min="0" max="100" step="0.01" value="${m.components?.GERAKAN??''}" ${locked||window.bkfIsFinishedScore(m.score_status)?'disabled':''}></div><div class="field"><label>Bacaan</label><input class="score comp" data-material="${esc(m.material_id)}" data-code="BACAAN" type="number" min="0" max="100" step="0.01" value="${m.components?.BACAAN??''}" ${locked||window.bkfIsFinishedScore(m.score_status)?'disabled':''}></div></div>`:''}
-     <div class="field"><label>${sh?'Nilai Akhir Sholat':'Nilai'}</label><input class="score final-score" data-material="${esc(m.material_id)}" type="number" min="0" max="100" step="0.01" value="${m.score??''}" ${sh||locked||window.bkfIsFinishedScore(m.score_status)?'readonly':''}></div>
+     ${sh?`<div class="component-grid"><div class="field"><label>Gerakan</label><input class="score comp" data-material="${esc(m.material_id)}" data-code="GERAKAN" type="number" min="1" max="100" step="0.01" value="${m.components?.GERAKAN??''}" ${locked||window.bkfIsFinishedScore(m.score_status)?'disabled':''}></div><div class="field"><label>Bacaan</label><input class="score comp" data-material="${esc(m.material_id)}" data-code="BACAAN" type="number" min="1" max="100" step="0.01" value="${m.components?.BACAAN??''}" ${locked||window.bkfIsFinishedScore(m.score_status)?'disabled':''}></div></div>`:''}
+     <div class="field"><label>${sh?'Nilai Akhir Sholat':'Nilai'}</label><input class="score final-score" data-material="${esc(m.material_id)}" type="number" min="1" max="100" step="0.01" value="${m.score??''}" ${sh||locked||window.bkfIsFinishedScore(m.score_status)?'readonly':''}></div>
    </div>`;
  }).join('')||'<div class="empty">Tidak ada materi yang menjadi penugasan Anda pada peserta ini.</div>';
  const updateSummary=()=>{
-   const vals=[...ms.querySelectorAll('.final-score')].map(x=>Number(x.value)).filter(Number.isFinite);
+   const vals=[...ms.querySelectorAll('.final-score')].map(x=>Number(String(x.value??'').trim())).filter(v=>Number.isFinite(v)&&v>=1&&v<=100);
    const allFilled=vals.length===Number(p.assigned_count||0)&&vals.length>0;
    const avg=vals.length?vals.reduce((a,b)=>a+b,0)/vals.length:null;
    const minOverall=Number(p.overall_minimum??65);
    const avgEl=document.getElementById('liveAverage'),statusEl=document.getElementById('liveStatus'),txt=document.getElementById('liveSummaryText');
    if(avgEl)avgEl.textContent=`Rata-rata: ${avg==null?'-':avg.toFixed(2)}`;
    if(allFilled&&avg!=null){
-     const allMaterialPassed=[...ms.querySelectorAll('.material')].every(el=>{const v=Number(el.querySelector('.final-score')?.value);const mn=Number(el.dataset.minimum);return Number.isFinite(v)&&(!Number.isFinite(mn)||v>=mn)});
+     const allMaterialPassed=[...ms.querySelectorAll('.material')].every(el=>{const v=Number(String(el.querySelector('.final-score')?.value??'').trim());const mn=Number(el.dataset.minimum);return Number.isFinite(v)&&v>=1&&v<=100&&(!Number.isFinite(mn)||v>=mn)});
      const pass=allMaterialPassed&&avg>=minOverall;
      if(statusEl)statusEl.textContent=pass?'MEMENUHI KETENTUAN':'BELUM MEMENUHI';
      if(txt)txt.textContent=pass?'Seluruh materi memenuhi batas minimal dan rata-rata memenuhi batas minimal keseluruhan.':'Masih ada materi atau rata-rata yang belum memenuhi batas minimal.';
@@ -268,7 +267,7 @@ function openParticipant(p){
      if(statusEl&&!locked)statusEl.textContent='Belum lengkap';
      if(txt)txt.textContent='Isi seluruh materi yang menjadi tugas Anda untuk melihat hasil sementara.';
    }
-   ms.querySelectorAll('.material').forEach(el=>{const v=Number(el.querySelector('.final-score')?.value),mn=Number(el.dataset.minimum),sp=el.querySelector('.material-status');if(!sp)return;sp.className='status material-status '+(Number.isFinite(v)&&Number.isFinite(mn)&&v>=mn?'ok':'');sp.textContent=Number.isFinite(v)?(Number.isFinite(mn)&&v>=mn?'MEMENUHI':'BELUM MEMENUHI'):'BELUM DINILAI'});
+   ms.querySelectorAll('.material').forEach(el=>{const v=Number(String(el.querySelector('.final-score')?.value??'').trim()),mn=Number(el.dataset.minimum),sp=el.querySelector('.material-status');if(!sp)return;const valid=Number.isFinite(v)&&v>=1&&v<=100;sp.className='status material-status '+(valid&&Number.isFinite(mn)&&v>=mn?'ok':'');sp.textContent=valid?(Number.isFinite(mn)&&v>=mn?'MEMENUHI':'BELUM MEMENUHI'):'BELUM DINILAI'});
  };
  if(locked)return;
  ms.querySelectorAll('.comp').forEach(x=>x.oninput=()=>{const mat=x.closest('.material');const vals=[...mat.querySelectorAll('.comp')].map(a=>Number(a.value));if(vals.length===2&&vals.every(Number.isFinite))mat.querySelector('.final-score').value=((vals[0]+vals[1])/2).toFixed(2);updateSummary()});
@@ -277,33 +276,41 @@ function openParticipant(p){
  if(document.getElementById('saveExam'))document.getElementById('saveExam').onclick=saveScores;
 }
 async function saveScores(){
- if(state.loading)return;
- state.loading=true;
- const btn=document.getElementById('saveExam'),msg=document.getElementById('examMsg');
+ if(window.__bkPengujianSaveBusy)return;
+ const host=page(), participant=state.participant;
+ if(!host||!participant?.exam_session_id)return;
+ const btn=host.querySelector('#saveExam'),msg=host.querySelector('#examMsg');
+ window.__bkPengujianSaveBusy=true;
  if(btn)btn.disabled=true;
  if(msg)msg.innerHTML='<p class="muted">Menyimpan nilai...</p>';
- const items=[];
- for(const el of document.querySelectorAll('.material')){
-   const status=String(el.dataset.scoreStatus||'').toUpperCase();
-   // Nilai FINAL/LOCKED sudah tersimpan. Tampilkan, tetapi jangan kirim ulang.
-   if(window.bkfIsFinishedScore(status))continue;
-   const final=el.querySelector('.final-score'),id=final?.dataset.material,s=Number(final?.value);
-   if(!id||!Number.isFinite(s)||s<0||s>100)return failSave('Semua nilai yang belum selesai harus diisi 0–100.');
-   const comps=[...el.querySelectorAll('.comp')].map(x=>({component_code:x.dataset.code,score:Number(x.value)}));
-   if(comps.length&&(comps.length!==2||comps.some(c=>!Number.isFinite(c.score)||c.score<0||c.score>100)))return failSave('Gerakan dan Bacaan Sholat wajib diisi 0–100.');
-   items.push(comps.length?{exam_material_id:id,score:s,components:comps}:{exam_material_id:id,score:s});
+ try{
+   const items=[];
+   for(const el of host.querySelectorAll('.material')){
+     const status=String(el.dataset.scoreStatus||'').toUpperCase();
+     if(window.bkfIsFinishedScore(status))continue;
+     const final=el.querySelector('.final-score'),id=final?.dataset.material;
+     const raw=String(final?.value??'').trim();
+     const s=raw===''?NaN:Number(raw);
+     if(!id||!Number.isFinite(s)||s<1||s>100)throw new Error('Semua nilai yang belum selesai wajib diisi 1–100. Nilai 0 atau kosong tidak diperbolehkan.');
+     const comps=[...el.querySelectorAll('.comp')].map(x=>{const raw=String(x.value??'').trim();return {component_code:x.dataset.code,score:raw===''?NaN:Number(raw)}});
+     if(comps.length&&(comps.length!==2||comps.some(c=>!Number.isFinite(c.score)||c.score<1||c.score>100)))throw new Error('Gerakan dan Bacaan Sholat wajib diisi 1–100.');
+     items.push(comps.length?{exam_material_id:id,score:s,components:comps}:{exam_material_id:id,score:s});
+   }
+   if(!items.length){
+     if(msg)msg.innerHTML='<p class="success">Semua materi peserta ini sudah tersimpan. Tidak ada nilai baru yang perlu disimpan.</p>';
+     return;
+   }
+   const {data,error}=await sb.rpc('save_examiner_scores',{p_exam_session_id:participant.exam_session_id,p_scores:items});
+   if(error)throw error;
+   const total=data?.total_score!=null?fmt(data.total_score):'-',avg=data?.average_score!=null?Number(data.average_score).toFixed(2):'-',status=String(data?.status||'BELUM_DINILAI');
+   if(msg)msg.innerHTML=`<p class="success">Berhasil menyimpan ${esc(data?.saved_materials??items.length)} materi. Total: <strong>${esc(total)}</strong> · Rata-rata: <strong>${esc(avg)}</strong> · Status: <strong>${esc(status)}</strong>.</p>`;
+   setTimeout(()=>navigate(participant.pengujian_return_route||(String(participant.exam_type||'').toUpperCase()==='TASHIH'?'pengujian-tashih':'pengujian-pra')),700);
+ }catch(e){
+   if(msg)msg.innerHTML=`<p class="error">${esc(e?.message||'Nilai belum berhasil disimpan.')}</p>`;
+   if(btn)btn.disabled=false;
+ }finally{
+   window.__bkPengujianSaveBusy=false;
  }
- if(!items.length){
-   state.loading=false;
-   if(btn)btn.disabled=true;
-   if(msg)msg.innerHTML='<p class="success">Semua materi peserta ini sudah tersimpan. Tidak ada nilai baru yang perlu disimpan.</p>';
-   return;
- }
- const {data,error}=await sb.rpc('save_examiner_scores',{p_exam_session_id:state.participant.exam_session_id,p_scores:items});
- if(error)return failSave(error.message||'Nilai belum berhasil disimpan.');
- const total=data?.total_score!=null?fmt(data.total_score):'-',avg=data?.average_score!=null?Number(data.average_score).toFixed(2):'-',status=String(data?.status||'BELUM_DINILAI');
- if(msg)msg.innerHTML=`<p class="success">Berhasil menyimpan ${esc(data?.saved_materials??items.length)} materi. Total: <strong>${esc(total)}</strong> · Rata-rata: <strong>${esc(avg)}</strong> · Status: <strong>${esc(status)}</strong>.</p>`;
- setTimeout(()=>{state.loading=false;navigate(state.participant?.pengujian_return_route||(String(state.participant?.exam_type||'').toUpperCase()==='TASHIH'?'pengujian-tashih':'pengujian-pra'))},1200);
 }
 
 function failSave(m){state.loading=false;const b=document.getElementById('saveExam');if(b)b.disabled=false;document.getElementById('examMsg').innerHTML=`<p class="error">${esc(m)}</p>`}
@@ -940,37 +947,58 @@ window.printExamCards=async function(){
  const close=()=>modal.remove();document.getElementById('bkfExamCardClose').onclick=close;
  const typeEl=document.getElementById('bkfCardType'),instEl=document.getElementById('bkfCardInstitution'),partEl=document.getElementById('bkfCardParticipant'),msg=document.getElementById('bkfCardPrintMsg');
  let cache=[];
- async function loadData(){
-   msg.textContent='Memuat data peserta...'; if(typeof window.bkfBusyShow==='function')window.bkfBusyShow('Memuat data peserta...');
-   try{
+ let institutionCache=[];
+ async function loadInstitutions(){
+   msg.textContent='Memuat daftar lembaga...';
    const examType=typeEl.value;
    const isOperator=Array.isArray(state.roles)&&state.roles.includes('OPERATOR');
    const ownInst=await window.bkfOperatorInstitutionId();
    if(isOperator&&!ownInst)throw new Error('Lembaga akun Operator belum terhubung.');
-   let q=sb.from('exam_registrations').select('id,exam_type,institution_id,registration_number,institutions:institution_id(id,name),exam_participants(id,name,nis,gender,exam_number,status,media_id)').eq('exam_type',examType);
+   let q=sb.from('exam_registrations').select('id,exam_type,institution_id,institutions:institution_id(id,name)').eq('exam_type',examType);
    if(isOperator)q=q.eq('institution_id',ownInst);
    q=await q.order('registration_number');
    if(q.error)throw q.error;
-   cache=(q.data||[]).flatMap(r=>(r.exam_participants||[]).filter(p=>p.status!=='BATAL').map(p=>({...p,institution:r.institutions,registration_number:r.registration_number||''})));
-   const ims=[...new Map(cache.filter(x=>x.institution?.id).map(x=>[x.institution.id,x.institution])).values()].sort((a,b)=>String(a.name||'').localeCompare(String(b.name||'')));
-   if(isOperator){const own=ims.find(x=>x.id===ownInst)||ims[0];if(!own)throw new Error('Data lembaga Operator tidak ditemukan.');instEl.innerHTML=`<option value="${E2(own.id)}">${E2(own.name||'-')}</option>`;instEl.value=own.id;instEl.disabled=true;}else{instEl.disabled=false;instEl.innerHTML='<option value="ALL">Semua Lembaga</option>'+ims.map(x=>`<option value="${E2(x.id)}">${E2(x.name||'-')}</option>`).join('');}
-   refreshParticipants();
-   msg.textContent=cache.length?`${cache.length} peserta tersedia.`:'Belum ada peserta untuk jenis ujian ini.';
+   institutionCache=[...new Map((q.data||[]).filter(r=>r.institutions?.id).map(r=>[r.institutions.id,r.institutions])).values()]
+     .sort((a,b)=>String(a.name||'').localeCompare(String(b.name||'')));
+   if(isOperator){
+     const own=institutionCache.find(x=>x.id===ownInst)||institutionCache[0];
+     if(!own)throw new Error('Data lembaga Operator tidak ditemukan.');
+     instEl.innerHTML=`<option value="${E2(own.id)}">${E2(own.name||'-')}</option>`;
+     instEl.value=own.id;instEl.disabled=true;
+   }else{
+     instEl.disabled=false;
+     instEl.innerHTML='<option value="ALL">Semua Lembaga</option>'+institutionCache.map(x=>`<option value="${E2(x.id)}">${E2(x.name||'-')}</option>`).join('');
+   }
+ }
+ async function loadParticipants(){
+   msg.textContent='Memuat peserta...';
+   const examType=typeEl.value,iid=instEl.value;
+   let q=sb.from('exam_registrations').select('id,exam_type,institution_id,registration_number,institutions:institution_id(id,name),exam_participants(id,name,nis,gender,exam_number,status,media_id)').eq('exam_type',examType);
+   if(iid!=='ALL')q=q.eq('institution_id',iid);
+   const r=await q.order('registration_number');
+   if(r.error)throw r.error;
+   cache=(r.data||[]).flatMap(reg=>(reg.exam_participants||[]).filter(p=>p.status!=='BATAL').map(p=>({...p,institution:reg.institutions,registration_number:reg.registration_number||''})));
+   cache.sort((a,b)=>String(a.exam_number||a.registration_number||'').localeCompare(String(b.exam_number||b.registration_number||''),undefined,{numeric:true}));
+   partEl.innerHTML='<option value="ALL">Semua Peserta</option>'+cache.map(x=>`<option value="${E2(x.id)}">${E2(x.exam_number||x.registration_number||'-')} — ${E2(x.name||'-')}</option>`).join('');
+   msg.textContent=cache.length?`${cache.length} peserta tersedia.`:'Belum ada peserta untuk pilihan tersebut.';
+ }
+ async function loadData(){
+   if(typeof window.bkfBusyShow==='function')window.bkfBusyShow('Memuat daftar lembaga...');
+   try{
+     cache=[];partEl.innerHTML='<option value="ALL">Semua Peserta</option>';
+     await loadInstitutions();
+     await loadParticipants();
    }finally{if(typeof window.bkfBusyHide==='function')window.bkfBusyHide()}
  }
- function refreshParticipants(){
-   const iid=instEl.value;const rows=iid==='ALL'?cache:cache.filter(x=>x.institution?.id===iid);
-   rows.sort((a,b)=>String(a.exam_number||a.registration_number||'').localeCompare(String(b.exam_number||b.registration_number||''),undefined,{numeric:true}));
-   partEl.innerHTML='<option value="ALL">Semua Peserta</option>'+rows.map(x=>`<option value="${E2(x.id)}">${E2(x.exam_number||x.registration_number||'-')} — ${E2(x.name||'-')}</option>`).join('');
- }
- instEl.onchange=refreshParticipants;typeEl.onchange=()=>loadData().catch(e=>{msg.textContent='Gagal memuat: '+(e?.message||e)});
+ instEl.onchange=()=>loadParticipants().catch(e=>{msg.textContent='Gagal memuat peserta: '+(e?.message||e)});
+ typeEl.onchange=()=>loadData().catch(e=>{msg.textContent='Gagal memuat: '+(e?.message||e)});
  await loadData().catch(e=>{msg.textContent='Gagal memuat: '+(e?.message||e)});
  async function generate(mode){
    const examType=typeEl.value;const iid=instEl.value;const pid=partEl.value;
    let rows=cache.slice();if(iid!=='ALL')rows=rows.filter(x=>x.institution?.id===iid);if(pid!=='ALL')rows=rows.filter(x=>x.id===pid);
    if(!rows.length){toast('Tidak ada peserta sesuai pilihan cetak.','error');return}
    const title=examType==='TASHIH'?'KARTU PESERTA UJIAN TASHIH':'KARTU PESERTA UJIAN PRA TASHIH';
-   const cardUrl=(id)=>{try{const u=new URL(window.location.href);u.searchParams.set('card',id||'');u.hash='';return u.toString()}catch(_){return window.location.href}};
+   const cardUrl=(id)=>{const base='https://simfaq.github.io/SIMFAQ/';try{return base+'?card='+encodeURIComponent(String(id||''))}catch(_){return base}};
    const materialQ=await sb.from('exam_materials').select('id,code,name,sequence').eq('status','ACTIVE').order('sequence');if(materialQ.error)throw materialQ.error;const materials=materialQ.data||[];
    const ids=rows.map(x=>x.id).filter(Boolean);const sessionsQ=ids.length?await sb.from('exam_sessions').select('id,participant_id,exam_registration_id').in('participant_id',ids):{data:[],error:null};if(sessionsQ.error)throw sessionsQ.error;const sessionMap=new Map((sessionsQ.data||[]).map(x=>[x.id,x.participant_id]));const sessionIds=[...sessionMap.keys()];
    const asQ=sessionIds.length?await sb.from('examiner_assignments').select('exam_session_id,exam_material_id,examiner_user_id,status').in('exam_session_id',sessionIds).eq('status','ACTIVE'):{data:[],error:null};if(asQ.error)throw asQ.error;const profIds=(asQ.data||[]).map(x=>x.examiner_user_id).filter(Boolean);const profQ=profIds.length?await sb.from('profiles').select('id,full_name').in('id',profIds):{data:[],error:null};if(profQ.error)throw profQ.error;const pmap=new Map((profQ.data||[]).map(x=>[x.id,x.full_name]));const examinerMap=new Map();for(const a of asQ.data||[]){const p=sessionMap.get(a.exam_session_id);if(!p)continue;if(!examinerMap.has(p))examinerMap.set(p,{});examinerMap.get(p)[a.exam_material_id]=pmap.get(a.examiner_user_id)||''}
@@ -3960,6 +3988,10 @@ window.bkfPreparePrintWindowV151=function(w){actions(w);return w};
 .bkf-peng-type{display:inline-flex;align-items:center;margin-top:5px;padding:4px 8px;border-radius:999px;font-size:11px;font-weight:800;background:#edf7f1;color:#075f3d;border:1px solid #cce6d8}
 .bkf-peng-type.tashih{background:#eef5ff;color:#1557a6;border-color:#cfe0f7}
 .bkf-peng-open{flex:0 0 auto}
+.bkf-peng-wave-btn{min-width:128px;font-weight:800;border:1px solid var(--line);transition:all .15s ease}
+.bkf-peng-wave-btn.active{background:var(--primary);color:#fff;border-color:var(--primary);box-shadow:0 2px 8px rgba(0,0,0,.10);cursor:default}
+.bkf-peng-wave-btn:not(.active){background:var(--surface,#fff);color:var(--text,#24342d);opacity:.72}
+.bkf-peng-wave-btn:not(.active):hover{opacity:1}
 .bkf-peng-identity{display:flex;gap:16px;align-items:flex-start;margin-top:14px;padding:15px;border:1px solid var(--line);border-radius:16px;background:linear-gradient(145deg,#fff,#f5faf7)}
 .bkf-peng-id-photo{width:113px;height:151px;flex:0 0 113px;border-radius:8px;border:1px solid #cbd8d0;background:#edf3ef;object-fit:cover;display:flex;align-items:center;justify-content:center;text-align:center;font-size:11px;color:#718078;overflow:hidden}
 .bkf-peng-id-photo img{width:100%;height:100%;object-fit:cover}
@@ -3978,51 +4010,54 @@ const E=window.esc||((v)=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':
 const normType=t=>String(t||'').toUpperCase()==='TASHIH'?'TASHIH':'PRA_TASHIH';
 const examLabel=t=>normType(t)==='TASHIH'?'UJIAN TASHIH':'PRA TASHIH';
 const examTypeClass=t=>normType(t)==='TASHIH'?'tashih':'';
-const photoHtml=(url,cls='bkf-peng-photo')=>url?`<div class="${cls}"><img src="${E(url)}" alt="Foto peserta"></div>`:`<div class="${cls}">Foto<br>peserta</div>`;
+const photoHtml=(url,cls='bkf-peng-photo')=>url?`<div class="${cls}"><img src="${E(url)}" alt="Foto peserta" loading="lazy" decoding="async"></div>`:`<div class="${cls}">Foto<br>peserta</div>`;
 const mediaUrl=path=>{const u=String(path||'');if(!u)return '';if(/^https?:/i.test(u))return u;try{return sb.storage.from('bkfuspaq-media').getPublicUrl(u).data?.publicUrl||''}catch(_){return ''}};
 const routeForType=t=>normType(t)==='TASHIH'?'pengujian-tashih':'pengujian-pra';
 const isFinishedScore=s=>['FINAL','LOCKED'].includes(String(s||'').toUpperCase());
 window.bkfIsFinishedScore=isFinishedScore;
 
-async function loadPengujianRows(examType){
- const type=normType(examType);
+async function loadPengujianRows(examType,wave=null){
+ const type=normType(examType),selectedWave=Number(wave)===2?2:1;
  const uid=state.profile?.id||state.user?.id||'00000000-0000-0000-0000-000000000000';
- const aq=await sb.from('examiner_assignments').select('exam_session_id,exam_material_id,examiner_user_id,status').eq('status','ACTIVE').eq('examiner_user_id',uid);
+
+ // Mulai dari assignment penguji, tetapi database langsung menyaring
+ // session berdasarkan exam_type + wave. Data di luar pilihan pengguna
+ // tidak dibawa ke browser untuk diproses kemudian.
+ const aq=await sb.from('examiner_assignments').select(
+   'exam_session_id,exam_material_id,examiner_user_id,status,'+
+   'exam_sessions!inner(id,participant_id,exam_registration_id,status,'+
+   'exam_registrations!inner(id,exam_type,institution_id,wave),' +
+   'exam_participants:participant_id(id,name,nis,exam_number,status,media_id))'
+ ).eq('status','ACTIVE').eq('examiner_user_id',uid)
+  .eq('exam_sessions.exam_registrations.exam_type',type)
+  .eq('exam_sessions.exam_registrations.wave',selectedWave);
  if(aq.error)throw aq.error;
- const rawAssignments=aq.data||[];if(!rawAssignments.length)return [];
- const sessionIds=[...new Set(rawAssignments.map(x=>x.exam_session_id).filter(Boolean))];
- const sq=await sb.from('exam_sessions').select('id,participant_id,exam_registration_id,status').in('id',sessionIds);if(sq.error)throw sq.error;
- const sessions=sq.data||[];const regIds=[...new Set(sessions.map(x=>x.exam_registration_id).filter(Boolean))];const partIds=[...new Set(sessions.map(x=>x.participant_id).filter(Boolean))];
- const [rq,pq]=await Promise.all([
-  regIds.length?sb.from('exam_registrations').select('id,exam_type,institution_id,wave').in('id',regIds):Promise.resolve({data:[],error:null}),
-  partIds.length?sb.from('exam_participants').select('id,name,nis,exam_number,status,media_id').in('id',partIds):Promise.resolve({data:[],error:null})
- ]);if(rq.error)throw rq.error;if(pq.error)throw pq.error;
- const regMap=new Map((rq.data||[]).map(x=>[x.id,x])),partMap=new Map((pq.data||[]).map(x=>[x.id,x])),sessMap=new Map(sessions.map(x=>[x.id,x]));
- const assignedRows=rawAssignments.map(a=>{const sess=sessMap.get(a.exam_session_id),reg=sess?regMap.get(sess.exam_registration_id):null,p=sess?partMap.get(sess.participant_id):null;return {...a,exam_sessions:sess?{...sess,exam_registrations:reg,exam_participants:p}:null}}).filter(x=>x.exam_sessions&&x.exam_sessions.exam_registrations&&x.exam_sessions.exam_participants&&normType(x.exam_sessions.exam_registrations.exam_type)===type);
+ const assignedRows=aq.data||[];
  if(!assignedRows.length)return [];
+
+ const sessionIds=[...new Set(assignedRows.map(x=>x.exam_session_id).filter(Boolean))];
  const mids=[...new Set(assignedRows.map(x=>x.exam_material_id).filter(Boolean))];
  const [mq,scoreQ,resultQ]=await Promise.all([
-  mids.length?sb.from('exam_materials').select('id,name,code,sequence').in('id',mids).eq('status','ACTIVE').order('sequence'):{data:[],error:null},
-  sessionIds.length?sb.from('exam_scores').select('exam_session_id,exam_material_id,score,status').in('exam_session_id',sessionIds).in('exam_material_id',mids):{data:[],error:null},
-  sessionIds.length?sb.from('exam_results').select('exam_session_id,status,total_score,average_score,finalized_at,locked_at').in('exam_session_id',sessionIds):{data:[],error:null}
+   mids.length?sb.from('exam_materials').select('id,name,code,sequence').in('id',mids).eq('status','ACTIVE').order('sequence'):{data:[],error:null},
+   sessionIds.length?sb.from('exam_scores').select('exam_session_id,exam_material_id,score,status').in('exam_session_id',sessionIds):{data:[],error:null},
+   sessionIds.length?sb.from('exam_results').select('exam_session_id,status,total_score,average_score,finalized_at,locked_at').in('exam_session_id',sessionIds):{data:[],error:null}
  ]);
  if(mq.error)throw mq.error;if(scoreQ.error)throw scoreQ.error;if(resultQ.error)throw resultQ.error;
- const mats=mq.data||[];
- const matMap=new Map(mats.map(m=>[m.id,m]));
- const scoreMap=new Map();
- for(const x of scoreQ.data||[])scoreMap.set(x.exam_session_id+'|'+x.exam_material_id,x);
+
+ const matMap=new Map((mq.data||[]).map(m=>[m.id,m]));
+ const scoreMap=new Map((scoreQ.data||[]).map(x=>[x.exam_session_id+'|'+x.exam_material_id,x]));
  const resultMap=new Map((resultQ.data||[]).map(x=>[x.exam_session_id,x]));
  const grouped=new Map();
  for(const a of assignedRows){
-   const sess=a.exam_sessions||{},p=sess.exam_participants||{};
-   if(!sess.id||!p.id)continue;
-   const mat=matMap.get(a.exam_material_id);if(!mat)continue;
-   if(!grouped.has(sess.id))grouped.set(sess.id,{p,r:{exam_type:type,institution_id:sess.exam_registrations?.institution_id,wave:sess.exam_registrations?.wave},sess,materials:[],result:resultMap.get(sess.id)||null});
+   const sess=a.exam_sessions||{},p=sess.exam_participants||{},reg=sess.exam_registrations||{},mat=matMap.get(a.exam_material_id);
+   if(!sess.id||!p.id||!reg.id||!mat)continue;
+   if(!grouped.has(sess.id))grouped.set(sess.id,{p,r:reg,sess,materials:[],result:resultMap.get(sess.id)||null});
    const g=grouped.get(sess.id);
    if(!g.materials.some(m=>m.id===mat.id))g.materials.push(mat);
  }
  const rows=[...grouped.values()].filter(x=>x.materials.length);
  if(!rows.length)return [];
+
  const mediaIds=[...new Set(rows.map(x=>x.p.media_id).filter(Boolean))];
  let mediaMap=new Map();
  if(mediaIds.length){const mm=await sb.from('participant_media').select('id,storage_path').in('id',mediaIds);if(mm.error)throw mm.error;mediaMap=new Map((mm.data||[]).map(x=>[x.id,mediaUrl(x.storage_path)]));}
@@ -4033,17 +4068,12 @@ async function loadPengujianRows(examType){
    const scoreRows=x.materials.map(m=>scoreMap.get(x.sess.id+'|'+m.id)).filter(Boolean);
    const scores=scoreRows.map(v=>Number(v.score)).filter(Number.isFinite);
    const result=x.result||{};
-   // Status peserta ditentukan dari SELURUH materi yang ditugaskan kepada penguji ini.
-   // Satu materi saja belum memiliki exam_scores => paket penilaian belum selesai.
    const scoredCount=scoreRows.length;
-   const completeScore=scoredCount===x.materials.length && x.materials.length>0;
+   const completeScore=scoredCount===x.materials.length&&x.materials.length>0;
    const total=result.total_score!=null?Number(result.total_score):(completeScore&&scores.length?scores.reduce((a,b)=>a+b,0):null);
    const average=result.average_score!=null?Number(result.average_score):(completeScore&&scores.length?scores.reduce((a,b)=>a+b,0)/scores.length:null);
    const finishedCount=x.materials.filter(m=>window.bkfIsFinishedScore(scoreMap.get(x.sess.id+'|'+m.id)?.status)).length;
-   const assignedMaterialScores=x.materials.map(m=>{
-     const sc=scoreMap.get(x.sess.id+'|'+m.id);
-     return {id:m.id,name:m.name,code:m.code,score:sc?.score??null,status:sc?.status||'BELUM_DINILAI'};
-   });
+   const assignedMaterialScores=x.materials.map(m=>{const sc=scoreMap.get(x.sess.id+'|'+m.id);return{id:m.id,name:m.name,code:m.code,score:sc?.score??null,status:sc?.status||'BELUM_DINILAI'}});
    return {...x,photo_url:mediaMap.get(x.p.media_id)||'',institution_name:instMap.get(x.r.institution_id)||'-',hasAnyScore:scoredCount>0,completeScore,total_score:completeScore?total:null,average_score:completeScore?average:null,scored_count:scoredCount,finished_count:finishedCount,assignedMaterialScores};
  }).sort((a,b)=>String(a.p.exam_number||'').localeCompare(String(b.p.exam_number||''),undefined,{numeric:true})||String(a.p.name||'').localeCompare(String(b.p.name||'')));
 }
@@ -4057,19 +4087,20 @@ function renderPengujianChooser(){
  </div>`;
 }
 
-async function showPengujianStage(examType){
- const type=normType(examType),route=routeForType(type),label=examLabel(type);
+async function showPengujianStage(examType,wave=1){
+ const type=normType(examType),route=routeForType(type),label=examLabel(type),selectedWave=Number(wave)===2?2:1;
  const host=document.getElementById('page');if(!host)return;
- host.innerHTML=`<div class="card"><div class="row"><div><button class="btn secondary" type="button" onclick="navigate('pengujian')">← Pengujian</button><h2 style="margin:12px 0 4px">Penilaian ${E(label)}</h2><p class="muted">Peserta yang belum memiliki nilai diberi tombol Nilai. Peserta yang sudah memiliki nilai hanya menampilkan nilainya.</p></div></div><div class="bkf-peng-search"><span class="ico">🔎</span><input id="pengujianSearch" type="search" autocomplete="off" placeholder="Cari nama peserta / nomor ujian..."></div><div id="pengujianCount" class="bkf-peng-count" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap"></div></div><div id="pengujianArea" class="card"><p class="muted">Memuat data peserta...</p></div>`;
+ host.innerHTML=`<div class="card"><div class="row"><div><button class="btn secondary" type="button" onclick="navigate('pengujian')">← Pengujian</button><h2 style="margin:12px 0 4px">Penilaian ${E(label)}</h2><p class="muted">Pilih gelombang untuk menampilkan hanya peserta ${E(label)} pada gelombang tersebut.</p></div></div><div class="compact-actions" style="margin-top:12px"><button class="btn bkf-peng-wave-btn ${selectedWave===1?'active':''}" type="button" aria-pressed="${selectedWave===1?'true':'false'}" onclick="${type==='TASHIH'?'window.showPengujianTashih(1)':'window.showPengujianPra(1)'}">Gelombang 1${selectedWave===1?' · Aktif':''}</button><button class="btn bkf-peng-wave-btn ${selectedWave===2?'active':''}" type="button" aria-pressed="${selectedWave===2?'true':'false'}" onclick="${type==='TASHIH'?'window.showPengujianTashih(2)':'window.showPengujianPra(2)'}">Gelombang 2${selectedWave===2?' · Aktif':''}</button></div><div class="bkf-peng-search" style="margin-top:12px"><span class="ico">🔎</span><input id="pengujianSearch" type="search" autocomplete="off" placeholder="Cari nama peserta / nomor ujian..."></div><div id="pengujianCount" class="bkf-peng-count" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap"></div></div><div id="pengujianArea" class="card"><p class="muted">Memuat data peserta...</p></div>`;
  const area=document.getElementById('pengujianArea'),search=document.getElementById('pengujianSearch'),count=document.getElementById('pengujianCount');
  try{
-   const data=await loadPengujianRows(type);window.__bkfPengujianRows=data;
+   // Filter gelombang diterapkan langsung pada query exam_registrations.
+   const data=await loadPengujianRows(type,selectedWave);window.__bkfPengujianRows=data;
    const render=()=>{
      const q=String(search.value||'').trim().toLowerCase();
      const rows=!q?data:data.filter(x=>String(x.p.name||'').toLowerCase().includes(q)||String(x.p.exam_number||'').toLowerCase().includes(q)||String(x.p.nis||'').toLowerCase().includes(q));
      const remaining=data.filter(x=>Number(x.scored_count||0)===0).length;
-     count.innerHTML=`<span>${rows.length} peserta</span><span style="margin-left:auto">Sisa peserta yang belum ikut Tes: <strong>${remaining}</strong></span>`;
-     area.innerHTML=`<div class="row"><div><h3>Peserta Ujian ${E(label)}</h3></div><span class="status ok">${rows.length}</span></div><div class="list" style="margin-top:10px">${rows.map(x=>{
+     count.innerHTML=`<span>${rows.length} peserta</span><span>Gelombang <strong>${selectedWave}</strong></span><span style="margin-left:auto">Sisa peserta yang belum ikut Tes: <strong>${remaining}</strong></span>`;
+     area.innerHTML=`<div class="row"><div><h3>Peserta Ujian ${E(label)} · Gelombang ${selectedWave}</h3></div><span class="status ok">${rows.length}</span></div><div class="list" style="margin-top:10px">${rows.map(x=>{
        const complete=!!x.completeScore;
        const r=x.result||{};
        const locked=!!r.locked_at||String(r.status||'').toUpperCase()==='LOCKED';
@@ -4078,51 +4109,113 @@ async function showPengujianStage(examType){
        const statusClass=complete?'ok':'';
        const valueLine=x.scored_count>0?`<div style="margin-top:8px"><strong>Nilai materi tugas:</strong><div style="margin-top:6px;display:flex;flex-wrap:wrap;gap:6px">${(x.assignedMaterialScores||[]).filter(m=>m.score!=null).map(m=>`<span class="status ok" style="display:inline-flex;gap:5px;align-items:center"><span>${E(m.name||m.code||'-')}</span><strong>${E(Number(m.score).toFixed(2))}</strong></span>`).join('')||'<span class="small muted">Belum ada nilai.</span>'}</div></div>`:`<div class="small muted" style="margin-top:8px">Belum ada nilai pada materi yang ditugaskan kepada Anda.</div>`;
        const action=complete?'':`<button class="btn primary bkf-peng-open" type="button" onclick="window.openParticipantFromPengujian('${E(x.sess.id)}','${E(x.p.id)}','${route}')">Nilai ›</button>`;
-       return `<div class="list-item"><div class="row"><div class="bkf-peng-person">${photoHtml(x.photo_url)}<div class="bkf-peng-info"><strong>${E(x.p.name||'-')}</strong><div class="bkf-peng-meta">No. Ujian: ${E(x.p.exam_number||'-')} · NIS: ${E(x.p.nis||'-')}</div><span class="bkf-peng-type ${examTypeClass(x.r.exam_type)}">${examLabel(x.r.exam_type)}</span></div></div>${action}</div><div class="small" style="margin-top:8px">Lembaga: <strong>${E(x.institution_name)}</strong> · ${x.materials.length} materi</div><div style="margin-top:10px;padding:10px 12px;border-radius:12px;background:var(--soft,#f4f8f5);border:1px solid var(--line)"><div class="row"><strong>${complete?'Hasil Penilaian':'Status Penilaian'}</strong><span class="status ${statusClass}">${statusText}</span></div>${valueLine}</div></div>`;
-     }).join('')||'<div class="empty">Belum ada peserta yang menjadi penugasan Anda.</div>'}</div>`;
+       return `<div class="list-item"><div class="row"><div class="bkf-peng-person">${photoHtml(x.photo_url)}<div class="bkf-peng-info"><strong>${E(x.p.name||'-')}</strong><div class="bkf-peng-meta">No. Ujian: ${E(x.p.exam_number||'-')} · NIS: ${E(x.p.nis||'-')}</div><span class="bkf-peng-type ${examTypeClass(x.r.exam_type)}">${examLabel(x.r.exam_type)}</span></div></div>${action}</div><div class="small" style="margin-top:8px">Lembaga: <strong>${E(x.institution_name)}</strong> · Gelombang: <strong>${x.r.wave==null?'Belum ditetapkan':E('Gelombang '+x.r.wave)}</strong> · ${x.materials.length} materi</div><div style="margin-top:10px;padding:10px 12px;border-radius:12px;background:var(--soft,#f4f8f5);border:1px solid var(--line)"><div class="row"><strong>${complete?'Hasil Penilaian':'Status Penilaian'}</strong><span class="status ${statusClass}">${statusText}</span></div>${valueLine}</div></div>`;
+     }).join('')||(q?`<div class="empty">Peserta yang Anda cari tidak ditemukan pada Gelombang ${selectedWave}. Silakan pilih gelombang lain atau periksa nama, NIS, atau nomor ujian.</div>`:`<div class="empty">Belum ada peserta yang ditugaskan kepada Anda pada Gelombang ${selectedWave}.</div>`)}</div>`;
    };
    search.oninput=render;render();search.focus();
  }catch(e){area.innerHTML=`<div class="error">${E(e?.message||'Modul Pengujian belum dapat dimuat.')}</div>`}
 }
 
 window.openParticipantFromPengujian=async function(sessionId,participantId,returnRoute){
+ if(window.__bkPengujianOpenBusy)return;
+ window.__bkPengujianOpenBusy=true;
+ const buttons=[...document.querySelectorAll('.bkf-peng-open')];
+ buttons.forEach(b=>b.disabled=true);
  try{
- const q=await sb.from('exam_sessions').select('id,participant_id,exam_registration_id,status,participant:participant_id(id,name,nis,exam_number,status,media_id,participant_media:media_id(storage_path)),exam_registrations:exam_registration_id(exam_type,institution_id)').eq('id',sessionId).single();
- if(q.error||!q.data)return window.bkAlert?.(window.friendlyError?q.error?friendlyError(q.error):'Peserta tidak ditemukan.':'Peserta tidak ditemukan.');
- const p=q.data.participant||{},examType=normType(q.data.exam_registrations?.exam_type),route=returnRoute||routeForType(examType);
- if(normType(examType)!==normType(route==='pengujian-tashih'?'TASHIH':'PRA_TASHIH'))return window.bkAlert?.('Tahap ujian tidak sesuai dengan modul penilaian.');
- 
- const uid=state.profile?.id||state.user?.id||'00000000-0000-0000-0000-000000000000';
- const ass=await sb.from('examiner_assignments').select('exam_material_id').eq('status','ACTIVE').eq('examiner_user_id',uid).eq('exam_session_id',sessionId);
- if(ass.error)throw ass.error;
- const mids=[...new Set((ass.data||[]).map(x=>x.exam_material_id).filter(Boolean))];
- const mats=mids.length?(await sb.from('exam_materials').select('id,name,code,sequence').in('id',mids).eq('status','ACTIVE').order('sequence')).data||[]:[];
- const sr=await sb.from('exam_sessions').select('exam_rule_id,rule_snapshot').eq('id',sessionId).maybeSingle();
- let ruleDetails=[];if(sr.data?.exam_rule_id){const rd=await sb.from('exam_rule_details').select('exam_material_id,minimum_score').eq('exam_rule_id',sr.data.exam_rule_id);ruleDetails=rd.data||[];}
- const minMap=new Map(ruleDetails.map(x=>[x.exam_material_id,Number(x.minimum_score)]));
- const overallMinimum=Number(sr.data?.rule_snapshot?.overall_minimum??65);
- const sc=mids.length?(await sb.from('exam_scores').select('exam_material_id,score,status,exam_score_components:exam_score_id(component_code,score)').eq('exam_session_id',sessionId).in('exam_material_id',mids)).data||[]:[];
- const scoreMap=new Map(sc.map(x=>[x.exam_material_id,x]));
- const assignedMats=mats;
- const pendingMats=assignedMats.filter(m=>!isFinishedScore(scoreMap.get(m.id)?.status));
- const resultRow=await sb.from('exam_results').select('status,finalized_at,locked_at').eq('exam_session_id',sessionId).maybeSingle();
- if(resultRow.error)throw resultRow.error;
- const resultLocked=!!resultRow.data?.locked_at||String(resultRow.data?.status||'').toUpperCase()==='LOCKED';
- let photo='';if(p.media_id){const mm=await sb.from('participant_media').select('storage_path').eq('id',p.media_id).maybeSingle();if(!mm.error)photo=mediaUrl(mm.data?.storage_path)}
- let institutionName='-';const instId=q.data.exam_registrations?.institution_id;if(instId){const iq=await sb.from('institutions').select('name').eq('id',instId).maybeSingle();if(!iq.error)institutionName=iq.data?.name||'-'}
- p.exam_session_id=sessionId;p.wave=q.data.exam_registrations?.wave??null;p.overall_status=resultLocked?'DIKUNCI':(resultRow.data?.finalized_at?'DIFINALISASI':(p.status||'BELUM_DINILAI'));p.assigned_count=assignedMats.length;p.exam_type=examType;p.photo_url=photo;p.institution_name=institutionName;p.overall_minimum=overallMinimum;p.pengujian_return_route=route;
- p.assigned_materials=assignedMats.map(m=>{const x=scoreMap.get(m.id)||{},comps={};for(const c of x.exam_score_components||[])comps[c.component_code]=c.score;return {material_id:m.id,name:m.name,code:m.code,score:x.score??null,score_status:x.status||'BELUM_DINILAI',minimum_score:minMap.get(m.id)??65,components:comps}});
- state.participant=p;window.openParticipant(p);
- }catch(e){console.error('[BK PENGUJIAN OPEN]',e);window.bkAlert?.(e?.message||'Form penilaian tidak dapat dibuka.');}
+   const sessionQ=await sb.from('exam_sessions').select(
+     'id,participant_id,exam_registration_id,status,exam_rule_id,rule_snapshot,'+
+     'participant:participant_id(id,name,nis,exam_number,status,media_id,participant_media:media_id(storage_path)),'+
+     'exam_registrations:exam_registration_id(exam_type,institution_id,wave)'
+   ).eq('id',sessionId).eq('participant_id',participantId).single();
+   if(sessionQ.error||!sessionQ.data)throw new Error('Peserta tidak ditemukan atau sesi ujian tidak sesuai.');
+   const row=sessionQ.data,p=row.participant||{},reg=row.exam_registrations||{},examType=normType(reg.exam_type),route=returnRoute||routeForType(examType);
+   if(normType(examType)!==normType(route==='pengujian-tashih'?'TASHIH':'PRA_TASHIH'))throw new Error('Tahap ujian tidak sesuai dengan modul penilaian.');
+   const uid=state.profile?.id||state.user?.id||'00000000-0000-0000-0000-000000000000';
+
+   // Semua data yang tidak saling bergantung diambil bersamaan. Tidak ada lagi
+   // rantai request panjang untuk membuka satu peserta.
+   const [assQ,resultQ,instQ]=await Promise.all([
+     sb.from('examiner_assignments').select('exam_material_id').eq('status','ACTIVE').eq('examiner_user_id',uid).eq('exam_session_id',sessionId),
+     sb.from('exam_results').select('status,finalized_at,locked_at').eq('exam_session_id',sessionId).maybeSingle(),
+     reg.institution_id?sb.from('institutions').select('name').eq('id',reg.institution_id).maybeSingle():Promise.resolve({data:null,error:null})
+   ]);
+   if(assQ.error)throw assQ.error;if(resultQ.error)throw resultQ.error;if(instQ.error)throw instQ.error;
+   const mids=[...new Set((assQ.data||[]).map(x=>x.exam_material_id).filter(Boolean))];
+   if(!mids.length)throw new Error('Peserta ini belum memiliki materi yang ditugaskan kepada penguji Anda.');
+
+   // Materi, nilai, dan aturan juga tidak saling bergantung sehingga diproses paralel.
+   const [matsQ,scoreQ,detailsQ]=await Promise.all([
+     sb.from('exam_materials').select('id,name,code,sequence').in('id',mids).eq('status','ACTIVE').order('sequence'),
+     sb.from('exam_scores').select('exam_material_id,score,status,exam_score_components:exam_score_components_exam_score_id_fkey(component_code,score)').eq('exam_session_id',sessionId).in('exam_material_id',mids),
+     row.exam_rule_id?sb.from('exam_rule_details').select('exam_material_id,minimum_score').eq('exam_rule_id',row.exam_rule_id):Promise.resolve({data:[],error:null})
+   ]);
+   if(matsQ.error)throw matsQ.error;if(scoreQ.error)throw scoreQ.error;if(detailsQ.error)throw detailsQ.error;
+   const mats=matsQ.data||[],sc=scoreQ.data||[],ruleDetails=detailsQ.data||[];
+   const minMap=new Map(ruleDetails.map(x=>[x.exam_material_id,Number(x.minimum_score)]));
+   const scoreMap=new Map(sc.map(x=>[x.exam_material_id,x]));
+   const resultLocked=!!resultQ.data?.locked_at||String(resultQ.data?.status||'').toUpperCase()==='LOCKED';
+   const photo= p.participant_media?.storage_path?mediaUrl(p.participant_media.storage_path):'';
+   p.exam_session_id=sessionId;p.wave=reg.wave??null;p.overall_status=resultLocked?'DIKUNCI':(resultQ.data?.finalized_at?'DIFINALISASI':(p.status||'BELUM_DINILAI'));
+   p.assigned_count=mats.length;p.exam_type=examType;p.photo_url=photo;p.institution_name=instQ.data?.name||'-';p.overall_minimum=Number(row.rule_snapshot?.overall_minimum??65);p.pengujian_return_route=route;
+   p.assigned_materials=mats.map(m=>{
+     const x=scoreMap.get(m.id)||{},comps={};
+     for(const c of x.exam_score_components||[])comps[c.component_code]=c.score;
+     return {material_id:m.id,name:m.name,code:m.code,score:x.score??null,score_status:x.status||'BELUM_DINILAI',minimum_score:minMap.get(m.id)??65,components:comps};
+   });
+   state.participant=p;window.openParticipant(p);
+ }catch(e){
+   console.error('[BK PENGUJIAN OPEN]',e);
+   window.bkAlert?.(e?.message||'Form penilaian tidak dapat dibuka.');
+ }finally{
+   window.__bkPengujianOpenBusy=false;
+   buttons.forEach(b=>b.disabled=false);
+ }
 };
 
 
 // Public route entry points: the central router calls these exact handlers.
 // Keep them explicit so Pengujian never falls through to the previously rendered module.
 window.showPengujian=renderPengujianChooser;
-window.showPengujianPra=()=>showPengujianStage('PRA_TASHIH');
-window.showPengujianTashih=()=>showPengujianStage('TASHIH');
+window.showPengujianPra=(wave=1)=>showPengujianStage('PRA_TASHIH',wave);
+window.showPengujianTashih=(wave=1)=>showPengujianStage('TASHIH',wave);
 
+})();
+</script>
+<script id="bkf-v180-card-validation">
+(function(){
+ 'use strict';
+ const E=window.esc||((v)=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])));
+ async function renderCardValidationResult(host,card){
+   const active=String(card?.status||'').toUpperCase()==='TERDAFTAR';
+   const type=card?.exam_type==='TASHIH'?'Tashih':card?.exam_type==='PRA_TASHIH'?'Pra Tashih':(card?.exam_type||'-');
+   host.innerHTML=`<div class="card"><div class="row"><div><h2>${active?'✓ Kartu Ujian Valid':'⚠ Kartu Ujian Tidak Aktif'}</h2><div class="small muted">${active?'Data QR cocok dengan data peserta ujian.':'Data kartu ditemukan, tetapi status peserta tidak aktif.'}</div></div><span class="status ${active?'ok':''}">${active?'VALID':'TIDAK AKTIF'}</span></div><div class="bkf-validation-grid" style="margin-top:14px"><div><div class="small muted">Nama Peserta</div><strong>${E(card?.name||'-')}</strong></div><div><div class="small muted">NIS</div><strong>${E(card?.nis||'-')}</strong></div><div><div class="small muted">Nomor Ujian</div><strong>${E(card?.exam_number||'-')}</strong></div><div><div class="small muted">Jenis Ujian</div><strong>${E(type)}</strong></div><div><div class="small muted">Lembaga</div><strong>${E(card?.institution_name||'-')}</strong></div><div><div class="small muted">Status</div><strong>${E(active?'TERDAFTAR':'TIDAK AKTIF')}</strong></div></div><div class="notice" style="margin-top:14px">Halaman ini hanya menampilkan informasi identitas kartu untuk verifikasi. Nilai ujian dan data penilaian tidak ditampilkan.</div><div class="login-footer" style="margin-top:22px"><strong>Deplovemen: Daneva.studio @${new Date().getFullYear()}</strong><span>Founder: Ahmad Fathunnur</span></div></div>`;
+ }
+ window.bkfShowPublicCardValidation=async function(participantId){
+   const host=document.getElementById('app');if(!host)return;
+   document.body.classList.add('bkf-ready');host.style.visibility='visible';
+   host.innerHTML='<main class="app-shell"><section class="content" id="publicCardValidation"><div class="card"><h2>Validasi Kartu Ujian</h2><div class="empty" style="margin-top:12px">Memeriksa kartu...</div></div></section></main>';
+   const target=document.getElementById('publicCardValidation');
+   try{
+     const r=await fetch('https://yhxetkdsuogbehxnarhk.supabase.co/functions/v1/bkf-card-validation?card='+encodeURIComponent(participantId),{headers:{'Accept':'application/json'}});
+     const data=await r.json().catch(()=>null);
+     if(!r.ok||!data?.ok){target.innerHTML='<div class="card"><h2>Validasi Kartu Ujian</h2><div class="error" style="margin-top:12px">'+E(data?.message||'Kartu tidak ditemukan atau tidak dapat diverifikasi.')+'</div></div>';return;}
+     await renderCardValidationResult(target,data.card);
+   }catch(e){
+     console.error('[BK PUBLIC CARD]',e);
+     target.innerHTML='<div class="card"><h2>Validasi Kartu Ujian</h2><div class="error" style="margin-top:12px">Validasi kartu tidak dapat dilakukan. Periksa koneksi internet lalu coba lagi.</div></div>';
+   }
+ };
+ window.bkfShowCardValidation=async function(participantId){
+   if(!participantId)return;
+   const host=document.getElementById('page');if(!host)return;
+   host.innerHTML='<div class="card"><div class="row"><div><h2>Validasi Kartu Ujian</h2><div class="small muted">Memeriksa keaslian data kartu dari database.</div></div><button class="btn secondary" onclick="navigate(\'home\')">Beranda</button></div><div class="empty" style="margin-top:12px">Memeriksa kartu...</div></div>';
+   const q=await sb.from('exam_participants').select('id,name,nis,exam_number,status,exam_registration_id,exam_registrations:exam_registration_id(exam_type,institution_id,institutions:institution_id(name))').eq('id',participantId).maybeSingle();
+   if(q.error||!q.data){host.innerHTML='<div class="card"><h2>Validasi Kartu Ujian</h2><div class="error" style="margin-top:12px">Kartu tidak ditemukan atau tidak dapat diverifikasi pada akun ini.</div></div>';return}
+   const p=q.data,reg=p.exam_registrations||{};
+   const type=reg.exam_type==='TASHIH'?'Tashih':reg.exam_type==='PRA_TASHIH'?'Pra Tashih':(reg.exam_type||'-');
+   host.innerHTML=`<div class="card"><div class="row"><div><h2>✓ Kartu Ujian Valid</h2><div class="small muted">Data QR cocok dengan data peserta ujian.</div></div><span class="status ok">VALID</span></div><div class="bkf-validation-grid" style="margin-top:14px"><div><div class="small muted">Nama Peserta</div><strong>${E(p.name||'-')}</strong></div><div><div class="small muted">NIS</div><strong>${E(p.nis||'-')}</strong></div><div><div class="small muted">Nomor Ujian</div><strong>${E(p.exam_number||'-')}</strong></div><div><div class="small muted">Jenis Ujian</div><strong>${E(type)}</strong></div><div><div class="small muted">Lembaga</div><strong>${E(reg.institutions?.name||'-')}</strong></div><div><div class="small muted">Status Peserta</div><strong>${E(p.status||'-')}</strong></div></div><div class="notice" style="margin-top:14px">Validasi ini menggunakan ID peserta yang tersimpan pada sistem BK FUSPAQ NU.</div></div>`;
+ };
+ window.bkfHandleCardQuery=function(){const id=new URLSearchParams(window.location.search).get('card');if(!id)return false;window.__BKF_CARD_QUERY__=id;return true};
 })();
 </script>
 <script id="bk-final-consolidated-runtime-clean">
@@ -4231,6 +4324,7 @@ window.boot=async function(){
  if(cfg.supabasePublishableKey==='REPLACE_WITH_PROJECT_PUBLISHABLE_KEY'){await window.bkfSplash?.hide();return renderLogin('Publishable key belum dikonfigurasi.')}
  let client=window.sb||sb;for(let i=0;!client&&i<60;i++){try{window.__bkInitSupabase?.()}catch(_){}client=window.sb||null;if(!client)await new Promise(r=>setTimeout(r,200))}
  if(!client){await window.bkfSplash?.hide();return renderLogin('Layanan sistem belum siap.')};sb=client;window.sb=client;
+ if(window.__BKF_CARD_QUERY__&&typeof window.bkfShowPublicCardValidation==='function'){await window.bkfSplash?.hide();return window.bkfShowPublicCardValidation(window.__BKF_CARD_QUERY__)}
  let session=null;window.bkfSplash?.status('Memeriksa akun...');try{const r=await client.auth.getSession();if(r.error)throw r.error;session=r.data?.session||null}catch(e){console.warn('[BK SESSION]',e)}
  if(!session){try{const r=await client.auth.refreshSession();session=r.data?.session||null}catch(e){console.warn('[BK SESSION REFRESH]',e)}}
  if(!session){try{const r=await client.auth.getUser();if(r.error)throw r.error;state.user=r.data?.user||null}catch(e){state.user=null}if(!state.user){await window.bkfSplash?.hide();return renderLogin()}}else state.user=session.user;
@@ -4240,6 +4334,7 @@ window.boot=async function(){
 };
 try{sb?.auth?.onAuthStateChange?.((event,session)=>{if(event==='SIGNED_OUT')renderLogin();else if(session)state.user=session.user})}catch(_){}
 window.bkfSplash?.show();
+try{const cardId=new URLSearchParams(window.location.search).get('card');if(cardId)window.__BKF_CARD_QUERY__=cardId}catch(_){}
 const start=async()=>{try{await window.boot()}catch(e){console.error('[BK FINAL BOOT]',e);await window.bkfSplash?.hide();try{renderLogin('Aplikasi gagal memuat. Silakan muat ulang halaman.')}catch(_) {}}};
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else setTimeout(start,0);
 })();
@@ -4517,23 +4612,7 @@ window.showMemoryAlbum=async function(eventId=''){
 };
 })();
 </script>
-<script id="bkf-v180-card-validation">
-(function(){
- 'use strict';
- const E=window.esc||((v)=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])));
- window.bkfShowCardValidation=async function(participantId){
-   if(!participantId)return;
-   const host=document.getElementById('page');if(!host)return;
-   host.innerHTML='<div class="card"><div class="row"><div><h2>Validasi Kartu Ujian</h2><div class="small muted">Memeriksa keaslian data kartu dari database.</div></div><button class="btn secondary" onclick="navigate(\'home\')">Beranda</button></div><div class="empty" style="margin-top:12px">Memeriksa kartu...</div></div>';
-   const q=await sb.from('exam_participants').select('id,name,nis,exam_number,status,exam_registration_id,exam_registrations:exam_registration_id(exam_type,institution_id,institutions:institution_id(name))').eq('id',participantId).maybeSingle();
-   if(q.error||!q.data){host.innerHTML='<div class="card"><h2>Validasi Kartu Ujian</h2><div class="error" style="margin-top:12px">Kartu tidak ditemukan atau tidak dapat diverifikasi pada akun ini.</div></div>';return}
-   const p=q.data,reg=p.exam_registrations||{};
-   const type=reg.exam_type==='TASHIH'?'Tashih':reg.exam_type==='PRA_TASHIH'?'Pra Tashih':(reg.exam_type||'-');
-   host.innerHTML=`<div class="card"><div class="row"><div><h2>✓ Kartu Ujian Valid</h2><div class="small muted">Data QR cocok dengan data peserta ujian.</div></div><span class="status ok">VALID</span></div><div class="bkf-validation-grid" style="margin-top:14px"><div><div class="small muted">Nama Peserta</div><strong>${E(p.name||'-')}</strong></div><div><div class="small muted">NIS</div><strong>${E(p.nis||'-')}</strong></div><div><div class="small muted">Nomor Ujian</div><strong>${E(p.exam_number||'-')}</strong></div><div><div class="small muted">Jenis Ujian</div><strong>${E(type)}</strong></div><div><div class="small muted">Lembaga</div><strong>${E(reg.institutions?.name||'-')}</strong></div><div><div class="small muted">Status Peserta</div><strong>${E(p.status||'-')}</strong></div></div><div class="notice" style="margin-top:14px">Validasi ini menggunakan ID peserta yang tersimpan pada sistem BK FUSPAQ NU.</div></div>`;
- };
- window.bkfHandleCardQuery=function(){const id=new URLSearchParams(window.location.search).get('card');if(!id)return false;window.__BKF_CARD_QUERY__=id;return true};
-})();
-</script>
+
 <style id="bkf-v180-card-validation-style">.bkf-validation-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.bkf-validation-grid>div{border:1px solid var(--line,#dbe6df);border-radius:12px;padding:11px;background:#f8fbf9}@media(max-width:600px){.bkf-validation-grid{grid-template-columns:1fr}}</style>
 <script id="bkf-notification-realtime-runtime">
 (function(){
@@ -5005,8 +5084,6 @@ window.showExamGovernance=async function(){const host=document.getElementById('p
 })();
 
 </script>
-<div id="bkfNetworkError" role="alertdialog" aria-modal="true" aria-labelledby="bkfNetworkErrorTitle" aria-describedby="bkfNetworkErrorMessage"><div class="bkf-network-card"><div class="bkf-network-icon" aria-hidden="true">!</div><h2 id="bkfNetworkErrorTitle">APLIKASI SIMFAQ</h2><div class="bkf-network-stopped">terhenti</div><div id="bkfNetworkErrorMessage" class="bkf-network-message">Tidak ada internet atau jaringan terputus.</div><button id="bkfNetworkRetry" class="bkf-network-retry" type="button">Coba lagi</button><div class="bkf-network-hint">Periksa koneksi internet, kemudian coba lagi.</div></div></div>
-<script id="bkf-network-error-v396">(function(){const overlay=document.getElementById('bkfNetworkError'),retry=document.getElementById('bkfNetworkRetry');if(!overlay||!retry)return;let retrying=false;const show=()=>overlay.classList.add('show');const hide=()=>{overlay.classList.remove('show');retrying=false;retry.disabled=false};const update=()=>{if(typeof navigator!=='undefined'&&navigator.onLine===false)show()};retry.addEventListener('click',()=>{if(retrying)return;retrying=true;retry.disabled=true;if(typeof navigator!=='undefined'&&navigator.onLine===false){retrying=false;retry.disabled=false;show();return}hide();setTimeout(()=>{try{window.location.reload()}catch(_){update()}},80)});window.addEventListener('offline',show,false);window.addEventListener('online',hide,false);window.addEventListener('pageshow',update,false);update()})();</script>
 </body><script id="bkf-audit-v128-e2e-action-guards">
 (function(){
   'use strict';
