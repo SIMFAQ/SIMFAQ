@@ -2238,7 +2238,7 @@ window.__showActivitiesCore=async function(){
     const roles=Array.isArray(state?.roles)?state.roles.map(r=>String(r).toUpperCase()):[];
     const canManage=roles.includes('KETUA')||roles.includes('BENDAHARA');
     if(!canManage){toast('Anda hanya dapat melihat informasi iuran ujian.','error');return}
-    const existing=await sb.from('tariffs').select('id,code,name,amount,unit,effective_from,effective_until,status').eq('code','IURAN_UJIAN').order('effective_from',{ascending:false}).limit(1).maybeSingle();
+    const existing=await sb.from('tariffs').select('id,code,name,amount,unit,effective_from,effective_until,status').eq('code','TASHIH').order('effective_from',{ascending:false}).limit(1).maybeSingle();
     if(existing.error){toast(friendlyError(existing.error),'error');return}
     const x=existing.data||{};
     document.getElementById('examDuesModal')?.remove();
@@ -2250,7 +2250,7 @@ window.__showActivitiesCore=async function(){
       if(until&&until<from){msg.className='error';msg.textContent='Tanggal berlaku sampai tidak boleh sebelum tanggal mulai.';return}
       const btn=form.querySelector('button[type="submit"]');btn.disabled=true;btn.textContent='Menyimpan...';
       try{
-        const q=await sb.rpc('save_tariff',{p_id:x.id||null,p_code:'IURAN_UJIAN',p_name:'Iuran Ujian',p_amount:amount,p_unit:String(f.get('unit')||'peserta').trim(),p_effective_from:from,p_effective_until:until,p_status:f.get('status')||'ACTIVE'});
+        const q=await sb.rpc('save_tariff',{p_id:x.id||null,p_code:'TASHIH',p_name:'Tarif Tashih',p_amount:amount,p_unit:String(f.get('unit')||'peserta').trim(),p_effective_from:from,p_effective_until:until,p_status:f.get('status')||'ACTIVE'});
         if(q.error)throw q.error;
         document.getElementById('examDuesModal')?.remove();toast('Iuran ujian berhasil disimpan.');window.showExams?.();
       }catch(err){msg.className='error';msg.textContent=friendlyError(err)||err?.message||'Iuran ujian belum berhasil disimpan.'}
@@ -2260,7 +2260,7 @@ window.__showActivitiesCore=async function(){
   window.showExamDues=async function(){
     const host=document.getElementById('examDuesArea');if(!host)return;
     host.innerHTML='<div class="card"><p class="muted">Memuat iuran ujian...</p></div>';
-    const q=await sb.from('tariffs').select('id,code,name,amount,unit,effective_from,effective_until,status').eq('code','IURAN_UJIAN').eq('status','ACTIVE').order('effective_from',{ascending:false}).limit(1).maybeSingle();
+    const q=await sb.from('tariffs').select('id,code,name,amount,unit,effective_from,effective_until,status').eq('code','TASHIH').eq('status','ACTIVE').order('effective_from',{ascending:false}).limit(1).maybeSingle();
     if(q.error){host.innerHTML=`<div class="card"><div class="error">${esc(friendlyError(q.error))}</div></div>`;return}
     const x=q.data;
     const roles=Array.isArray(state?.roles)?state.roles.map(r=>String(r).toUpperCase()):[];
