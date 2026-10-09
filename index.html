@@ -1,3 +1,5 @@
+<!-- BK-FUSPAQ-NU V412: Ujian menggunakan satu master Biaya Ujian + approval Kas terintegrasi pada financeCash2(). Baseline V411; modul lain tidak diubah. -->
+<!-- BK-FUSPAQ-NU V411: Refresh UI Pembayaran/Kas setelah pembayaran; baseline V410; Selapanan dan RLS tidak diubah. -->
 <!-- BK-FUSPAQ-NU V395: Tampilkan gelombang peserta pada daftar Pengujian dan form Penilaian. Baseline V394; hanya alur display/query wave yang diperbaiki. -->
 <!-- BK-FUSPAQ-NU V332: Konsistensi identitas transaksi lembaga + item + keterangan + nominal + status; menggantikan jalur display V331. -->
 <!-- V236: Penetapan batas minimal nilai ujian terhubung langsung dari Pengaturan. Referensi Pengujian dipertahankan. -->
@@ -6,7 +8,7 @@
 <!-- V172: legacy Panel Penguji runtime removed; standalone Pengujian retained. -->
 <!DOCTYPE html>
 
-<html><head><meta content="V370 - Sentralisasi Aturan Ujian & Wisuda" name="bkf-version"/><meta charset="utf-8"><meta content="width=device-width,initial-scale=1" name="viewport"/><title>BK FUSPAQ NU</title><style>
+<html><head><meta content="V412 - Single Master Biaya Ujian & Approval Kas" name="bkf-version"/><meta charset="utf-8"><meta content="width=device-width,initial-scale=1" name="viewport"/><title>BK FUSPAQ NU</title><style>
 :root{--green:#176b3a;--green2:#0f542d;--gold:#b78a24;--bg:#f6f8f6;--card:#fff;--line:#dce5df;--muted:#66756d;--text:#18231d;--ok:#176b3a;--danger:#a33a35;--warn:#8a6500;--radius:16px;--shadow:0 6px 22px rgba(25,55,38,.07);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text)}button,input,select,textarea{font:inherit}a{color:inherit}
 
 body{min-height:100vh}.shell{min-height:100vh;padding-top:76px;padding-bottom:20px}.top{position:fixed;left:0;right:0;top:0;z-index:1000;background:var(--green);color:#fff;padding:17px 16px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 2px 10px #0001}.brand{font-weight:800}.sub{font-size:12px;opacity:.82}.content{max-width:980px;margin:auto;padding:16px}.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin-bottom:12px;box-shadow:var(--shadow)}.hero{background:linear-gradient(135deg,var(--green),#25844d);color:#fff;border:0}.grid{display:grid;gap:12px}.grid2{grid-template-columns:repeat(2,minmax(0,1fr))}.grid3{grid-template-columns:repeat(3,minmax(0,1fr))}.metric{font-size:25px;font-weight:800}.muted{color:var(--muted);font-size:14px}.small{font-size:12px}.btn{min-height:44px;border:0;border-radius:12px;padding:10px 15px;font-weight:750;cursor:pointer}.primary{background:var(--green);color:#fff}.secondary{background:#edf3ee;color:var(--green)}.gold{background:#f7efd8;color:#765600}.danger{background:#fcebea;color:var(--danger)}.btn:disabled{opacity:.55;cursor:not-allowed}.row{display:flex;justify-content:space-between;gap:12px;align-items:center}.field{display:grid;gap:6px;margin:12px 0}.field label{font-size:13px;font-weight:700}.field input,.field select,.field textarea{width:100%;min-height:46px;border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:#fff}.field textarea{min-height:100px}.status{display:inline-flex;padding:5px 9px;border-radius:999px;font-size:12px;font-weight:750;background:#eef2ef}.status.ok{color:var(--ok);background:#eaf6ed}.status.lock{color:#6b4e00;background:#fbf3d7}.status.bad{color:var(--danger);background:#fcebea}.error{color:var(--danger);font-size:13px}.success{color:var(--ok);font-size:13px}.login{max-width:430px;margin:10vh auto;padding:22px}.bottom{position:fixed;bottom:0;left:0;right:0;height:70px;background:#fff;border-top:1px solid var(--line);display:flex;justify-content:space-around;z-index:30}.bottom button{flex:1;background:none;border:0;color:var(--muted);font-size:12px;font-weight:750}.bottom button.active{color:var(--green)}.menu-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.menu-item{text-align:left;min-height:72px}.drawer-panel .menu-item{display:block!important;padding:12px 14px}.drawer-panel .menu-item .menu-label{display:block;font-size:15px;font-weight:850;line-height:1.2;color:#123f2b}.drawer-panel .menu-item .menu-caption{display:block;margin-top:4px;font-size:11px;line-height:1.3;font-weight:700;color:#66776d}.app-branding{padding:12px 18px 82px;text-align:center;color:#516258;font-size:11px;display:flex;justify-content:center;gap:6px;flex-wrap:wrap}.app-branding strong{color:#165b39;font-weight:900}.app-branding span{font-weight:700;color:#6d6a55}.drawer-panel .menu-item:hover .menu-caption{color:#8a6719}.list{display:grid;gap:8px}.list-item{border:1px solid var(--line);border-radius:14px;padding:13px;background:#fff}.toolbar{display:flex;gap:8px;flex-wrap:wrap}.toolbar>*{flex:1;min-width:140px}.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:14px}.table{width:100%;border-collapse:collapse;min-width:650px}.table th,.table td{padding:10px;border-bottom:1px solid var(--line);text-align:left;font-size:13px}.table th{background:#f2f6f3}.material{border:1px solid var(--line);border-radius:14px;padding:12px}.materials{display:grid;gap:10px}.component-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.empty{padding:24px;text-align:center;color:var(--muted)}.drawer{position:fixed;inset:0;background:#0006;z-index:50}.drawer-panel{height:100%;width:min(360px,88vw);background:#fff;padding:18px;overflow:auto}.drawer-head{display:flex;justify-content:space-between;align-items:center}.section-title{font-size:13px;font-weight:800;color:var(--muted);margin:18px 0 8px}.notice{padding:12px;border-radius:12px;background:#fff8df;border:1px solid #ead9a5}.print-area{background:#fff}.report-card{break-inside:avoid}@media(min-width:760px){.content{padding:24px}.bottom{left:50%;right:auto;transform:translateX(-50%);width:min(980px,100%);border-left:1px solid var(--line);border-right:1px solid var(--line)}.menu-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}@media(max-width:600px){.grid2,.grid3{grid-template-columns:1fr}.component-grid{grid-template-columns:1fr 1fr}.toolbar>*{min-width:100%}}@media print{body{background:#fff}.top,.bottom,.no-print{display:none!important}.content{max-width:none;padding:0}.card{box-shadow:none;border:0}.print-area{display:block!important}}
@@ -454,11 +456,19 @@ async function showPayments(){
       if(print&&paymentId&&typeof window.printReceipt==='function'){
         try{await window.printReceipt(paymentId)}catch(printErr){console.warn('[BK PAYMENT RECEIPT]',printErr);safeToast('Pembayaran sudah tersimpan, tetapi struk belum dapat dibuka.','error')}
       }else if(print&&!paymentId){safeToast('Pembayaran tersimpan, tetapi ID resi tidak tersedia untuk dicetak.','error')}
-      // Setelah pengguna selesai memilih cetak/tidak cetak, baru siapkan pembayaran berikutnya.
-      resetBillSelection();
-      billSel.disabled=!bills.length;
-      if(!bills.length)billSel.innerHTML='<option value="">— Tidak ada tagihan yang masih harus dibayar —</option>';
-      focusBill();
+      // V411: setelah pembayaran CONFIRMED, tandai dan segarkan UI keuangan yang sedang terpasang.
+      // Database trigger sudah membuat Kas Masuk; UI tidak boleh bergantung pada cache/tampilan lama.
+      if(typeof window.bkfRefreshFinanceAfterPayment==='function') await window.bkfRefreshFinanceAfterPayment();
+      // Setelah cetak/tidak cetak, bangun ulang modul Pembayaran dari database.
+      // Ini memastikan transaksi terbaru, status tagihan, dan sisa tagihan langsung tersinkron.
+      await showPayments();
+      const refreshedInst=document.getElementById('payInstitution');
+      if(refreshedInst){
+        refreshedInst.value=institutionId;
+        if(typeof window._paymentPageLoadBills==='function') await window._paymentPageLoadBills(institutionId);
+      }
+      const refreshedAmount=document.getElementById('payAmount');
+      if(refreshedAmount) refreshedAmount.focus();
     }catch(e2){msg.className='error';msg.textContent=friendlyError(e2);submit.disabled=false;delete submit.dataset.busy}
   };
   window._paymentPageLoadBills=loadBills;
@@ -2234,42 +2244,12 @@ window.__showActivitiesCore=async function(){
     f.onsubmit=async e=>{e.preventDefault();const fd=new FormData(f),msg=document.getElementById('v40ExamRegMsg');let mediaId=null;let stage='validasi data';msg.className='small';msg.textContent='Memeriksa data...';try{if(!f._photoFile)throw new Error('Foto peserta wajib diisi.');const institution=isOp?ownInst:fd.get('institution_id');if(!institution)throw new Error('Lembaga peserta wajib dipilih.');stage='mengunggah foto';msg.textContent='Mengunggah foto...';const upload=window.bkfUploadImage||window.v23UploadImage;if(typeof upload!=='function')throw new Error('Fungsi penyimpanan foto tidak tersedia.');const url=await upload(f._photoFile,'exam-participants/'+crypto.randomUUID()+'.jpg');stage='menyimpan foto peserta';const m=await sb.from('participant_media').insert({media_type:'PARTICIPANT',storage_path:url,mime_type:'image/jpeg',file_size:f._photoFile.size,uploaded_by:state.profile?.id||null,status:'ACTIVE'}).select('id').single();if(m.error)throw m.error;mediaId=m.data.id;stage='mendaftarkan peserta dan membuat sesi ujian';msg.textContent='Mendaftarkan peserta...';const q=await sb.rpc('register_exam_participant',{p_activity_id:null,p_exam_type:'PRA_TASHIH',p_institution_id:institution,p_name:String(fd.get('name')||'').trim(),p_nis:String(fd.get('nis')||'').trim()||null,p_gender:fd.get('gender')||null,p_birth_place:String(fd.get('birth_place')||'').trim()||null,p_birth_date:fd.get('birth_date')||null,p_address:String(fd.get('address')||'').trim()||null,p_guardian_name:String(fd.get('guardian_name')||'').trim()||null,p_media_id:mediaId});if(q.error)throw q.error;document.getElementById('examRegModal')?.remove();toast('Peserta berhasil didaftarkan. Status proses ujian akan mengikuti sesi ujian.');showExams()}catch(e2){console.error('[BKF PENDAFTARAN UJIAN]',{stage,error:e2});msg.className='error';const raw=String(e2?.message||e2||'Terjadi kesalahan.');const friendly=window.friendlyError?window.friendlyError(e2):raw;msg.textContent=(friendly=== 'Tindakan belum berhasil. Silakan periksa data lalu coba lagi.'||friendly=== 'Fitur atau data yang diminta belum tersedia.')?('Gagal pada tahap '+stage+'. '+raw):friendly;if(mediaId){try{await sb.from('participant_media').delete().eq('id',mediaId)}catch(_){}}}};
   };
 
-  window.openExamDuesForm=async function(){
-    const roles=Array.isArray(state?.roles)?state.roles.map(r=>String(r).toUpperCase()):[];
-    const canManage=roles.includes('KETUA')||roles.includes('BENDAHARA');
-    if(!canManage){toast('Anda hanya dapat melihat informasi iuran ujian.','error');return}
-    const existing=await sb.from('tariffs').select('id,code,name,amount,unit,effective_from,effective_until,status').eq('code','TASHIH').order('effective_from',{ascending:false}).limit(1).maybeSingle();
-    if(existing.error){toast(friendlyError(existing.error),'error');return}
-    const x=existing.data||{};
-    document.getElementById('examDuesModal')?.remove();
-    document.body.insertAdjacentHTML('beforeend',`<div class="backdrop" id="examDuesModal"><div class="modal-sheet"><div class="row"><div><h3>${x.id?'Edit Iuran Ujian':'Tetapkan Iuran Ujian'}</h3><div class="small muted">Iuran ujian berlaku sebagai tarif per peserta.</div></div><button class="btn secondary" type="button" onclick="document.getElementById('examDuesModal')?.remove()">Tutup</button></div><form id="examDuesForm"><div class="field"><label>Nominal iuran ujian *</label><input name="amount" type="number" min="0" step="0.01" required value="${x.amount??''}" placeholder="Contoh: 50000"></div><div class="field"><label>Satuan</label><input name="unit" value="${esc(x.unit||'peserta')}" required></div><div class="grid grid2"><div class="field"><label>Berlaku mulai *</label><input name="from" type="date" value="${esc(x.effective_from||new Date().toISOString().slice(0,10))}" required></div><div class="field"><label>Berlaku sampai</label><input name="until" type="date" value="${esc(x.effective_until||'')}"></div></div><div class="field"><label>Status</label><select name="status"><option value="ACTIVE" ${x.status==='ACTIVE'||!x.status?'selected':''}>ACTIVE</option><option value="INACTIVE" ${x.status==='INACTIVE'?'selected':''}>INACTIVE</option></select></div><button class="btn primary" type="submit" style="width:100%">Simpan Iuran Ujian</button><p id="examDuesMsg" class="small"></p></form></div></div>`);
-    const form=document.getElementById('examDuesForm'),msg=document.getElementById('examDuesMsg');
-    form.onsubmit=async e=>{
-      e.preventDefault();const f=new FormData(form),amount=Number(f.get('amount')),from=String(f.get('from')||''),until=String(f.get('until')||'')||null;
-      if(!Number.isFinite(amount)||amount<0||!from){msg.className='error';msg.textContent='Nominal dan tanggal mulai wajib diisi dengan benar.';return}
-      if(until&&until<from){msg.className='error';msg.textContent='Tanggal berlaku sampai tidak boleh sebelum tanggal mulai.';return}
-      const btn=form.querySelector('button[type="submit"]');btn.disabled=true;btn.textContent='Menyimpan...';
-      try{
-        const q=await sb.rpc('save_tariff',{p_id:x.id||null,p_code:'TASHIH',p_name:'Tarif Tashih',p_amount:amount,p_unit:String(f.get('unit')||'peserta').trim(),p_effective_from:from,p_effective_until:until,p_status:f.get('status')||'ACTIVE'});
-        if(q.error)throw q.error;
-        document.getElementById('examDuesModal')?.remove();toast('Iuran ujian berhasil disimpan.');window.showExams?.();
-      }catch(err){msg.className='error';msg.textContent=friendlyError(err)||err?.message||'Iuran ujian belum berhasil disimpan.'}
-      finally{btn.disabled=false;btn.textContent='Simpan Iuran Ujian'}
-    };
-  };
-  window.showExamDues=async function(){
-    const host=document.getElementById('examDuesArea');if(!host)return;
-    host.innerHTML='<div class="card"><p class="muted">Memuat iuran ujian...</p></div>';
-    const q=await sb.from('tariffs').select('id,code,name,amount,unit,effective_from,effective_until,status').eq('code','TASHIH').eq('status','ACTIVE').order('effective_from',{ascending:false}).limit(1).maybeSingle();
-    if(q.error){host.innerHTML=`<div class="card"><div class="error">${esc(friendlyError(q.error))}</div></div>`;return}
-    const x=q.data;
-    const roles=Array.isArray(state?.roles)?state.roles.map(r=>String(r).toUpperCase()):[];
-    const canManage=roles.includes('KETUA')||roles.includes('BENDAHARA');
-    host.innerHTML=`<div class="card"><div class="row"><div><h3>Iuran Ujian</h3><div class="small muted">Informasi nominal iuran ujian yang berlaku per peserta.</div></div>${canManage?'<button class="btn primary" type="button" onclick="openExamDuesForm()">'+(x?'Edit Iuran Ujian':'+ Tetapkan Iuran Ujian')+'</button>':''}</div><div class="notice" style="margin-top:10px">${x?`Nominal: <strong>${fmt(x.amount)}</strong> / ${esc(x.unit||'peserta')} · Berlaku mulai ${date(x.effective_from)}${x.effective_until?' sampai '+date(x.effective_until):''}`:'Iuran ujian belum ditetapkan.'}</div></div>`;
-  };
+  // V412: Jalur operasional "Ujian -> Iuran Ujian" dihapus.
+  // Master biaya Tashih hanya dikelola melalui Aturan Ujian & Wisuda -> Biaya Ujian
+  // (exam_cost_rules). Tidak ada sumber tarif TASHIH kedua dari modul Ujian.
 
   window.showExams=async function(){
-    page().innerHTML=`<div class="card"><div class="row"><div><h2>Ujian</h2><p class="muted">Pendaftaran, penilaian, rekap, dan kartu kendali.</p></div>${state.roles.includes('OPERATOR')||canExamManage()?'<div class="compact-actions"><button class="btn primary" onclick="openExamRegistrationForm()">+ Pendaftaran Peserta</button><button class="btn secondary" onclick="window.openExamParticipantList()">Daftar Peserta Ujian</button></div>':''}</div><div class="menu-grid"><button class="btn secondary menu-item" onclick="showExamReportsV32?showExamReportsV32():showExamReports()"><strong>Rekap Hasil Ujian</strong></button><button class="btn secondary menu-item" onclick="showExamDues()"><strong>Iuran Ujian</strong></button>${canExamManage()?'<button class="btn gold menu-item" onclick="openExamNumberManager()"><strong>Nomor Ujian</strong></button><button class="btn info menu-item" onclick="printExamNumbers()"><strong>Cetak Nomor Ujian</strong></button><button class="btn primary menu-item" onclick="printExamCards()"><strong>Cetak Kartu Ujian</strong></button><button class="btn secondary menu-item" onclick="v10ExamAdmin()"><strong>Penetapan Gelombang</strong></button>':''}</div></div><div id="examArea"></div><div id="examDuesArea"></div>`;
+    page().innerHTML=`<div class="card"><div class="row"><div><h2>Ujian</h2><p class="muted">Pendaftaran, penilaian, rekap, dan kartu kendali.</p></div>${state.roles.includes('OPERATOR')||canExamManage()?'<div class="compact-actions"><button class="btn primary" onclick="openExamRegistrationForm()">+ Pendaftaran Peserta</button><button class="btn secondary" onclick="window.openExamParticipantList()">Daftar Peserta Ujian</button></div>':''}</div><div class="menu-grid"><button class="btn secondary menu-item" onclick="showExamReportsV32?showExamReportsV32():showExamReports()"><strong>Rekap Hasil Ujian</strong></button>${canExamManage()?'<button class="btn gold menu-item" onclick="openExamNumberManager()"><strong>Nomor Ujian</strong></button><button class="btn info menu-item" onclick="printExamNumbers()"><strong>Cetak Nomor Ujian</strong></button><button class="btn primary menu-item" onclick="printExamCards()"><strong>Cetak Kartu Ujian</strong></button><button class="btn secondary menu-item" onclick="v10ExamAdmin()"><strong>Penetapan Gelombang</strong></button>':''}</div></div><div id="examArea"></div>`;
     // Modul Pengujian berdiri sendiri; Ujian tidak lagi menampilkan Panel Penguji.
   };
 
@@ -2289,13 +2269,11 @@ window.__showActivitiesCore=async function(){
   window.openGraduationCostForm=async function(eventId){
     if(!eventId)return toast('Belum ada rangkaian Wisuda aktif.','error');
     if(!canGradManage())return toast('Anda tidak memiliki izin menetapkan biaya Wisuda.','error');
-    const org=(await sb.from('organizations').select('id').eq('status','ACTIVE').limit(1).maybeSingle()).data;
-    if(!org)return toast('Organisasi aktif belum tersedia.','error');
-    const tq=await sb.from('tariffs').select('id,code,name,amount,unit,effective_from,effective_until,status').in('code',['WISUDA','WISUDA_SEWA']).eq('status','ACTIVE').order('effective_from',{ascending:false});
+    const tq=await sb.from('tariffs').select('id,code,name,amount,unit,effective_from,effective_until,status').eq('code','WISUDA').eq('status','ACTIVE').order('effective_from',{ascending:false}).limit(1).maybeSingle();
     if(tq.error)return toast(err(tq.error),'error');
-    const base=(tq.data||[]).find(x=>x.code==='WISUDA')||{};const rent=(tq.data||[]).find(x=>x.code==='WISUDA_SEWA')||{};
-    document.body.insertAdjacentHTML('beforeend',`<div class="backdrop" id="gradCostModal"><div class="modal-sheet"><div class="row"><div><h3>Penetapan Biaya Wisuda</h3><div class="small muted">Master biaya dipisahkan dari pembuatan tagihan.</div></div><button class="btn secondary" onclick="document.getElementById('gradCostModal')?.remove()">Tutup</button></div><form id="gradCostForm"><div class="field"><label>Biaya Wisuda per peserta</label><input name="base" type="number" min="0" required value="${base.amount??''}"></div><div class="field"><label>Sewa Perlengkapan Wisuda per peserta</label><input name="rent" type="number" min="0" required value="${rent.amount??''}"></div><div class="small muted">Paket TANPA_SEWA memakai biaya Wisuda. Paket DENGAN_SEWA memakai keduanya.</div><button class="btn primary" style="width:100%;margin-top:12px">Simpan Penetapan Biaya</button><p id="gradCostMsg" class="small"></p></form></div></div>`);
-    document.getElementById('gradCostForm').onsubmit=async e=>{e.preventDefault();const f=new FormData(e.target),msg=document.getElementById('gradCostMsg');msg.textContent='Menyimpan...';const today=new Date().toISOString().slice(0,10);const a=await sb.rpc('save_tariff',{p_id:base.id||null,p_code:'WISUDA',p_name:'Biaya Wisuda',p_amount:Number(f.get('base')),p_unit:'peserta',p_effective_from:today,p_effective_until:null,p_status:'ACTIVE'});if(a.error){msg.className='error';msg.textContent=err(a.error);return}const b=await sb.rpc('save_tariff',{p_id:rent.id||null,p_code:'WISUDA_SEWA',p_name:'Sewa Perlengkapan Wisuda',p_amount:Number(f.get('rent')),p_unit:'peserta',p_effective_from:today,p_effective_until:null,p_status:'ACTIVE'});if(b.error){msg.className='error';msg.textContent=err(b.error);return}document.getElementById('gradCostModal')?.remove();toast('Penetapan biaya Wisuda berhasil disimpan.');};
+    const base=tq.data||{};
+    document.body.insertAdjacentHTML('beforeend',`<div class="backdrop" id="gradCostModal"><div class="modal-sheet"><div class="row"><div><h3>Penetapan Biaya Wisuda</h3><div class="small muted">Master resmi Biaya Wisuda dihitung <strong>per peserta</strong>. Master ini tidak membuat tagihan.</div></div><button class="btn secondary" onclick="document.getElementById('gradCostModal')?.remove()">Tutup</button></div><form id="gradCostForm"><div class="field"><label>Biaya Wisuda per peserta</label><input name="base" type="number" min="0" required value="${base.amount??''}"></div><div class="notice">Sewa perlengkapan <strong>bukan</strong> bagian dari Biaya Wisuda. Jika diperlukan, buat sebagai <strong>Iuran Lain-lain Lembaga</strong>.</div><button class="btn primary" style="width:100%;margin-top:12px">Simpan Penetapan Biaya</button><p id="gradCostMsg" class="small"></p></form></div></div>`);
+    document.getElementById('gradCostForm').onsubmit=async e=>{e.preventDefault();const f=new FormData(e.target),msg=document.getElementById('gradCostMsg');const amount=Number(f.get('base'));if(!Number.isFinite(amount)||amount<0)return msg.textContent='Nominal tidak valid.';msg.textContent='Menyimpan...';const today=new Date().toISOString().slice(0,10);const a=await sb.rpc('save_tariff',{p_id:base.id||null,p_code:'WISUDA',p_name:'Biaya Wisuda',p_amount:amount,p_unit:'peserta',p_effective_from:today,p_effective_until:null,p_status:'ACTIVE'});if(a.error){msg.className='error';msg.textContent=err(a.error);return}document.getElementById('gradCostModal')?.remove();toast('Penetapan Biaya Wisuda berhasil disimpan.','success');};
   };
   window.openGraduationPackageForm=async function(eventId){
     if(!eventId)return toast('Belum ada rangkaian Wisuda aktif.','error');
@@ -2373,14 +2351,13 @@ html,body{margin:0;padding:0;background:#fff!important;color:#111;font-family:Ar
   window.showGraduation=async function(){
     const isOperator=Array.isArray(state.roles)&&state.roles.includes('OPERATOR');
     const {data:events,error}=await sb.from('graduation_events').select('id,activity_id,registration_deadline,registration_status,graduation_status,theme,motto,activities:activity_id(name)').order('registration_deadline',{ascending:false}).limit(20);
-    listPage('Wisuda','Peserta Tashih yang lulus masuk otomatis; pendaftaran wisuda dikelola melalui Pengurus.','<div class="v14-toolbar no-print"><button class="btn primary" id="v40AlbumBtn">Album Kenangan</button><button class="btn gold" id="v40DaftarBtn">+Pendaftaran Wisuda</button><button class="btn secondary" id="v40EditDataBtn">Edit Data Wisuda</button>'+(canGradManage()?' <button class="btn secondary" id="v40CostBtn">Penetapan Biaya</button><button class="btn gold" id="v40PkgBtn">Penetapan Paket</button>':'')+((Array.isArray(state.roles)&&state.roles.some(r=>String(r).toUpperCase()==='KETUA'||String(r).toUpperCase()==='SEKRETARIS'))?' <button class="btn info" id="v40CetakFotoBtn">Cetak Foto Peserta</button>':'')+(isOperator?'':'<button class="btn info" id="v40CetakBtn">Cetak</button>')+'</div><div class="card"><div class="row"><h3>Peserta Wisuda</h3><span class="small muted">Nomor wisuda dapat diedit Pengurus.</span></div><div id="v40GradList" class="list">Memuat...</div></div>');
+    listPage('Wisuda','Peserta Tashih yang lulus masuk otomatis; pendaftaran wisuda dikelola melalui Pengurus.','<div class="notice no-print" style="margin-bottom:10px"><strong>Penagihan Wisuda otomatis.</strong> Sistem menghitung ulang peserta Tashih yang masuk dan peserta manual setiap hari pada pukul <strong>23.59 WIB</strong>. Tagihan per lembaga disesuaikan dengan jumlah peserta × Biaya Wisuda per peserta. Tidak ada tombol Penagihan Wisuda manual, dan pembayaran yang sudah masuk tetap dipertahankan.</div><div class="v14-toolbar no-print"><button class="btn primary" id="v40AlbumBtn">Album Kenangan</button><button class="btn gold" id="v40DaftarBtn">+Pendaftaran Wisuda</button><button class="btn secondary" id="v40EditDataBtn">Edit Data Wisuda</button>'+(canGradManage()?' <button class="btn secondary" id="v40CostBtn">Penetapan Biaya</button>':'')+((Array.isArray(state.roles)&&state.roles.some(r=>String(r).toUpperCase()==='KETUA'||String(r).toUpperCase()==='SEKRETARIS'))?' <button class="btn info" id="v40CetakFotoBtn">Cetak Foto Peserta</button>':'')+(isOperator?'':'<button class="btn info" id="v40CetakBtn">Cetak</button>')+'</div><div class="card"><div class="row"><h3>Peserta Wisuda</h3><span class="small muted">Nomor wisuda dapat diedit Pengurus.</span></div><div id="v40GradList" class="list">Memuat...</div></div>');
     const list=document.getElementById('v40GradList');const event=events?.[0];
     // Setiap tombol selalu membuka modul/templatnya. Data kosong hanya memengaruhi isi modul.
     document.getElementById('v40AlbumBtn').onclick=()=>showMemoryAlbum(event?.id||'');
     document.getElementById('v40DaftarBtn').onclick=async()=>{try{if(typeof window.openSpecialGraduationForm!=='function')throw new Error('Fungsi form pendaftaran wisuda belum tersedia.');await window.openSpecialGraduationForm(event?.id||'')}catch(e){console.error('[WISUDA DAFTAR]',e);toast('Form pendaftaran wisuda gagal dibuka: '+(e?.message||e),'error')}};
     document.getElementById('v40EditDataBtn').onclick=()=>openGraduationEditSearch(event?.id||'');
     if(document.getElementById('v40CostBtn'))document.getElementById('v40CostBtn').onclick=()=>openGraduationCostForm(event?.id||'');
-    if(document.getElementById('v40PkgBtn'))document.getElementById('v40PkgBtn').onclick=()=>openGraduationPackageForm(event?.id||'');
     if(document.getElementById('v40CetakBtn'))document.getElementById('v40CetakBtn').onclick=()=>printGraduationReportV40(event?.id||'');
     if(document.getElementById('v40CetakFotoBtn'))document.getElementById('v40CetakFotoBtn').onclick=()=>window.openGraduationPhotoPrintV386(event?.id||'');
     if(!event){list.innerHTML='<div class="empty">Belum ada acara wisuda.</div>';return}
@@ -3244,7 +3221,7 @@ window.showHome=async function(){
  const counters=visibleCounters.map(x=>`<button type="button" class="card v75-dashboard-counter" data-dashboard-detail="${E(x[1])}" aria-label="Lihat detail ${E(x[0])}"><div class="v173-counter-title">${E(x[0])}</div><div class="metric v173-counter-number" id="metric-${E(x[1])}">…</div><div class="v173-counter-help">Ringkasan data saat ini</div><div class="v173-counter-detail">Ketuk untuk detail</div></button>`).join('');
  const roleQuick=quickByRole[dashboardPrimaryRole()]||quickByRole.ANGGOTA||[];
  const quickHtml='<div class="module-card-grid">'+roleQuick.map(x=>'<button class="btn secondary menu-item quick-module module-card-btn" type="button" onclick="navigate(\''+x[1]+'\')"><strong>'+E(x[0])+'</strong></button>').join('')+'</div>';
- host.innerHTML='<div class="card hero v35-welcome"><div style="font-size:14px;color:#6b7c70;font-weight:700">Assalamu\'alaikum Wr. Wb.</div><h2 class="v41-user-name" style="margin:6px 0 2px">'+E(name)+'</h2><div class="row" style="justify-content:flex-start;gap:8px;margin:6px 0 10px"><span class="status ok">'+E(role)+'</span><span class="status '+(status==='ACTIVE'?'ok':'bad')+'">'+E(status==='ACTIVE'?'Aktif':status)+'</span></div><p class="v35-message" style="margin:8px 0 4px">Selamat datang di Sistem Informasi BK FUSPAQ NU.</p><p class="small muted" style="margin:0">'+E(dashboardGreeting())+'</p></div><div class="v75-dashboard-counters">'+counters+'</div><div class="card"><div class="row"><h3 style="margin:0">Akses cepat</h3><span class="status ok">'+E((state.roles||[]).map(roleLabel).join(' · ')||'Pengguna')+'</span></div><div class="menu-grid" style="margin-top:10px">'+quickHtml+'</div></div>';
+ host.innerHTML='<div class="card hero v35-welcome"><div style="font-size:14px;color:#6b7c70;font-weight:700">Assalamu\'alaikum Wr. Wb.</div><h2 class="v41-user-name" style="margin:6px 0 2px">'+E(name)+'</h2><div class="row" style="justify-content:flex-start;gap:8px;margin:6px 0 10px"><span class="status ok">'+E(role)+'</span><span class="status '+(status==='ACTIVE'?'ok':'bad')+'">'+E(status==='ACTIVE'?'Aktif':status)+'</span><button type="button" class="darus-quran-link" onclick="openDarusQuranViewer()" aria-label="Buka Darus Al-Qur\'an di dalam aplikasi"><span class="darus-quran-icon" aria-hidden="true">☪</span><span>Darus Al-Qur\'an</span><span class="darus-quran-arrow" aria-hidden="true">↗</span></button></div><p class="v35-message" style="margin:8px 0 4px">Selamat datang di Sistem Informasi BK FUSPAQ NU.</p><p class="small muted" style="margin:0">'+E(dashboardGreeting())+'</p></div><div class="v75-dashboard-counters">'+counters+'</div><div class="card"><div class="row"><h3 style="margin:0">Akses cepat</h3><span class="status ok">'+E((state.roles||[]).map(roleLabel).join(' · ')||'Pengguna')+'</span></div><div class="menu-grid" style="margin-top:10px">'+quickHtml+'</div></div>';
  host.querySelectorAll('[data-dashboard-detail]').forEach(card=>card.addEventListener('click',()=>openDashboardDetail(card.dataset.dashboardDetail)));
  try{if(typeof loadMetrics==='function')await loadMetrics()}catch(e){console.warn('[Dashboard metrics]',e)}
 };
@@ -3343,6 +3320,13 @@ window.showHome=async function(){
   window.v97DeleteActivity=async function(id){if(!id)return;if(!(await window.bkfSystemConfirm('Hapus kegiatan ini? Data turunan yang mengikuti aturan database dapat ikut terhapus.')))return;try{const q=await sb.rpc('delete_activity',{p_id:id});if(q.error)throw q.error;say('Kegiatan berhasil dihapus.','success');await window.showActivities()}catch(e){say(msgErr(e),'error')}};
 
   window.openCashForm2=async function(id=''){
+    if(id){
+      const chk=await sb.from('cash_transactions').select('id,status').eq('id',id).maybeSingle();
+      if(chk.error||!chk.data)return toast('Transaksi kas tidak ditemukan.','error');
+      const rr=Array.isArray(state.roles)?state.roles.map(r=>String(r).toUpperCase()):[];
+      if(rr.includes('KETUA')&&String(chk.data.status||'').toUpperCase()==='MENUNGGU_PERSETUJUAN')return toast('Transaksi MENUNGGU_PERSETUJUAN tidak dapat diedit oleh Ketua.','error');
+      if(String(chk.data.status||'').toUpperCase()==='DITOLAK')return toast('Transaksi yang ditolak bersifat final untuk audit. Buat transaksi baru jika ada koreksi.','error');
+    }
     const cats=(await sb.from('finance_categories').select('id,name,category_type').eq('is_active',true).order('name')).data||[];
     let x={}; if(id){const q=await sb.from('cash_transactions').select('id,transaction_date,transaction_type,category_id,amount,description').eq('id',id).maybeSingle();if(q.error||!q.data)return toast('Transaksi kas tidak ditemukan.','error');x=q.data}
     const initialType=x.transaction_type==='EXPENSE'?'EXPENSE':'INCOME';
@@ -3353,8 +3337,8 @@ window.showHome=async function(){
     cashForm.onsubmit=async e=>{e.preventDefault();const f=new FormData(e.target),msg=document.getElementById('cash2msg'),org=(await sb.from('organizations').select('id').eq('status','ACTIVE').limit(1).maybeSingle()).data,profileId=state.profile?.id;if(!org||!profileId){msg.className='error';msg.textContent='Identitas organisasi atau profil belum tersedia.';return}const chosenCategory=cats.find(c=>c.id===f.get('cat')&&c.category_type===f.get('type'));if(!chosenCategory){msg.className='error';msg.textContent='Pilih kategori aktif yang sesuai dengan jenis transaksi.';return}const payload={transaction_date:f.get('date'),transaction_type:f.get('type'),category_id:f.get('cat'),amount:Number(f.get('amount')),description:String(f.get('desc')||'').trim()};let q;if(id)q=await sb.from('cash_transactions').update(payload).eq('id',id);else q=await sb.from('cash_transactions').insert({...payload,transaction_number:'KAS-'+(String(f.get('type')||'INCOME').toUpperCase()==='EXPENSE'?'KELUAR':'MASUK')+'-'+String(f.get('desc')||'TRANSAKSI KAS').trim().toUpperCase().replace(/[^A-Z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,48)+'-'+String(f.get('date')||new Date().toISOString().slice(0,10)).replace(/-/g,'')+'-'+crypto.randomUUID().replace(/-/g,'').slice(0,8),organization_id:org.id,created_by:profileId,status:(await v123Chair())?'DISETUJUI':'MENUNGGU_PERSETUJUAN',approved_by:(await v123Chair())?profileId:null});if(q.error){msg.className='error';msg.textContent=friendlyError(q.error);return}document.getElementById('cash2')?.remove();toast(id?'Transaksi kas diperbarui.':'Transaksi kas berhasil disimpan.');await window.financeTab2('cash')};
   };
   window.financeCash2=async function(p){
-    // V336: sumber tunggal modul Kas = v_cash_book.
-    // Tidak memakai query pembayaran/tagihan tambahan untuk menentukan apakah transaksi tampil.
+    // V412: renderer tunggal approval Kas. Sumber tetap v_cash_book.
+    // Approval memakai RPC canonical approve_cash_expense(); tidak membuat sistem approval baru.
     const {data,error}=await sb.from('v_cash_book')
       .select('*')
       .order('transaction_date',{ascending:false})
@@ -3364,7 +3348,8 @@ window.showHome=async function(){
       p.innerHTML=`<div class="card"><p class="error">${E(friendlyError(error))}</p></div>`;
       return;
     }
-    // V359: transaksi kas yang berasal dari pembayaran harus membawa nama lembaga dari tagihan sumbernya.
+
+    // V359/V411: pertahankan resolusi lembaga untuk transaksi kas yang berasal dari pembayaran.
     const missingInstitutionRows=rows.filter(x=>!x.institution_name&&x.transaction_number);
     if(missingInstitutionRows.length){
       const txNums=[...new Set(missingInstitutionRows.map(x=>x.transaction_number))];
@@ -3376,12 +3361,16 @@ window.showHome=async function(){
           if(!billsQ.error&&billsQ.data?.length){
             const instIds=[...new Set(billsQ.data.map(x=>x.institution_id).filter(Boolean))];
             const instQ=instIds.length?await sb.from('institutions').select('id,name').in('id',instIds):{data:[],error:null};
-            if(!instQ.error){const names=new Map((instQ.data||[]).map(x=>[x.id,x.name]));const billMap=new Map(billsQ.data.map(x=>[x.id,x]));const payMap=new Map(payQ.data.map(x=>[x.payment_number,x.bill_id]));missingInstitutionRows.forEach(x=>{const b=billMap.get(payMap.get(x.transaction_number));if(b?.institution_id)x.institution_name=names.get(b.institution_id)||x.institution_name||''})}
+            if(!instQ.error){
+              const names=new Map((instQ.data||[]).map(x=>[x.id,x.name]));
+              const billMap=new Map(billsQ.data.map(x=>[x.id,x]));
+              const payMap=new Map(payQ.data.map(x=>[x.payment_number,x.bill_id]));
+              missingInstitutionRows.forEach(x=>{const b=billMap.get(payMap.get(x.transaction_number));if(b?.institution_id)x.institution_name=names.get(b.institution_id)||x.institution_name||''});
+            }
           }
         }
       }
     }
-    // Fallback for payment-origin cash rows: resolve the bill number embedded in the transaction description.
     const unresolvedCashRows=rows.filter(x=>!x.institution_name&&/TAG-[A-Z0-9-]+/i.test(String(x.description||'')));
     if(unresolvedCashRows.length){
       const billNos=[...new Set(unresolvedCashRows.flatMap(x=>String(x.description||'').match(/TAG-[A-Z0-9-]+/gi)||[]))];
@@ -3398,36 +3387,78 @@ window.showHome=async function(){
         }
       }
     }
+
+    const roles=Array.isArray(state.roles)?state.roles.map(r=>String(r).toUpperCase()):[];
+    const isKetua=roles.includes('KETUA');
+    const canApprove=isKetua&&has('finance.approve');
+    const canManage=roles.includes('BENDAHARA')||isKetua;
+    const pending=rows.filter(x=>String(x.status||'').toUpperCase()==='MENUNGGU_PERSETUJUAN');
+
+    const auditText=x=>{
+      const st=String(x.status||'').toUpperCase();
+      if(st==='DISETUJUI')return 'Audit approval: disetujui Ketua.'+(x.approved_by?' · approved_by tercatat.':'');
+      if(st==='DITOLAK')return 'Audit approval: ditolak Ketua. Transaksi tetap tersimpan sebagai riwayat dan tidak menjadi kas keluar disetujui.';
+      if(st==='MENUNGGU_PERSETUJUAN')return 'Audit approval: menunggu keputusan Ketua.';
+      return '';
+    };
+
+    const approve=async(id,ok)=>{
+      if(!canApprove)return toast('Hanya Ketua yang dapat menyetujui atau menolak kas keluar.','error');
+      const action=ok?'Setujui transaksi ini?':'Tolak transaksi ini?';
+      if(!(await (window.bkfSystemConfirm?window.bkfSystemConfirm(action,'Approval Kas'):Promise.resolve(confirm(action)))))return;
+      try{
+        const note=ok?'Disetujui Ketua':'Ditolak Ketua';
+        const q=await sb.rpc('approve_cash_expense',{p_id:id,p_approved:ok,p_note:note});
+        if(q.error)throw q.error;
+        // V414: verifikasi status yang benar-benar tersimpan sebelum menyegarkan rekap.
+        const expectedStatus=ok?'DISETUJUI':'DITOLAK';
+        const verify=await sb.from('cash_transactions').select('id,status,transaction_type,amount').eq('id',id).maybeSingle();
+        if(verify.error)throw verify.error;
+        if(!verify.data||String(verify.data.status||'').toUpperCase()!==expectedStatus)throw new Error('Status persetujuan belum terbaca sesuai hasil tindakan. Muat ulang data lalu periksa transaksi.');
+        // Satu baris transaksi yang sama dihitung berdasarkan status; jangan membuat baris kas kedua.
+        const summary=document.getElementById('finSummary337');
+        const summaryOk=summary&&typeof window.financeSummaryV337==='function'?await window.financeSummaryV337(summary):true;
+        await window.financeCash2(p);
+        toast(ok?(summaryOk?'Kas keluar disetujui; rekap kas diperbarui.':'Kas keluar disetujui, tetapi rekap gagal dimuat. Periksa pesan pada kartu saldo.'):(summaryOk?'Kas keluar ditolak; rekap kas diperbarui.':'Kas keluar ditolak, tetapi rekap gagal dimuat. Periksa pesan pada kartu saldo.'),summaryOk?'success':'error');
+      }catch(e){toast(friendlyError(e),'error')}
+    };
+    window.approveCashV412=approve;
+
     p.innerHTML=`<div class="card">
       <div class="row">
         <div><h3>Kas</h3><div class="small muted">Seluruh transaksi kas kepengurusan dari sumber data keuangan yang sama.</div></div>
-        <button class="btn primary" onclick="openCashForm2()">+ Catat Transaksi</button>
+        ${canManage?'<button class="btn primary" onclick="openCashForm2()">+ Catat Transaksi</button>':''}
       </div>
-      <div class="v228-section" style="margin-top:10px">
-        <div class="v228-data-list">
-          ${rows.map(x=>{
-            const jenis=x.transaction_type==='INCOME'?'Kas Masuk':'Kas Keluar';
-            const kategori=x.category_name||'Kategori tidak tersedia';
-            const lembaga=x.institution_name||'Transaksi kas umum';
-            const itemText=x.item_name?`${x.item_name}${x.item_quantity!=null?' × '+window.bkfFormatQuantityV359(x.item_quantity):''}`:(x.description||kategori);
-            const ket=x.description||'-';
-            return `<div class="v228-data-row">
-              <div class="v228-main"><div>
-                <strong>${E(lembaga)}</strong>
-                <div class="v228-meta">Jenis: ${E(jenis)} · Kategori: ${E(kategori)}</div>
-                <div class="v228-meta">Item: ${E(itemText)}</div>
-                <div class="v228-meta">Keterangan: ${E(ket)}</div>
-                <div class="v228-meta">${E(x.transaction_number||'-')} · ${E(date(x.transaction_date))}</div>
-              </div><span class="status">${E(x.status||'-')}</span></div>
-              <div class="v228-amount">${jenis} · ${fmt(x.amount)}</div>
-              <div class="compact-actions"><button class="btn secondary" onclick="openCashForm2('${x.id}')">Edit</button></div>
-            </div>`;
-          }).join('')||'<div class="empty">Belum ada transaksi kas.</div>'}
-        </div>
-      </div>
+      ${isKetua&&pending.length?`<div class="approval-box" style="margin-top:12px;padding:12px;border-radius:12px"><strong>Menunggu Persetujuan Ketua (${pending.length})</strong><div class="small muted" style="margin-top:4px">Transaksi MENUNGGU_PERSETUJUAN hanya dapat diputuskan melalui tombol Setujui/Tolak. Tidak ada tombol Edit untuk Ketua.</div></div>`:''}
+      <div class="v228-section" style="margin-top:10px"><div class="v228-data-list">
+        ${rows.map(x=>{
+          const jenis=x.transaction_type==='INCOME'?'Kas Masuk':'Kas Keluar';
+          const kategori=x.category_name||'Kategori tidak tersedia';
+          const lembaga=x.institution_name||'Transaksi kas umum';
+          const itemText=x.item_name?`${x.item_name}${x.item_quantity!=null?' × '+window.bkfFormatQuantityV359(x.item_quantity):''}`:(x.description||kategori);
+          const ket=x.description||'-';
+          const st=String(x.status||'').toUpperCase();
+          const pendingRow=st==='MENUNGGU_PERSETUJUAN';
+          const rejectedRow=st==='DITOLAK';
+          let action='';
+          if(pendingRow&&canApprove) action=`<button class="btn primary" type="button" onclick="approveCashV412('${x.id}',true)">Setujui</button><button class="btn danger" type="button" onclick="approveCashV412('${x.id}',false)">Tolak</button>`;
+          else if(!pendingRow&&!rejectedRow&&canManage) action=`<button class="btn secondary" type="button" onclick="openCashForm2('${x.id}')">Edit</button>`;
+          else if(pendingRow&&!isKetua&&roles.includes('BENDAHARA')) action=`<button class="btn secondary" type="button" onclick="openCashForm2('${x.id}')">Edit</button>`;
+          return `<div class="v228-data-row">
+            <div class="v228-main"><div><strong>${E(lembaga)}</strong>
+              <div class="v228-meta">Jenis: ${E(jenis)} · Kategori: ${E(kategori)}</div>
+              <div class="v228-meta">Item: ${E(itemText)}</div>
+              <div class="v228-meta">Keterangan: ${E(ket)}</div>
+              <div class="v228-meta">${E(x.transaction_number||'-')} · ${E(date(x.transaction_date))}</div>
+            </div><span class="status ${st==='DITOLAK'?'bad':pendingRow?'lock':st==='DISETUJUI'?'ok':''}">${E(x.status||'-')}</span></div>
+            <div class="v228-amount">${jenis} · ${fmt(x.amount)}</div>
+            ${auditText(x)?`<div class="small muted" style="margin-top:5px">${E(auditText(x))}</div>`:''}
+            ${action?`<div class="compact-actions" style="margin-top:8px">${action}</div>`:''}
+          </div>`;
+        }).join('')||'<div class="empty">Belum ada transaksi kas.</div>'}
+      </div></div>
     </div>`;
   };
-
   window.openBillForm2=async function(id=''){
     const insts=(await sb.from('institutions').select('id,name').eq('status','ACTIVE').order('name')).data||[]; let x={},item={};
     if(id){const q=await sb.from('bills').select('id,institution_id,bill_date,due_date,total_amount').eq('id',id).maybeSingle();if(q.error||!q.data)return toast('Tagihan tidak ditemukan.','error');x=q.data;item=(await sb.from('bill_items').select('description,quantity,unit_price').eq('bill_id',id).limit(1).maybeSingle()).data||{}}
@@ -3448,12 +3479,33 @@ window.financeBudget2=async function(p){const {data,error}=await sb.from('budget
   window.v123EditBudget=async function(id){const q=await sb.from('budgets').select('id,name,total_amount').eq('id',id).maybeSingle();if(q.error||!q.data)return toast('Anggaran tidak ditemukan.','error');const x=q.data;document.body.insertAdjacentHTML('beforeend',`<div class="backdrop" id="v123BudgetEdit"><div class="modal-sheet"><div class="row"><h3>Edit Anggaran</h3><button class="btn secondary" onclick="document.getElementById('v123BudgetEdit')?.remove()">Tutup</button></div><form id="v123BudgetForm"><div class="field"><label>Nama anggaran</label><input name="name" value="${E(x.name)}" required></div><div class="field"><label>Total anggaran</label><input name="amount" type="number" min="0" value="${x.total_amount}" required></div><button class="btn primary">Simpan Perubahan</button></form></div></div>`);document.getElementById('v123BudgetForm').onsubmit=async e=>{e.preventDefault();const f=new FormData(e.target),r=await sb.from('budgets').update({name:String(f.get('name')||'').trim(),total_amount:Number(f.get('amount'))}).eq('id',id);if(r.error)return toast(friendlyError(r.error),'error');document.getElementById('v123BudgetEdit')?.remove();financeTab2('budget')};};
 
   window.financeLimit23=async function(p){
-    const [{data,error},{data:cats}]=await Promise.all([sb.from('cash_spending_limits').select('id,category_id,max_per_transaction,max_monthly_amount,notes,is_active').eq('is_active',true).order('created_at',{ascending:false}),sb.from('finance_categories').select('id,name').eq('is_active',true).order('name')]);
+    const [{data,error},{data:cats,error:catError}]=await Promise.all([
+      sb.from('cash_spending_limits').select('id,category_id,max_per_transaction,notes,is_active').eq('is_active',true).order('created_at',{ascending:false}),
+      sb.from('finance_categories').select('id,name').eq('is_active',true).order('name')
+    ]);
     window._cashLimitCats=cats||[];
-    p.innerHTML=`<div class="card"><div class="row"><div><h3>Batas Pengeluaran</h3><div class="small muted">Tetapkan batas per transaksi dan/atau per bulan.</div></div><button class="btn primary" onclick="openCashLimitForm23()">+ Buat Batas Pengeluaran</button></div><div class="list" style="margin-top:10px">${error?`<p class="error">${E(friendlyError(error))}</p>`:(data||[]).map(x=>`<div class="list-item"><div class="row"><strong>${E((cats||[]).find(c=>c.id===x.category_id)?.name||'Semua kategori')}</strong><span class="status ok">AKTIF</span></div><div class="small">Per transaksi: ${fmt(x.max_per_transaction||0)} · Per bulan: ${fmt(x.max_monthly_amount||0)}</div><div class="small muted">${E(x.notes||'')}</div><div class="compact-actions"><button class="btn secondary" onclick="openCashLimitForm23('${x.id}')">Edit</button><button class="btn danger" onclick="deleteCashLimit23('${x.id}')">Hapus</button></div></div>`).join('')||'<div class="empty">Belum ada batas pengeluaran. Gunakan tombol "+ Buat Batas Pengeluaran".</div>'}</div></div>`;
+    if(catError){p.innerHTML=`<div class="card"><p class="error">${E(friendlyError(catError))}</p></div>`;return}
+    p.innerHTML=`<div class="card"><div class="row"><div><h3>Batas Pengeluaran</h3><div class="small muted">Atur batas maksimal untuk setiap transaksi kas keluar. Tidak ada batas pengeluaran bulanan.</div></div><button class="btn primary" onclick="openCashLimitForm23()">+ Buat Batas Pengeluaran</button></div><div class="list" style="margin-top:10px">${error?`<p class="error">${E(friendlyError(error))}</p>`:(data||[]).map(x=>`<div class="list-item"><div class="row"><strong>${E((cats||[]).find(c=>c.id===x.category_id)?.name||'Semua kategori')}</strong><span class="status ok">AKTIF</span></div><div class="small">Batas per transaksi: ${x.max_per_transaction==null?'Belum ditetapkan':fmt(x.max_per_transaction)}</div><div class="small muted">${E(x.notes||'')}</div><div class="compact-actions"><button class="btn secondary" onclick="openCashLimitForm23('${x.id}')">Edit</button><button class="btn danger" onclick="deleteCashLimit23('${x.id}')">Hapus</button></div></div>`).join('')||'<div class="empty">Belum ada batas pengeluaran. Gunakan tombol "+ Buat Batas Pengeluaran".</div>'}</div></div>`;
   };
-  window.openCashLimitForm23=async function(id=''){const cats=window._cashLimitCats||[];let x={};if(id){const q=await sb.from('cash_spending_limits').select('id,category_id,max_per_transaction,max_monthly_amount,notes').eq('id',id).maybeSingle();if(q.error||!q.data)return toast('Batas pengeluaran tidak ditemukan.','error');x=q.data}document.body.insertAdjacentHTML('beforeend',`<div class="backdrop" id="limitModal"><div class="modal-sheet"><div class="row"><h3>${id?'Edit Batas Pengeluaran':'Buat Batas Pengeluaran'}</h3><button class="btn neutral" onclick="document.getElementById('limitModal')?.remove()">Tutup</button></div><form id="limitForm"><div class="field"><label>Kategori</label><select name="cat"><option value="">Semua kategori pengeluaran</option>${cats.map(c=>`<option value="${c.id}" ${x.category_id===c.id?'selected':''}>${E(c.name)}</option>`).join('')}</select></div><div class="field"><label>Batas maksimal per transaksi</label><input name="per" type="number" min="0" step="1000" value="${x.max_per_transaction??''}"></div><div class="field"><label>Batas maksimal per bulan</label><input name="month" type="number" min="0" step="1000" value="${x.max_monthly_amount??''}"></div><div class="field"><label>Keterangan</label><textarea name="notes" rows="3">${E(x.notes||'')}</textarea></div><button class="btn primary" style="width:100%">${id?'Simpan Perubahan':'Simpan Batas'}</button></form></div></div>`);document.getElementById('limitForm').onsubmit=async e=>{e.preventDefault();const f=new FormData(e.target),payload={category_id:f.get('cat')||null,max_per_transaction:f.get('per')?Number(f.get('per')):null,max_monthly_amount:f.get('month')?Number(f.get('month')):null,notes:f.get('notes')||null};const q=id?await sb.from('cash_spending_limits').update(payload).eq('id',id):await sb.from('cash_spending_limits').insert({...payload,organization_id:(await sb.from('organizations').select('id').eq('status','ACTIVE').limit(1).maybeSingle()).data?.id,management_period_id:(await window.bkfLoadSelectedPeriod())?.id,created_by:state.profile?.id||null,is_active:true});if(q.error){toast(friendlyError(q.error),'error');return}document.getElementById('limitModal')?.remove();toast(id?'Batas pengeluaran diperbarui.':'Batas pengeluaran berhasil dibuat.');if(typeof window.v97FinanceTab==='function'){const b=document.querySelector('[data-fin-tab="limit"]');window.v97FinanceTab('limit',b)}else financeTab2('limit')};};
-
+  window.openCashLimitForm23=async function(id=''){
+    const cats=window._cashLimitCats||[];let x={};
+    if(id){const q=await sb.from('cash_spending_limits').select('id,category_id,max_per_transaction,notes').eq('id',id).maybeSingle();if(q.error||!q.data)return toast('Batas pengeluaran tidak ditemukan.','error');x=q.data}
+    document.body.insertAdjacentHTML('beforeend',`<div class="backdrop" id="limitModal"><div class="modal-sheet"><div class="row"><h3>${id?'Edit Batas Pengeluaran':'Buat Batas Pengeluaran'}</h3><button class="btn neutral" type="button" onclick="document.getElementById('limitModal')?.remove()">Tutup</button></div><form id="limitForm"><div class="field"><label>Kategori</label><select name="cat"><option value="">Semua kategori pengeluaran</option>${cats.map(c=>`<option value="${c.id}" ${x.category_id===c.id?'selected':''}>${E(c.name)}</option>`).join('')}</select></div><div class="field"><label>Batas maksimal per transaksi</label><input name="per" type="number" min="1" step="1000" required value="${x.max_per_transaction??''}" placeholder="Contoh: 500000"></div><div class="field"><label>Keterangan</label><textarea name="notes" rows="3">${E(x.notes||'')}</textarea></div><button class="btn primary" style="width:100%">${id?'Simpan Perubahan':'Simpan Batas'}</button></form></div></div>`);
+    document.getElementById('limitForm').onsubmit=async e=>{
+      e.preventDefault();const f=new FormData(e.target),per=Number(f.get('per'));
+      if(!Number.isFinite(per)||per<=0)return toast('Batas maksimal per transaksi harus lebih besar dari Rp0.','error');
+      const payload={category_id:f.get('cat')||null,max_per_transaction:per,notes:String(f.get('notes')||'').trim()||null};let q;
+      if(id){q=await sb.from('cash_spending_limits').update(payload).eq('id',id)}
+      else{
+        let period;try{period=await window.bkfLoadSelectedPeriod()}catch(err){return toast(friendlyError(err),'error')}
+        if(!period?.id||!period?.organization_id)return toast('Periode kepengurusan terpilih belum memiliki organisasi.','error');
+        q=await sb.from('cash_spending_limits').insert({...payload,organization_id:period.organization_id,management_period_id:period.id,created_by:state.profile?.id||null,is_active:true});
+      }
+      if(q.error){toast(friendlyError(q.error),'error');return}
+      document.getElementById('limitModal')?.remove();toast(id?'Batas pengeluaran diperbarui.':'Batas pengeluaran berhasil dibuat.');
+      if(typeof window.v97FinanceTab==='function'){const b=document.querySelector('[data-fin-tab="limit"]');window.v97FinanceTab('limit',b)}else financeTab2('limit');
+    };
+  };
   window.financeTeacherOtherDues2=async function(p){
     const [{data:insts},{data:general,error}]=await Promise.all([
       sb.from('institutions').select('id,name').eq('status','ACTIVE').order('name'),
@@ -3461,9 +3513,9 @@ window.financeBudget2=async function(p){const {data,error}=await sb.from('budget
     ]);
     const im=new Map((insts||[]).map(x=>[x.id,x.name]));
     p.innerHTML=`<div class="card">
-      <div class="row"><div><h3>Iuran Lain-lain Guru</h3><div class="small muted">Penetapan iuran guru per lembaga. Jumlah guru diisi manual, lalu sistem otomatis membuat tagihan lembaga.</div></div><button class="btn primary" type="button" onclick="openTeacherOtherDuesForm()">+ Tambah Iuran Lain-lain Guru</button></div>
+      <div class="row"><div><h3>Iuran Lain-lain Lembaga</h3><div class="small muted">Penetapan iuran tambahan untuk lembaga. Isi nama iuran, satuan, jumlah, dan nominal; sistem otomatis membuat tagihan lembaga.</div></div><button class="btn primary" type="button" onclick="openInstitutionOtherDuesForm()">+ Tambah Iuran Lain-lain Lembaga</button></div>
       <div class="notice" style="margin-top:10px"><strong>Contoh:</strong> 10 guru × Rp50.000 = <strong>Rp500.000</strong>.</div>
-      <div class="list" style="margin-top:10px">${error?`<p class="error">${E(friendlyError(error))}</p>`:(general||[]).map(x=>`<div class="list-item"><div class="row"><div><strong>${E(x.name)}</strong><div class="small muted">${E(im.get(x.institution_id)||'Lembaga')} · ${E(x.quantity)} ${E(x.unit_label)} × ${fmt(x.unit_price)}</div></div><span class="status ${x.status==='PAID'?'ok':x.status==='PARTIAL'?'lock':x.status==='CANCELLED'?'bad':'lock'}">${E(x.status==='PAID'?'LUNAS':x.status==='PARTIAL'?'SEBAGIAN':x.status==='CANCELLED'?'DIBATALKAN':'DITAGIHKAN')}</span></div><div class="small">Total kewajiban: <strong>${fmt(x.total_amount)}</strong>${x.bill_id?' · Tagihan otomatis dibuat':''}</div><div class="small muted">Periode ${E(x.period_start)}${x.period_end?' s/d '+E(x.period_end):''}${x.due_date?' · Jatuh tempo '+E(x.due_date):''}</div></div>`).join('')||'<div class="empty">Belum ada Iuran Lain-lain Guru.</div>'}</div>
+      <div class="list" style="margin-top:10px">${error?`<p class="error">${E(friendlyError(error))}</p>`:(general||[]).map(x=>`<div class="list-item"><div class="row"><div><strong>${E(x.name)}</strong><div class="small muted">${E(im.get(x.institution_id)||'Lembaga')} · ${E(x.quantity)} ${E(x.unit_label)} × ${fmt(x.unit_price)}</div></div><span class="status ${x.status==='PAID'?'ok':x.status==='PARTIAL'?'lock':x.status==='CANCELLED'?'bad':'lock'}">${E(x.status==='PAID'?'LUNAS':x.status==='PARTIAL'?'SEBAGIAN':x.status==='CANCELLED'?'DIBATALKAN':'DITAGIHKAN')}</span></div><div class="small">Total kewajiban: <strong>${fmt(x.total_amount)}</strong>${x.bill_id?' · Tagihan otomatis dibuat':''}</div><div class="small muted">Periode ${E(x.period_start)}${x.period_end?' s/d '+E(x.period_end):''}${x.due_date?' · Jatuh tempo '+E(x.due_date):''}</div></div>`).join('')||'<div class="empty">Belum ada Iuran Lain-lain Lembaga.</div>'}</div>
     </div>`;
   };
   window.financeDues2=async function(p){
@@ -3474,70 +3526,102 @@ window.financeBudget2=async function(p){const {data,error}=await sb.from('budget
       period?.id?sb.from('selapanan_dues_rules').select('id,amount,effective_from,effective_until,status').eq('management_period_id',period.id).eq('status','ACTIVE').order('effective_from',{ascending:false}).limit(1).maybeSingle():Promise.resolve({data:null,error:null})
     ]);
     const im=new Map((insts||[]).map(x=>[x.id,x.name]));const activeRule=ruleQ?.data||null;
-    p.innerHTML=`<div class="card"><div class="row"><div><h3>Iuran Selapanan</h3><div class="small muted">${activeRule?`Nominal aktif: <strong>${fmt(activeRule.amount)}</strong> · berlaku mulai ${date(activeRule.effective_from)}`:'Tetapkan nominal iuran terlebih dahulu.'}</div></div><button class="btn primary" onclick="v123IuranRuleForm('${activeRule?.id||''}')">${activeRule?'Edit Nominal Iuran':'+ Tetapkan Nominal Iuran'}</button></div><div class="list" style="margin-top:10px">${error?`<p class="error">${E(friendlyError(error))}</p>`:(data||[]).map(x=>`<div class="list-item"><div class="row"><div><strong>${E(im.get(x.institution_id)||'Lembaga')}</strong><div class="small muted">Item: Iuran Selapanan · Jumlah item: 1 lembaga · Keterangan: Kewajiban iuran selapanan</div></div><span class="status ${x.status==='LUNAS'?'ok':'lock'}">${E(financeStatusLabel(x.status))}</span></div><div class="small">Nominal kewajiban: ${fmt(x.amount)}</div></div>`).join('')||'<div class="empty">Belum ada kewajiban iuran.</div>'}</div></div>
-`;
+    const canManage=Array.isArray(state?.roles)&&state.roles.some(r=>['KETUA','BENDAHARA'].includes(String(r).toUpperCase()));
+    p.innerHTML=`<div class="card"><div class="row"><div><h3>Iuran Selapanan</h3><div class="small muted">${activeRule?`Nominal master aktif: <strong>${fmt(activeRule.amount)}</strong> · berlaku mulai ${date(activeRule.effective_from)}`:'Nominal master Iuran Selapanan belum ditetapkan.'}</div></div>${canManage?`<div class="compact-actions"><button class="btn secondary" type="button" onclick="v123IuranRuleForm('${activeRule?.id||''}')">${activeRule?'Edit Nominal':'Tetapkan Nominal'}</button><button class="btn primary" type="button" onclick="openSelapananBillingForm()">Penagihan Selapanan</button></div>`:''}</div><div class="notice" style="margin-top:10px">Menetapkan nominal master <strong>tidak membuat tagihan</strong>. Tagihan hanya dibuat melalui <strong>Penagihan Selapanan</strong>.</div><div class="list" style="margin-top:10px">${error?`<p class="error">${E(friendlyError(error))}</p>`:(data||[]).map(x=>`<div class="list-item"><div class="row"><div><strong>${E(im.get(x.institution_id)||'Lembaga')}</strong><div class="small muted">Iuran Selapanan · ${E(x.activity_id||'-')}</div></div><span class="status ${x.status==='LUNAS'?'ok':'lock'}">${E(financeStatusLabel(x.status))}</span></div><div class="small">Nominal kewajiban: ${fmt(x.amount)}</div></div>`).join('')||'<div class="empty">Belum ada kewajiban Selapanan. Gunakan Penagihan Selapanan untuk membuatnya.</div>'}</div></div>`;
+  };
+  window.openSelapananBillingForm=async function(){
+    const roles=Array.isArray(state?.roles)?state.roles.map(r=>String(r).toUpperCase()):[];
+    if(!roles.some(r=>['KETUA','BENDAHARA'].includes(r)))return toast('Hanya Ketua atau Bendahara yang dapat melakukan penagihan Selapanan.','error');
+    const period=await window.bkfLoadSelectedPeriod();if(!period?.id)return toast('Periode kepengurusan aktif belum tersedia.','error');
+    const typeQ=await sb.from('activity_types').select('id,name,code').eq('code','SELAPANAN').eq('is_active',true).maybeSingle();if(typeQ.error)throw typeQ.error;
+    if(!typeQ.data)return toast('Jenis kegiatan Selapanan belum tersedia.','error');
+    const aq=await sb.from('activities').select('id,name,start_at,status,is_published,management_period_id,activity_type_id').eq('management_period_id',period.id).eq('activity_type_id',typeQ.data.id).order('start_at',{ascending:false}).limit(50);if(aq.error)throw aq.error;
+    if(!(aq.data||[]).length)return toast('Belum ada kegiatan Selapanan pada periode aktif. Buat/publikasikan kegiatan Selapanan terlebih dahulu.','error');
+    const rq=await sb.from('selapanan_dues_rules').select('id,amount,effective_from,effective_until,status').eq('management_period_id',period.id).eq('status','ACTIVE').order('effective_from',{ascending:false}).limit(1).maybeSingle();if(rq.error)throw rq.error;
+    if(!rq.data)return toast('Nominal master Iuran Selapanan belum ditetapkan.','error');
+    document.getElementById('selapananBillingModal')?.remove();
+    document.body.insertAdjacentHTML('beforeend',`<div class="backdrop" id="selapananBillingModal"><div class="modal-sheet"><div class="row"><div><h3>Penagihan Selapanan</h3><div class="small muted">Pilih satu kegiatan. Sistem menagihkan satu kewajiban dan satu tagihan untuk setiap lembaga aktif yang belum ditagihkan.</div></div><button class="btn secondary" type="button" onclick="document.getElementById('selapananBillingModal')?.remove()">Tutup</button></div><form id="selapananBillingForm"><div class="field"><label>Kegiatan Selapanan</label><select name="activity" id="selapananBillingActivity" required>${(aq.data||[]).map(a=>`<option value="${E(a.id)}">${E(a.name)} · ${a.start_at?date(a.start_at):'-'}${a.is_published?' · Terbit':''}</option>`).join('')}</select></div><div class="notice">Nominal per lembaga: <strong>${fmt(rq.data.amount)}</strong>. Penetapan nominal tidak ditagihkan otomatis.</div><div id="selapananBillingPreview" class="small muted" style="margin-top:10px">Memeriksa status tagihan...</div><button class="btn primary" style="width:100%;margin-top:12px">TAGIHKAN SELAPANAN</button></form></div></div>`);
+    const preview=async()=>{const id=document.getElementById('selapananBillingActivity')?.value;if(!id)return;const oq=await sb.from('selapanan_dues_obligations').select('id,institution_id,status').eq('activity_id',id);const ids=new Set((oq.data||[]).map(x=>x.institution_id));const iq=await sb.from('institutions').select('id,name').eq('status','ACTIVE').order('name');const pending=(iq.data||[]).filter(i=>!ids.has(i.id));document.getElementById('selapananBillingPreview').innerHTML=`${iq.data?.length||0} lembaga aktif · <strong>${pending.length}</strong> belum ditagihkan · ${ids.size} sudah memiliki kewajiban untuk kegiatan ini.`};
+    document.getElementById('selapananBillingActivity').onchange=preview;await preview();
+    document.getElementById('selapananBillingForm').onsubmit=async e=>{e.preventDefault();const btn=e.target.querySelector('button[type="submit"]');btn.disabled=true;btn.textContent='Menagihkan...';try{const q=await sb.rpc('tagihkan_selapanan_v408',{p_activity_id:document.getElementById('selapananBillingActivity').value});if(q.error)throw q.error;document.getElementById('selapananBillingModal')?.remove();const d=q.data||{};toast(`Penagihan selesai. ${d.created_obligations||0} kewajiban dan ${d.created_bills||0} tagihan baru dibuat.`,'success');await financeTab2('dues')}catch(ex){toast(friendlyError(ex),'error')}finally{btn.disabled=false;btn.textContent='TAGIHKAN SELAPANAN'}};
   };
   window.v123IuranRuleForm=async function(id=''){
     let x={};
     if(id){const q=await sb.from('selapanan_dues_rules').select('id,organization_id,management_period_id,amount,effective_from,effective_until,status').eq('id',id).maybeSingle();if(q.error||!q.data)return toast('Aturan iuran tidak ditemukan.','error');x=q.data}
-    const orgQ=await sb.from('organizations').select('id').limit(1).maybeSingle();if(orgQ.error||!orgQ.data?.id)return toast('Organisasi belum tersedia.','error');
+    const orgQ=await sb.from('organizations').select('id').eq('status','ACTIVE').limit(1).maybeSingle();if(orgQ.error||!orgQ.data?.id)return toast('Organisasi belum tersedia.','error');
     const period=await window.bkfLoadSelectedPeriod();if(!period?.id)return toast('Periode kepengurusan belum dipilih.','error');
-    document.body.insertAdjacentHTML('beforeend',`<div class="backdrop" id="v123IuranRule"><div class="modal-sheet"><div class="row"><h3>${id?'Edit Nominal Iuran':'Tetapkan Nominal Iuran'}</h3><button class="btn secondary" onclick="document.getElementById('v123IuranRule')?.remove()">Tutup</button></div><div class="small muted" style="margin-bottom:10px">Nominal disimpan sebagai aturan Iuran Selapanan dan langsung membentuk kewajiban untuk lembaga aktif pada kegiatan Selapanan periode berjalan.</div><form id="v123IuranForm"><div class="field"><label>Nominal iuran</label><input name="amount" type="number" min="0" required value="${x.amount??''}"></div><div class="grid grid2"><div class="field"><label>Berlaku mulai</label><input name="from" type="date" required value="${x.effective_from||new Date().toISOString().slice(0,10)}"></div><div class="field"><label>Berlaku sampai</label><input name="until" type="date" value="${x.effective_until||''}"></div></div><button class="btn primary" style="width:100%">Simpan Nominal Iuran</button></form></div></div>`);
+    document.body.insertAdjacentHTML('beforeend',`<div class="backdrop" id="v123IuranRule"><div class="modal-sheet"><div class="row"><h3>${id?'Edit Nominal Iuran':'Tetapkan Nominal Iuran'}</h3><button class="btn secondary" onclick="document.getElementById('v123IuranRule')?.remove()">Tutup</button></div><div class="small muted" style="margin-bottom:10px">Nominal hanya menjadi master. Menyimpan nominal <strong>tidak membuat kewajiban maupun tagihan</strong>.</div><form id="v123IuranForm"><div class="field"><label>Nominal iuran</label><input name="amount" type="number" min="0" required value="${x.amount??''}"></div><div class="grid grid2"><div class="field"><label>Berlaku mulai</label><input name="from" type="date" required value="${x.effective_from||new Date().toISOString().slice(0,10)}"></div><div class="field"><label>Berlaku sampai</label><input name="until" type="date" value="${x.effective_until||''}"></div></div><button class="btn primary" style="width:100%">Simpan Nominal Iuran</button></form></div></div>`);
     document.getElementById('v123IuranForm').onsubmit=async e=>{
       e.preventDefault();const f=new FormData(e.target),amount=Number(f.get('amount')),from=String(f.get('from')||''),until=String(f.get('until')||'')||null;
       if(!Number.isFinite(amount)||amount<0||!from)return toast('Nominal dan tanggal mulai wajib diisi dengan benar.','error');if(until&&until<from)return toast('Tanggal berlaku sampai tidak boleh sebelum tanggal mulai.','error');
       const btn=e.target.querySelector('button[type="submit"]');btn.disabled=true;btn.textContent='Menyimpan...';
-      try{
-        const ruleId=x.id||crypto.randomUUID();
-        const payload={id:ruleId,organization_id:orgQ.data.id,management_period_id:period.id,amount,effective_from:from,effective_until:until,status:'ACTIVE'};
-        const rq=id?await sb.from('selapanan_dues_rules').update(payload).eq('id',id):await sb.from('selapanan_dues_rules').insert(payload);if(rq.error)throw rq.error;
-        const tq=await sb.from('activity_types').select('id').eq('code','SELAPANAN').limit(1).maybeSingle();if(tq.error)throw tq.error;
-        const aq=await sb.from('activities').select('id').eq('organization_id',orgQ.data.id).eq('management_period_id',period.id).eq('activity_type_id',tq.data?.id||'00000000-0000-0000-0000-000000000000').eq('status','PUBLISHED').order('created_at',{ascending:false}).limit(1).maybeSingle();if(aq.error)throw aq.error;
-        const activityId=aq.data?.id;if(!activityId)throw new Error('Kegiatan Selapanan aktif pada periode ini belum tersedia. Buat/aktifkan kegiatan Selapanan terlebih dahulu.');
-        const iq=await sb.from('institutions').select('id').eq('organization_id',orgQ.data.id).eq('status','ACTIVE').order('name');if(iq.error)throw iq.error;
-        const rows=(iq.data||[]).map(i=>({activity_id:activityId,institution_id:i.id,rule_id:ruleId,amount,status:'BELUM_BAYAR'}));
-        if(rows.length){const oq=await sb.from('selapanan_dues_obligations').upsert(rows,{onConflict:'activity_id,institution_id',ignoreDuplicates:false});if(oq.error)throw oq.error;}
-        document.getElementById('v123IuranRule')?.remove();toast(`Nominal iuran berhasil disimpan. ${rows.length} kewajiban lembaga diperbarui.`);financeTab2('dues');
-      }catch(ex){toast(friendlyError(ex),'error')}finally{btn.disabled=false;btn.textContent='Simpan Nominal Iuran'}
+      try{const ruleId=x.id||crypto.randomUUID(),payload={id:ruleId,organization_id:orgQ.data.id,management_period_id:period.id,amount,effective_from:from,effective_until:until,status:'ACTIVE'};const rq=id?await sb.from('selapanan_dues_rules').update(payload).eq('id',id):await sb.from('selapanan_dues_rules').insert(payload);if(rq.error)throw rq.error;document.getElementById('v123IuranRule')?.remove();toast('Nominal Iuran Selapanan berhasil disimpan. Tidak ada tagihan yang dibuat.','success');financeTab2('dues')}catch(ex){toast(friendlyError(ex),'error')}finally{btn.disabled=false;btn.textContent='Simpan Nominal Iuran'}
     };
   };
-  window.openTeacherOtherDuesForm=async function(){
+  window.openInstitutionOtherDuesForm=async function(){
     try{
       if(!state.user){const ok=await requireActiveSession();if(!ok)return toast('Sesi pengguna belum tersedia. Silakan muat ulang halaman.','error');}
       const iq=await sb.from('institutions').select('id,name').eq('status','ACTIVE').order('name');
       if(iq.error)throw iq.error;
       const insts=iq.data||[];
       if(!insts.length)return toast('Belum ada lembaga aktif yang dapat ditetapkan iuran.','error');
-    document.getElementById('teacherOtherDuesModal')?.remove();
-    document.body.insertAdjacentHTML('beforeend',`<div class="backdrop" id="teacherOtherDuesModal"><div class="modal-sheet"><div class="row"><div><h3>Iuran Lain-lain Guru</h3><div class="small muted">Penetapan langsung membuat tagihan untuk lembaga yang dipilih.</div></div><button class="btn secondary" type="button" onclick="document.getElementById('teacherOtherDuesModal')?.remove()">Tutup</button></div><form id="teacherOtherDuesForm"><div class="field"><label>Lembaga</label><select name="institution" required><option value="">— Pilih lembaga —</option>${insts.map(i=>`<option value="${E(i.id)}">${E(i.name)}</option>`).join('')}</select></div><div class="field"><label>Nama Iuran</label><input name="name" required value="Iuran Lain-lain Guru" placeholder="Contoh: Iuran Lain-lain Guru"></div><div class="grid grid2"><div class="field"><label>Nominal per unit</label><input name="amount" id="teacherOtherDuesAmount" type="number" min="0" step="1000" required placeholder="50000"></div><div class="field"><label>Jumlah unit <span class="small muted">(manual)</span></label><input name="quantity" id="teacherOtherDuesQuantity" type="number" min="1" step="1" required placeholder="10"></div></div><div class="grid grid2"><div class="field"><label>Satuan</label><input name="unit" value="guru" required placeholder="guru"></div><div class="field"><label>Jatuh tempo *</label><input name="due" type="date" required></div></div><div class="grid grid2"><div class="field"><label>Periode mulai *</label><input name="from" type="date" required></div><div class="field"><label>Periode sampai *</label><input name="until" type="date" required></div></div><div class="notice" id="teacherOtherDuesTotal"><strong>Total kewajiban: Rp0</strong><br><span class="small muted">Total = nominal per unit × jumlah unit.</span></div><button class="btn primary" style="width:100%">Simpan & Buat Tagihan Otomatis</button></form></div></div>`);
-    const recalc=()=>{const a=Number(document.getElementById('teacherOtherDuesAmount')?.value||0),q=Number(document.getElementById('teacherOtherDuesQuantity')?.value||0);document.getElementById('teacherOtherDuesTotal').innerHTML='<strong>Total kewajiban: '+fmt(a*q)+'</strong><br><span class="small muted">'+(q||0)+' unit × '+fmt(a)+'</span>'};
-    document.getElementById('teacherOtherDuesAmount').oninput=recalc;document.getElementById('teacherOtherDuesQuantity').oninput=recalc;
-    document.getElementById('teacherOtherDuesForm').onsubmit=async e=>{e.preventDefault();const f=new FormData(e.target),amount=Number(f.get('amount')),quantity=Number(f.get('quantity')),periodStart=String(f.get('from')||''),periodEnd=String(f.get('until')||''),dueDate=String(f.get('due')||'');if(!f.get('institution')||!String(f.get('name')||'').trim()||!f.get('unit')||!periodStart||!periodEnd||!dueDate)return toast('Lembaga, nama iuran, satuan, tanggal periode mulai, tanggal periode sampai, dan jatuh tempo wajib diisi.','error');if(periodEnd<periodStart)return toast('Tanggal periode sampai tidak boleh sebelum periode mulai.','error');if(!Number.isFinite(amount)||amount<0||!Number.isFinite(quantity)||quantity<=0)return toast('Nominal harus 0 atau lebih dan jumlah unit harus lebih dari 0.','error');const q=await sb.rpc('create_general_dues_bill',{p_institution_id:f.get('institution'),p_name:String(f.get('name')).trim(),p_unit_label:String(f.get('unit')).trim(),p_unit_price:amount,p_quantity:quantity,p_period_start:periodStart,p_period_end:periodEnd,p_due_date:dueDate});if(q.error)return toast(friendlyError(q.error),'error');const total=Number(q.data?.total_amount||amount*quantity);document.getElementById('teacherOtherDuesModal')?.remove();const notice='Iuran Lain-lain Guru berhasil disimpan dan tagihan berhasil dibuat sebesar '+fmt(total)+'.';try{if(typeof window.v12Toast==='function')window.v12Toast(notice,'success');else if(typeof window.bkAlert==='function')window.bkAlert(notice)}catch(_){}const b=document.querySelector('[data-fin-tab=\"teacher_other_dues\"]');if(typeof window.v97FinanceTab==='function')window.v97FinanceTab('teacher_other_dues',b)};
-      }catch(e){console.error('[BK IURAN LAIN-LAIN GURU]',e);toast(friendlyError(e)||'Form Iuran Lain-lain Guru gagal dibuka.','error')}
+    document.getElementById('institutionOtherDuesModal')?.remove();
+    document.body.insertAdjacentHTML('beforeend',`<div class="backdrop" id="institutionOtherDuesModal"><div class="modal-sheet"><div class="row"><div><h3>Iuran Lain-lain Lembaga</h3><div class="small muted">Penetapan langsung membuat tagihan untuk lembaga yang dipilih.</div></div><button class="btn secondary" type="button" onclick="document.getElementById('institutionOtherDuesModal')?.remove()">Tutup</button></div><form id="institutionOtherDuesForm"><div class="field"><label>Lembaga</label><select name="institution" required><option value="">— Pilih lembaga —</option>${insts.map(i=>`<option value="${E(i.id)}">${E(i.name)}</option>`).join('')}</select></div><div class="field"><label>Nama Iuran</label><input name="name" required value="Iuran Lain-lain Lembaga" placeholder="Contoh: Iuran Lain-lain Lembaga"></div><div class="grid grid2"><div class="field"><label>Nominal per unit</label><input name="amount" id="institutionOtherDuesAmount" type="number" min="0" step="1000" required placeholder="50000"></div><div class="field"><label>Jumlah unit <span class="small muted">(manual)</span></label><input name="quantity" id="institutionOtherDuesQuantity" type="number" min="1" step="1" required placeholder="10"></div></div><div class="grid grid2"><div class="field"><label>Satuan</label><input name="unit" value="unit" required placeholder="paket / unit / orang"></div><div class="field"><label>Jatuh tempo *</label><input name="due" type="date" required></div></div><div class="grid grid2"><div class="field"><label>Periode mulai *</label><input name="from" type="date" required></div><div class="field"><label>Periode sampai *</label><input name="until" type="date" required></div></div><div class="notice" id="teacherOtherDuesTotal"><strong>Total kewajiban: Rp0</strong><br><span class="small muted">Total = nominal per unit × jumlah unit.</span></div><button class="btn primary" style="width:100%">Simpan & Buat Tagihan Otomatis</button></form></div></div>`);
+    const recalc=()=>{const a=Number(document.getElementById('institutionOtherDuesAmount')?.value||0),q=Number(document.getElementById('institutionOtherDuesQuantity')?.value||0);document.getElementById('teacherOtherDuesTotal').innerHTML='<strong>Total kewajiban: '+fmt(a*q)+'</strong><br><span class="small muted">'+(q||0)+' unit × '+fmt(a)+'</span>'};
+    document.getElementById('institutionOtherDuesAmount').oninput=recalc;document.getElementById('institutionOtherDuesQuantity').oninput=recalc;
+    document.getElementById('institutionOtherDuesForm').onsubmit=async e=>{e.preventDefault();const f=new FormData(e.target),amount=Number(f.get('amount')),quantity=Number(f.get('quantity')),periodStart=String(f.get('from')||''),periodEnd=String(f.get('until')||''),dueDate=String(f.get('due')||'');if(!f.get('institution')||!String(f.get('name')||'').trim()||!f.get('unit')||!periodStart||!periodEnd||!dueDate)return toast('Lembaga, nama iuran, satuan, tanggal periode mulai, tanggal periode sampai, dan jatuh tempo wajib diisi.','error');if(periodEnd<periodStart)return toast('Tanggal periode sampai tidak boleh sebelum periode mulai.','error');if(!Number.isFinite(amount)||amount<0||!Number.isFinite(quantity)||quantity<=0)return toast('Nominal harus 0 atau lebih dan jumlah unit harus lebih dari 0.','error');const q=await sb.rpc('create_general_dues_bill',{p_institution_id:f.get('institution'),p_name:String(f.get('name')).trim(),p_unit_label:String(f.get('unit')).trim(),p_unit_price:amount,p_quantity:quantity,p_period_start:periodStart,p_period_end:periodEnd,p_due_date:dueDate});if(q.error)return toast(friendlyError(q.error),'error');const total=Number(q.data?.total_amount||amount*quantity);document.getElementById('institutionOtherDuesModal')?.remove();const notice='Iuran Lain-lain Lembaga berhasil disimpan dan tagihan berhasil dibuat sebesar '+fmt(total)+'.';try{if(typeof window.v12Toast==='function')window.v12Toast(notice,'success');else if(typeof window.bkAlert==='function')window.bkAlert(notice)}catch(_){}const b=document.querySelector('[data-fin-tab=\"teacher_other_dues\"]');if(typeof window.v97FinanceTab==='function')window.v97FinanceTab('teacher_other_dues',b)};
+      }catch(e){console.error('[BK IURAN LAIN-LAIN GURU]',e);toast(friendlyError(e)||'Form Iuran Lain-lain Lembaga gagal dibuka.','error')}
+  };
+
+  // V411: satu pintu refresh UI Keuangan setelah pembayaran.
+  // Tidak mengubah logika database, Selapanan, atau RLS. Hanya menyegarkan panel
+  // Kas/Summary yang kebetulan sedang terpasang dan menaikkan penanda data terbaru.
+  window.bkfFinanceDataRevision=(Number(window.bkfFinanceDataRevision)||0)+0;
+  window.bkfRefreshFinanceAfterPayment=async function(){
+    window.bkfFinanceDataRevision=(Number(window.bkfFinanceDataRevision)||0)+1;
+    try{
+      const summary=document.getElementById('finSummary337');
+      if(summary && typeof window.financeSummaryV337==='function') await window.financeSummaryV337(summary);
+      const panel=document.getElementById('finPanel');
+      if(panel){
+        const active=document.querySelector('[data-fin-tab].active');
+        const tab=active?.getAttribute('data-fin-tab')||'cash';
+        if(tab==='cash' && typeof window.financeCash2==='function') await window.financeCash2(panel);
+        else if(typeof window.v97FinanceTab==='function') await window.v97FinanceTab(tab,active);
+      }
+    }catch(e){console.warn('[BK FINANCE UI REFRESH]',e)}
+    try{window.dispatchEvent(new CustomEvent('bkf-payment-synced',{detail:{revision:window.bkfFinanceDataRevision}}))}catch(_){}
   };
 
   window.financeSummaryV337=async function(container){
-    if(!container)return;
+    if(!container)return false;
     const roles=Array.isArray(state.roles)?state.roles:[];
     const allowed=roles.includes('KETUA')||roles.includes('BENDAHARA');
-    if(!allowed){container.innerHTML='';return}
+    if(!allowed){container.innerHTML='';return true}
     container.innerHTML='<div class="grid grid3" style="margin-bottom:12px"><div class="card" style="margin:0"><div class="small muted">Kas Masuk</div><div id="finSummaryIn337" class="metric">Memuat...</div></div><div class="card" style="margin:0"><div class="small muted">Kas Keluar</div><div id="finSummaryOut337" class="metric">Memuat...</div></div><div class="card" style="margin:0"><div class="small muted">Saldo</div><div id="finSummaryBal337" class="metric">Memuat...</div></div></div>';
     try{
+      // V414: hitung langsung dari cash_transactions, bukan dari view rekap.
+      // Status persetujuan menentukan apakah transaksi ikut saldo; tidak membuat transaksi duplikat.
+      const orgQ=await sb.rpc('current_organization_ids');
+      if(orgQ.error)throw orgQ.error;
+      const orgIds=Array.isArray(orgQ.data)?orgQ.data:(orgQ.data?[orgQ.data]:[]);
+      if(!orgIds.length)throw new Error('Organisasi aktif akun belum tersedia.');
       let rows=[],from=0,step=1000;
       while(true){
-        const q=await sb.from('v_cash_book').select('transaction_type,amount').range(from,from+step-1);
+        const q=await sb.from('cash_transactions').select('organization_id,transaction_type,amount,status').in('organization_id',orgIds).range(from,from+step-1);
         if(q.error)throw q.error;
         const batch=q.data||[];rows.push(...batch);if(batch.length<step)break;from+=step;
       }
       let income=0,expense=0;
-      for(const r of rows){const a=Number(r.amount)||0;const t=String(r.transaction_type||'').toUpperCase();if(['INCOME','MASUK','KAS_MASUK'].includes(t))income+=a;else if(['EXPENSE','KELUAR','KAS_KELUAR'].includes(t))expense+=a;}
+      for(const r of rows){const a=Number(r.amount)||0;const t=String(r.transaction_type||'').toUpperCase();const st=String(r.status||'').toUpperCase();if(!['DISETUJUI','FINAL','LOCKED'].includes(st))continue;if(['INCOME','MASUK','KAS_MASUK'].includes(t))income+=a;else if(['EXPENSE','KELUAR','KAS_KELUAR'].includes(t))expense+=a;}
       const balance=income-expense;
       const fmtMoney=v=>typeof fmt==='function'?fmt(v):new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(v);
       document.getElementById('finSummaryIn337').textContent=fmtMoney(income);document.getElementById('finSummaryOut337').textContent=fmtMoney(expense);document.getElementById('finSummaryBal337').textContent=fmtMoney(balance);
-    }catch(e){const msg=E(friendlyError(e));['finSummaryIn337','finSummaryOut337','finSummaryBal337'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML='<span class="error">'+msg+'</span>'})}
+      return true;
+    }catch(e){const msg=E(friendlyError(e));['finSummaryIn337','finSummaryOut337','finSummaryBal337'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML='<span class="error">'+msg+'</span>'});return false}
   };
 
-  window.showFinance=async function(){const manage=await v123FinanceManager();window._financeManage=manage;const isOperator=Array.isArray(state.roles)&&state.roles.includes('OPERATOR');listPage('Keuangan',isOperator?'Informasi tagihan lembaga Anda.':'Kelola kas, tagihan, pembayaran, anggaran, batas pengeluaran dan iuran.',`<div class="card">${(state.roles||[]).some(r=>r==='KETUA'||r==='BENDAHARA')?'<div id="finSummary337"></div>':''}<div class="seg" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px">${isOperator?'':'<button class="btn secondary active" type="button" data-fin-tab="cash" onclick="v97FinanceTab(\'cash\',this)">Kas</button>'}<button class="btn secondary ${isOperator?'active':''}" type="button" data-fin-tab="bills" onclick="v97FinanceTab('bills',this)">${isOperator?'Tagihan Lembaga Saya':'Tagihan'}</button>${isOperator?'':'<button class="btn secondary" type="button" data-fin-tab="report" onclick="v97FinanceTab(\'report\',this)">Laporan</button>'}${state.roles.includes('KETUA')?'<button class="btn secondary" type="button" data-fin-tab="limit" onclick="v97FinanceTab(\'limit\',this)">Batas Pengeluaran</button>':''}${isOperator?'':'<button class="btn secondary" type="button" data-fin-tab="dues" onclick="v97FinanceTab(\'dues\',this)">Iuran</button><button class="btn secondary" type="button" data-fin-tab="teacher_other_dues" onclick="openTeacherOtherDuesForm()">Iuran Lain-lain Guru</button>'}</div><div id="finPanel"><div class="empty">Memuat modul keuangan...</div></div></div>`);await window.financeSummaryV337(document.getElementById('finSummary337'));await window.v97FinanceTab(isOperator?'bills':'cash',document.querySelector(`[data-fin-tab="${isOperator?'bills':'cash'}"]`))};
+  window.showFinance=async function(){const manage=await v123FinanceManager();window._financeManage=manage;const isOperator=Array.isArray(state.roles)&&state.roles.includes('OPERATOR');listPage('Keuangan',isOperator?'Informasi tagihan lembaga Anda.':'Kelola kas, tagihan, pembayaran, anggaran, batas pengeluaran dan iuran.',`<div class="card">${(state.roles||[]).some(r=>r==='KETUA'||r==='BENDAHARA')?'<div id="finSummary337"></div>':''}<div class="seg" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px">${isOperator?'':'<button class="btn secondary active" type="button" data-fin-tab="cash" onclick="v97FinanceTab(\'cash\',this)">Kas</button>'}<button class="btn secondary ${isOperator?'active':''}" type="button" data-fin-tab="bills" onclick="v97FinanceTab('bills',this)">${isOperator?'Tagihan Lembaga Saya':'Tagihan'}</button>${isOperator?'':'<button class="btn secondary" type="button" data-fin-tab="report" onclick="v97FinanceTab(\'report\',this)">Laporan</button>'}${state.roles.includes('KETUA')?'<button class="btn secondary" type="button" data-fin-tab="limit" onclick="v97FinanceTab(\'limit\',this)">Batas Pengeluaran</button>':''}${isOperator?'':'<button class="btn secondary" type="button" data-fin-tab="dues" onclick="v97FinanceTab(\'dues\',this)">Iuran</button><button class="btn secondary" type="button" data-fin-tab="teacher_other_dues" onclick="v97FinanceTab(\'teacher_other_dues\',this)">Iuran Lain-lain Lembaga</button>'}</div><div id="finPanel"><div class="empty">Memuat modul keuangan...</div></div></div>`);await window.financeSummaryV337(document.getElementById('finSummary337'));await window.v97FinanceTab(isOperator?'bills':'cash',document.querySelector(`[data-fin-tab="${isOperator?'bills':'cash'}"]`))};
   window.v97FinanceTab=async function(tab,btn){document.querySelectorAll('[data-fin-tab]').forEach(b=>b.classList.toggle('active',b===btn));const p=document.getElementById('finPanel');if(!p)return;p.innerHTML='<div class="card muted">Memuat...</div>';try{if(tab==='cash')return financeCash2(p);if(tab==='bills')return financeBills2(p);if(tab==='budget')return financeBudget2(p);if(tab==='report')return financeReport23(p);if(tab==='limit'){if(!state.roles.includes('KETUA')){p.innerHTML='<div class="notice">Batas Pengeluaran hanya dapat dikelola oleh Ketua.</div>';return}return financeLimit23(p);}if(tab==='teacher_other_dues')return financeTeacherOtherDues2(p);return financeDues2(p)}catch(e){p.innerHTML=`<div class="error">${E(friendlyError(e))}</div>`}};
 })();
 </script>
@@ -5071,18 +5155,25 @@ async function renderGraduation(body){
  const activities=await query(sb.from('activities').select('id,name,management_period_id,organization_id,start_at').eq('management_period_id',M.periodId).in('organization_id',M.orgIds).order('start_at',{ascending:false}));
  const activityIds=activities.map(a=>a.id);M.events=activityIds.length?await query(sb.from('graduation_events').select('id,activity_id,theme,graduation_status,registration_status').in('activity_id',activityIds)):[];
  const eventMap=new Map(activities.map(a=>[a.id,a]));if(!M.eventId||!M.events.some(e=>e.id===M.eventId))M.eventId=M.events[0]?.id||'';
- let gq=M.eventId?sb.from('graduation_cost_rules').select('id,graduation_event_id,name,description,amount,unit_type,charge_scope,is_mandatory,effective_from,effective_until,status').eq('graduation_event_id',M.eventId).order('created_at',{ascending:false}):null;
- if(gq&&!manage)gq=gq.eq('status','ACTIVE');
- const costs=gq?await query(gq):[];
- body.innerHTML=`<div class="card"><h3>Penetapan Biaya Wisuda</h3><div class="small muted">${manage?'Ketua/Sekretaris dapat mengelola biaya.':'Mode lihat saja untuk biaya wisuda aktif.'}</div><div class="field"><label>Kegiatan wisuda pada periode ini</label><select id="v369GradEvent">${M.events.map(e=>`<option value="${e.id}" ${e.id===M.eventId?'selected':''}>${esc(eventMap.get(e.activity_id)?.name||'Wisuda')} · ${esc(e.graduation_status||'')}</option>`).join('')||'<option value="">Belum ada kegiatan wisuda pada periode ini</option>'}</select></div><div class="small muted">Biaya wisuda disimpan pada kegiatan wisuda terpilih agar tagihan dan riwayat biaya tetap terhubung dengan kegiatan asal.</div>${manage&&M.eventId?`<div class="field" style="margin-top:10px"><label>Referensi biaya wisuda dari periode lain</label><div class="row"><select id="v369GradSource"><option value="">Pilih periode sumber</option>${M.periods.filter(p=>p.id!==M.periodId).map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join('')}</select><button class="btn secondary" id="v369CopyGradSource" type="button">Salin sebagai Rancangan</button></div></div>`:''}</div>${manage&&M.eventId?`<div class="card"><h3>Tambah komponen biaya wisuda</h3><form id="v369GradForm"><input type="hidden" name="id" value=""><div class="field"><label>Nama biaya *</label><input name="name" required placeholder="Contoh: Paket wisuda peserta"></div><div class="field"><label>Keterangan</label><input name="description" placeholder="Rincian barang atau layanan"></div><div class="grid grid2"><div class="field"><label>Nominal (Rp) *</label><input name="amount" type="number" min="0" required></div><div class="field"><label>Satuan *</label><select name="unit_type"><option value="PARTICIPANT">Per peserta</option><option value="INSTITUTION">Per lembaga</option><option value="EVENT">Per kegiatan</option><option value="ITEM">Per item</option></select></div><div class="field"><label>Cakupan tagihan</label><select name="charge_scope"><option value="ALL">Semua</option><option value="SELECTED_INSTITUTIONS">Lembaga terpilih</option><option value="SELECTED_PARTICIPANTS">Peserta terpilih</option></select></div><div class="field"><label>Status penyimpanan</label><select name="status"><option value="DRAFT">Rancangan</option><option value="ACTIVE">Aktif</option></select></div><div class="field"><label>Berlaku mulai</label><input name="effective_from" type="date" value="${dateNow()}"></div><div class="field"><label>Berlaku sampai</label><input name="effective_until" type="date"></div></div><label class="row" style="gap:8px"><input type="checkbox" name="is_mandatory" checked style="width:auto">Biaya wajib</label><button class="btn primary" style="margin-top:12px" type="submit">Simpan Biaya Wisuda</button></form></div><div class="card"><h3>Daftar biaya wisuda</h3>${costs.map(c=>`<div class="list-item"><div class="row"><div style="flex:1"><strong>${esc(c.name)}</strong><div class="small muted">${esc(c.description||'Tanpa keterangan')} · ${esc(c.unit_type)} · ${esc(c.charge_scope)}</div><div><strong>${fmtMoney(c.amount)}</strong></div></div><div><span class="status ${c.status==='ACTIVE'?'ok':'lock'}">${esc(c.status)}</span>${manage?`<button class="btn secondary" type="button" style="margin-top:6px" data-edit-grad="${c.id}">Edit</button>`:''}</div></div></div>`).join('')||'<div class="empty">Belum ada komponen biaya untuk kegiatan ini.</div>'}</div>`:'<div class="card"><div class="empty">Buat kegiatan wisuda pada periode ini terlebih dahulu. Setelah kegiatan tersedia, biaya dapat ditetapkan di sini.</div></div>'}`;
- document.getElementById('v369CopyGradSource')?.addEventListener('click',async()=>{const sourcePeriod=document.getElementById('v369GradSource')?.value;if(!sourcePeriod)return notify('Pilih periode sumber terlebih dahulu.','error');try{const acts=await query(sb.from('activities').select('id').eq('management_period_id',sourcePeriod).in('organization_id',M.orgIds));const aids=acts.map(a=>a.id);const events=aids.length?await query(sb.from('graduation_events').select('id,activity_id').in('activity_id',aids)):[];const sourceEvent=events[0];if(!sourceEvent)return notify('Tidak ditemukan kegiatan wisuda pada periode sumber.','error');const old=await query(sb.from('graduation_cost_rules').select('name,description,amount,unit_type,charge_scope,is_mandatory,effective_from,effective_until').eq('graduation_event_id',sourceEvent.id).eq('status','ACTIVE'));if(!old.length)return notify('Tidak ada biaya aktif pada kegiatan wisuda sumber.','error');for(const c of old){const q=await sb.rpc('save_graduation_cost_rule_for_period',{p_id:null,p_management_period_id:M.periodId,p_graduation_event_id:M.eventId,p_name:c.name,p_description:c.description||'',p_amount:c.amount,p_unit_type:c.unit_type,p_charge_scope:c.charge_scope,p_is_mandatory:c.is_mandatory,p_effective_from:dateNow(),p_effective_until:null,p_status:'DRAFT'});if(q.error)throw q.error}notify(`${old.length} komponen biaya disalin sebagai rancangan. Periksa sebelum diaktifkan.`);await render()}catch(e){notify(errText(e),'error')}});
-body.querySelectorAll('[data-edit-grad]').forEach(b=>b.onclick=async()=>{try{const rows=await query(sb.from('graduation_cost_rules').select('id,name,description,amount,unit_type,charge_scope,is_mandatory,effective_from,effective_until,status').eq('id',b.dataset.editGrad));const c=rows[0];if(!c)return;const f=document.getElementById('v369GradForm');if(!f)return;f.elements.id.value=c.id;f.elements.name.value=c.name;f.elements.description.value=c.description||'';f.elements.amount.value=c.amount;f.elements.unit_type.value=c.unit_type;f.elements.charge_scope.value=c.charge_scope;f.elements.status.value=c.status==='ACTIVE'?'ACTIVE':'DRAFT';f.elements.effective_from.value=c.effective_from||dateNow();f.elements.effective_until.value=c.effective_until||'';f.elements.is_mandatory.checked=!!c.is_mandatory;f.scrollIntoView({behavior:'smooth',block:'start'});notify('Data biaya dimuat ke formulir. Simpan untuk memperbarui.')}catch(e){notify(errText(e),'error')}});
-document.getElementById('v369GradEvent')?.addEventListener('change',async e=>{M.eventId=e.target.value;await render()});
- const form=document.getElementById('v369GradForm');if(form)form.onsubmit=async e=>{e.preventDefault();const f=new FormData(form),amount=Number(f.get('amount')),from=String(f.get('effective_from')||dateNow()),until=String(f.get('effective_until')||'')||null;if(!Number.isFinite(amount)||amount<0||(until&&until<from))return notify('Nominal atau tanggal biaya tidak valid.','error');const q=await sb.rpc('save_graduation_cost_rule_for_period',{p_id:String(f.get('id')||'')||null,p_management_period_id:M.periodId,p_graduation_event_id:M.eventId,p_name:String(f.get('name')||'').trim(),p_description:String(f.get('description')||''),p_amount:amount,p_unit_type:f.get('unit_type'),p_charge_scope:f.get('charge_scope'),p_is_mandatory:f.get('is_mandatory')==='on',p_effective_from:from,p_effective_until:until,p_status:f.get('status')});if(q.error)return notify(errText(q.error),'error');notify('Biaya wisuda berhasil disimpan.');await render()};
+ const tq=M.eventId?await query(sb.from('tariffs').select('id,code,name,amount,unit,effective_from,effective_until,status').eq('code','WISUDA').eq('status','ACTIVE').order('effective_from',{ascending:false}).limit(5)):[];
+ const active=tq.find(x=>x.effective_from<=dateNow()&&(!x.effective_until||x.effective_until>=dateNow()))||tq[0]||null;
+ body.innerHTML=`<div class="card"><h3>Penetapan Biaya Wisuda</h3><div class="small muted">${manage?'Master tunggal Biaya Wisuda, dihitung per peserta.':'Mode lihat saja untuk master Biaya Wisuda.'}</div><div class="field"><label>Kegiatan wisuda pada periode ini</label><select id="v369GradEvent">${M.events.map(e=>`<option value="${e.id}" ${e.id===M.eventId?'selected':''}>${esc(eventMap.get(e.activity_id)?.name||'Wisuda')} · ${esc(e.graduation_status||'')}</option>`).join('')||'<option value="">Belum ada kegiatan wisuda pada periode ini</option>'}</select></div>${M.eventId?`<div class="card" style="margin-top:10px"><div class="row"><div><strong>Biaya Wisuda per peserta</strong><div class="small muted">${active?`Berlaku mulai ${active.effective_from} · ${active.effective_until?'sampai '+active.effective_until:'tanpa batas akhir'}`:'Belum ada master aktif'}</div></div><div style="font-size:20px;font-weight:700">${active?fmtMoney(active.amount):'Rp 0'}</div></div>${manage?'<button class="btn primary" id="v408GradMasterBtn" type="button" style="margin-top:10px">'+(active?'Edit Master Biaya':'Tetapkan Biaya')+'</button>':''}</div><div class="notice" style="margin-top:10px"><strong>Aturan V408:</strong> biaya resmi hanya satu, yaitu Biaya Wisuda per peserta. Sewa perlengkapan tidak masuk komponen ini dan ditagihkan terpisah sebagai Iuran Lain-lain Lembaga.</div>`:'<div class="empty">Buat kegiatan wisuda pada periode ini terlebih dahulu.</div>'}</div>`;
+ document.getElementById('v369GradEvent')?.addEventListener('change',async e=>{M.eventId=e.target.value;await render()});
+ document.getElementById('v408GradMasterBtn')?.addEventListener('click',()=>openGraduationCostForm(M.eventId));
 }
 window.showExamGovernance=async function(){const host=document.getElementById('page');if(host)host.innerHTML='<div class="card"><p class="muted">Memuat Aturan Ujian & Wisuda...</p></div>';try{await init()}catch(e){const h=document.getElementById('page');if(h)h.innerHTML=`<div class="card"><div class="error">${esc(errText(e))}</div></div>`}};
 })();
 
+</script>
+<script id="bkf-v408-targeted-revision">
+(function(){
+  window.__BKFUSPAQ_V408__={baseline:'V407',scope:['Penetapan Biaya Wisuda','Penagihan Wisuda','Iuran Lain-lain Lembaga','Penetapan/Penagihan Selapanan'],noRlsChanges:true};
+})();
+</script>
+<script id="bkf-v409-targeted-revision">
+(function(){
+  window.__BKFUSPAQ_V410__={baseline:'V409',scope:['Wisuda auto-billing 23:59','Refresh otomatis Pembayaran/Kas'],rules:['no manual graduation billing','payment refresh after save','cash refresh after save'],noRlsChanges:true};
+})();
 </script>
 </body><script id="bkf-audit-v128-e2e-action-guards">
 (function(){
@@ -5185,5 +5276,40 @@ window.showExamGovernance=async function(){const host=document.getElementById('p
   };
 })();
 
+</script>
+
+<script id="v416-darus-quran-viewer">
+(function(){
+  'use strict';
+  const style=document.createElement('style');
+  style.id='v416-darus-quran-styles';
+  style.textContent=`
+    .darus-quran-link{appearance:none;display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:34px;padding:6px 12px;border:1px solid #f3d58b;border-radius:999px;background:linear-gradient(135deg,#fff4cc 0%,#f4d47d 100%);color:#533b05;font:800 13px/1.2 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;letter-spacing:.1px;box-shadow:0 2px 0 rgba(112,78,5,.15),0 3px 10px rgba(255,210,92,.22);cursor:pointer;white-space:nowrap;transition:transform .15s ease,box-shadow .15s ease}
+    .darus-quran-link:active{transform:translateY(1px);box-shadow:0 1px 0 rgba(112,78,5,.15)}
+    .darus-quran-link:focus-visible{outline:3px solid #fff;outline-offset:2px}
+    .darus-quran-icon{font-size:15px;line-height:1}
+    .darus-quran-arrow{font-size:14px;font-weight:900;line-height:1}
+    .darus-quran-backdrop{position:fixed;inset:0;z-index:100000;background:rgba(9,24,15,.72);display:flex;align-items:stretch;justify-content:center;padding:0}
+    .darus-quran-panel{display:flex;flex-direction:column;width:100%;height:100%;max-width:1100px;background:#fff;overflow:hidden}
+    .darus-quran-toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;background:#176b3a;color:#fff;box-shadow:0 2px 8px #0002;z-index:1}
+    .darus-quran-heading{font-weight:850;font-size:15px;line-height:1.25}.darus-quran-subheading{font-size:11px;opacity:.82;margin-top:2px}
+    .darus-quran-close{border:1px solid #ffffff75;border-radius:10px;background:#ffffff18;color:#fff;padding:9px 13px;font:750 13px system-ui;cursor:pointer;white-space:nowrap}
+    .darus-quran-frame{display:block;flex:1;width:100%;height:100%;min-height:0;border:0;background:#fff}
+    .darus-quran-hint{font-size:11px;color:#fff9;padding:0 12px 8px;background:#176b3a}
+    @media(min-width:760px){.darus-quran-backdrop{padding:3vh 3vw}.darus-quran-panel{height:94vh;border-radius:16px;box-shadow:0 16px 60px #0005}.darus-quran-toolbar{padding:12px 16px}}
+  `;
+  document.head.appendChild(style);
+  window.openDarusQuranViewer=function(){
+    if(document.getElementById('darusQuranViewer'))return;
+    const backdrop=document.createElement('div');backdrop.id='darusQuranViewer';backdrop.className='darus-quran-backdrop';backdrop.setAttribute('role','dialog');backdrop.setAttribute('aria-modal','true');backdrop.setAttribute('aria-label','Darus Al-Qur\'an - Tanzil.net');
+    backdrop.innerHTML='<section class="darus-quran-panel"><header class="darus-quran-toolbar"><div><div class="darus-quran-heading">Darus Al-Qur\'an</div><div class="darus-quran-subheading">Mushaf digital Daneva.studio</div></div><button type="button" class="darus-quran-close" id="darusQuranClose">Tutup ✕</button></header><iframe class="darus-quran-frame" title="Tanzil.net - Al-Qur\'an digital" src="https://tanzil.net/" referrerpolicy="strict-origin-when-cross-origin" allow="fullscreen"></iframe></section>';
+    document.body.appendChild(backdrop);
+    const close=()=>backdrop.remove();
+    document.getElementById('darusQuranClose').addEventListener('click',close);
+    backdrop.addEventListener('click',e=>{if(e.target===backdrop)close()});
+    const esc=e=>{if(e.key==='Escape'&&document.getElementById('darusQuranViewer')){close();document.removeEventListener('keydown',esc)}};
+    document.addEventListener('keydown',esc);
+  };
+})();
 </script>
 </html>
