@@ -204,7 +204,7 @@ const menu=[['home','Beranda'],['activities','Kegiatan'],['exams','Ujian'],['pen
 function bkAuthRedirectUrl(){const u=new URL(window.location.href);u.hash='';u.search='';return /^https?:$/.test(u.protocol)?u.toString():null}
 function renderLogin(msg='',notice=''){document.body.classList.add('bkf-ready');app.style.visibility='visible';app.innerHTML=`<main class="login-v2"><section class="login-card"><div class="login-brand"><div class="login-mark">BK</div><div><div class="login-title">BK FUSPAQ NU</div><div class="login-subtitle">Sistem Informasi Badan Khusus FUSPAQ Nahdlatul Ulama</div></div></div><div class="login-welcome"><h1>Selamat datang</h1><p>Masuk untuk melanjutkan ke sistem informasi BK FUSPAQ NU.</p></div>${msg?`<div class="login-message error">${esc(msg)}</div>`:''}${notice?`<div class="login-message success">${esc(notice)}</div>`:''}<form id="login" novalidate><div class="field"><label for="loginEmail">Email</label><div class="login-input"><span>✉</span><input id="loginEmail" name="email" type="email" required autocomplete="username" placeholder="nama@email.com"></div></div><div class="field"><label for="loginPassword">Kata sandi</label><div class="login-input"><span>●</span><input id="loginPassword" name="password" type="password" required autocomplete="current-password" placeholder="Masukkan kata sandi"><button type="button" class="password-toggle" aria-label="Lihat kata sandi" onclick="v12TogglePassword('loginPassword',this)">👁</button></div></div><button id="loginSubmit" class="btn primary login-submit" type="submit">Masuk ke Sistem</button></form><button id="forgotPasswordBtn" class="login-link" type="button">Lupa kata sandi?</button><div class="login-divider"><span>BK FUSPAQ NU</span></div><div class="login-footer"><strong>Deplovemen: Daneva. Studio</strong><span>Founder: Ahmad Fathunnur</span></div></section></main>`;document.getElementById('login').onsubmit=login;document.getElementById('forgotPasswordBtn').onclick=forgotPassword}
 function renderRecovery(msg='',ok=''){app.innerHTML=`<main class="login-v2"><section class="login-card"><div class="login-brand"><div class="login-mark">BK</div><div><div class="login-title">BK FUSPAQ NU</div><div class="login-subtitle">Pemulihan akun</div></div></div><div class="login-welcome"><h1>Buat kata sandi baru</h1><p>Masukkan kata sandi baru untuk akun Anda. Gunakan minimal 8 karakter.</p></div>${msg?`<div class="login-message error">${esc(msg)}</div>`:''}${ok?`<div class="login-message success">${esc(ok)}</div>`:''}<form id="recoveryForm"><div class="field"><label for="newPassword">Kata sandi baru</label><div class="login-input"><span>●</span><input id="newPassword" type="password" minlength="8" required autocomplete="new-password" placeholder="Minimal 8 karakter"><button type="button" class="password-toggle" onclick="v12TogglePassword('newPassword',this)">👁</button></div></div><div class="field"><label for="confirmPassword">Ulangi kata sandi</label><div class="login-input"><span>●</span><input id="confirmPassword" type="password" minlength="8" required autocomplete="new-password" placeholder="Ulangi kata sandi baru"><button type="button" class="password-toggle" onclick="v12TogglePassword('confirmPassword',this)">👁</button></div></div><button id="recoverySubmit" class="btn primary login-submit" type="submit">Simpan Kata Sandi Baru</button></form><button class="login-link" type="button" onclick="renderLogin()">Kembali ke Login</button><div class="login-footer"><strong>Deplovemen: Daneva. Studio</strong><span>Founder: Ahmad Fathunnur</span></div></section></main>`;document.getElementById('recoveryForm').onsubmit=completeRecovery}
-async function login(e){e.preventDefault();sb=window.sb||sb;if(!sb){renderLogin('Layanan sistem belum siap. Silakan tunggu sebentar lalu coba lagi.');return}const f=new FormData(e.target),email=String(f.get('email')||'').trim(),password=String(f.get('password')||'');const btn=document.getElementById('loginSubmit');btn.disabled=true;btn.textContent='Memeriksa akun…';try{try{localStorage.removeItem('bkf_explicit_logout')}catch(_){}const r=await Promise.race([sb.auth.signInWithPassword({email,password}),new Promise((_,reject)=>setTimeout(()=>reject(new Error('Waktu pemeriksaan akun habis (15 detik). Periksa koneksi lalu coba lagi.')),15000))]);if(r.error){renderLogin(friendlyError(r.error));return}await boot()}catch(err){renderLogin(err?.message||'Login belum berhasil diselesaikan. Silakan coba lagi.')}}
+async function login(e){e.preventDefault();sb=window.sb||sb;if(!sb){renderLogin('Layanan sistem belum siap. Silakan tunggu sebentar lalu coba lagi.');return}const f=new FormData(e.target),email=String(f.get('email')||'').trim(),password=String(f.get('password')||'');const btn=document.getElementById('loginSubmit');btn.disabled=true;btn.textContent='Memeriksa akun…';try{try{localStorage.removeItem('bkf_explicit_logout')}catch(_){}const r=await Promise.race([sb.auth.signInWithPassword({email,password}),new Promise((_,reject)=>setTimeout(()=>reject(new Error('Waktu pemeriksaan akun habis (15 detik). Periksa koneksi lalu coba lagi.')),15000))]);if(r.error){renderLogin(friendlyError(r.error));return}await boot();try{await window.bkfRecordSuccessfulLogin?.()}catch(logErr){console.warn('[BK LOGIN AUDIT]',logErr)}}catch(err){renderLogin(err?.message||'Login belum berhasil diselesaikan. Silakan coba lagi.')}}
 async function forgotPassword(){if(!sb)return renderLogin('Koneksi layanan belum siap.');const email=String(document.getElementById('loginEmail')?.value||'').trim();if(!email)return renderLogin('Masukkan email akun terlebih dahulu.');const redirectTo=bkAuthRedirectUrl();if(!redirectTo)return renderLogin('Pemulihan kata sandi memerlukan alamat web (http/https). Jika aplikasi dibuka sebagai file HTML langsung, jalankan melalui server lokal terlebih dahulu.');const btn=document.getElementById('forgotPasswordBtn');btn.disabled=true;btn.textContent='Mengirim tautan…';const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo});if(error){renderLogin(friendlyError(error));return}renderLogin('',`Tautan pemulihan telah dikirim ke ${email}. Buka tautan tersebut untuk membuat kata sandi baru.`)}
 async function completeRecovery(e){e.preventDefault();const a=document.getElementById('newPassword').value,b=document.getElementById('confirmPassword').value;if(a.length<8)return renderRecovery('Kata sandi minimal 8 karakter.');if(a!==b)return renderRecovery('Konfirmasi kata sandi tidak sama.');const btn=document.getElementById('recoverySubmit');btn.disabled=true;btn.textContent='Menyimpan…';const {error}=await sb.auth.updateUser({password:a});if(error){renderRecovery(friendlyError(error));return}await sb.auth.signOut();renderLogin('', 'Kata sandi berhasil diperbarui. Silakan masuk dengan kata sandi baru.')}
 function initAuthRecovery(){if(!sb)return;sb.auth.onAuthStateChange((event)=>{if(event==='PASSWORD_RECOVERY')setTimeout(()=>renderRecovery(),0)});const hasRecovery=window.location.hash.includes('type=recovery')||new URLSearchParams(window.location.search).get('type')==='recovery';if(hasRecovery)setTimeout(()=>renderRecovery(),0)}
@@ -3041,7 +3041,7 @@ html,body{margin:0;padding:0;background:#fff!important;color:#111;font-family:Ar
 (function(){
   const E=window.esc||((v)=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])));
   const canManager=()=>['KETUA','SEKRETARIS'].some(r=>state.roles.includes(r));
-  try{ if(Array.isArray(menu)&&!menu.some(x=>x[0]==='auditbackup')) menu.push(['auditbackup','Audit & Backup','Jejak aktivitas dan cadangan data']); }catch(e){}
+  // V471: Audit & Backup diakses dari Pengaturan, bukan sebagai menu utama terpisah.
 
   async function qcount(table, extra){
     let q=sb.from(table).select('id',{count:'exact',head:true});
@@ -3069,6 +3069,24 @@ html,body{margin:0;padding:0;background:#fff!important;color:#111;font-family:Ar
 
   const oldHome=window.showHome;
   
+
+  async function recordSuccessfulLogin(){
+    if(!sb||!state?.profile?.id||!Array.isArray(state.roles)||!state.roles.length)return;
+    const payload={user_id:state.profile.id,organization_id:state.managementPeriod?.organization_id||null,action:'LOGIN_SUCCESS',table_name:'authentication',reason:'Login berhasil melalui aplikasi; peran saat login: '+state.roles.join(', ')};
+    const r=await sb.from('audit_logs').insert(payload);
+    if(r.error)throw r.error;
+  }
+  window.bkfRecordSuccessfulLogin=recordSuccessfulLogin;
+
+  async function showLoginHistory(){
+    if(!Array.isArray(state.roles)||!state.roles.includes('KETUA')){toast('Riwayat Login hanya dapat dibuka oleh Ketua.','error');return;}
+    listPage('Riwayat Login','Catatan login berhasil yang mulai direkam setelah fitur ini diterapkan.','<div class="card"><div class="row"><div><h3 style="margin:0">Login berhasil</h3><div class="small muted">Waktu ditampilkan dalam WIB. Catatan ini merekam login melalui formulir aplikasi, bukan status sesi aktif.</div></div><button class="btn secondary" id="v471LoginRefresh" type="button">Muat ulang</button></div><div class="field" style="margin-top:12px"><label for="v471LoginSearch">Cari nama atau peran</label><input id="v471LoginSearch" type="search" placeholder="Ketik nama atau peran…"></div><div id="v471LoginList" class="list" style="margin-top:10px">Memuat riwayat login…</div></div>');
+    const box=document.getElementById('v471LoginList'),search=document.getElementById('v471LoginSearch');let rows=[];
+    const render=()=>{const term=String(search?.value||'').trim().toLowerCase();const filtered=rows.filter(x=>((x.name||'')+' '+(x.roles||'')).toLowerCase().includes(term));box.innerHTML=filtered.map(x=>'<div class="list-item"><div class="row"><strong>'+E(x.name||'Nama akun tidak tersedia')+'</strong><span class="status ok">LOGIN BERHASIL</span></div><div class="small muted" style="margin-top:5px">'+E(x.roles||'Peran tidak tercatat')+'</div><div class="small" style="margin-top:4px">'+E(new Date(x.created_at).toLocaleString('id-ID',{timeZone:'Asia/Jakarta',dateStyle:'medium',timeStyle:'medium'}))+' WIB</div></div>').join('')||'<div class="empty">'+(rows.length?'Tidak ada hasil yang cocok.':'Belum ada riwayat login sejak fitur ini diterapkan.')+'</div>';};
+    const load=async()=>{box.textContent='Memuat riwayat login…';const r=await sb.from('audit_logs').select('id,user_id,action,table_name,reason,created_at').eq('action','LOGIN_SUCCESS').eq('table_name','authentication').order('created_at',{ascending:false}).limit(500);if(r.error){box.innerHTML='<div class="error">Riwayat login belum dapat dimuat: '+E(r.error.message)+'</div>';return;}const data=r.data||[],ids=[...new Set(data.map(x=>x.user_id).filter(Boolean))];let names={};if(ids.length){const q=await sb.from('profiles').select('id,full_name').in('id',ids);if(q.error){box.innerHTML='<div class="error">Nama akun belum dapat dicocokkan: '+E(q.error.message)+'</div>';return;}(q.data||[]).forEach(x=>names[x.id]=x.full_name)}rows=data.map(x=>({name:names[x.user_id]||'Nama akun tidak tersedia',roles:(String(x.reason||'').match(/peran saat login:\s*(.*)$/i)||[])[1]||'Peran tidak tercatat',created_at:x.created_at}));render();};
+    document.getElementById('v471LoginRefresh').onclick=load;search.oninput=render;await load();
+  }
+  window.showLoginHistory=showLoginHistory;
 
   async function showAuditBackup(){
     
@@ -5787,33 +5805,25 @@ window.showExamGovernance=async function(){const host=document.getElementById('p
   if(typeof window.showExamReports!=='function' && typeof window.showExamReportsV32==='function')
     window.showExamReports=window.showExamReportsV32;
 
-  // V334 route table exposes Pengaturan to Ketua, but the canonical settings
-  // renderer was left without the public route entry. Restore one single route.
-  if(typeof window.showSettings!=='function' && typeof window.v10SettingsTab==='function'){
-    window.showSettings=async function(){
-      const host=document.getElementById('page');
-      if(!host)return;
-      host.innerHTML=`<div class="card">
-        <div class="module-head"><div><h2>Pengaturan</h2><div class="small muted">Pengaturan sistem BK FUSPAQ NU.</div></div></div>
-        <div class="menu-grid" style="margin-top:12px">
-          <button class="btn secondary menu-item" type="button" data-settings-tab="aturan">Batas Minimal Nilai Ujian</button>
-          <button class="btn secondary menu-item" type="button" data-settings-tab="penguji">Penugasan Penguji</button>
-          <button class="btn secondary menu-item" type="button" id="settingsFinanceCategoriesBtn">Kategori Kas Masuk dan Kas Keluar</button>
-        </div>
-      </div><div id="settingsArea" style="margin-top:12px"></div>`;
-      document.getElementById('settingsFinanceCategoriesBtn')?.addEventListener('click',()=>window.openSettingsFinanceCategories());
-      host.querySelectorAll('[data-settings-tab]').forEach(btn=>btn.addEventListener('click',async()=>{
-        try{await window.v10SettingsTab(btn.dataset.settingsTab,true)}
-        catch(e){const a=document.getElementById('settingsArea');if(a)a.innerHTML='<div class="card"><div class="error">'+esc(e?.message||e||'Modul gagal dimuat.')+'</div></div>'}
-      }));
-      await window.v10SettingsTab('aturan',true);
-    };
-  }
+  // V471: Pengaturan menjadi pusat kategori kas, Audit & Backup, dan Riwayat Login.
+  try{for(let i=menu.length-1;i>=0;i--)if(menu[i]?.[0]==='auditbackup')menu.splice(i,1)}catch(_){}
+  window.showSettings=async function(){
+    if(!Array.isArray(state.roles)||!state.roles.includes('KETUA')){toast('Pengaturan ini hanya dapat dibuka oleh Ketua.','error');return;}
+    const host=document.getElementById('page');if(!host)return;
+    host.innerHTML=`<div class="card"><div class="module-head"><div><h2>Pengaturan</h2><div class="small muted">Pengaturan administrasi dan pemeliharaan aplikasi.</div></div></div><div class="menu-grid" style="margin-top:12px">
+      <button class="btn secondary menu-item" type="button" id="v471FinanceCategories"><strong>Kategori Kas Masuk dan Kas Keluar</strong><span class="small">Kelola kategori transaksi kas.</span></button>
+      <button class="btn secondary menu-item" type="button" id="v471AuditBackup"><strong>Audit & Backup</strong><span class="small">Jejak perubahan, ekspor, dan pemulihan cadangan.</span></button>
+      <button class="btn secondary menu-item" type="button" id="v471LoginHistory"><strong>Riwayat Login</strong><span class="small">Lihat akun yang berhasil masuk dan waktu login.</span></button>
+    </div></div>`;
+    document.getElementById('v471FinanceCategories')?.addEventListener('click',()=>window.openSettingsFinanceCategories?.());
+    document.getElementById('v471AuditBackup')?.addEventListener('click',()=>window.showAuditBackup?.());
+    document.getElementById('v471LoginHistory')?.addEventListener('click',()=>window.showLoginHistory?.());
+  };
 
   window.__BKFUSPAQ_V335_SIMULATION__={
-    baseline:'V334',
-    fixes:['settings-route','institution-handler-alias','examiner-handler-alias','exam-report-handler-alias'],
-    rollback:'remove V335 simulation file and return to BK-FUSPAQ-NU-V334.html'
+    baseline:'V470',
+    fixes:['settings-menu-cleanup','audit-backup-moved-to-settings','login-history'],
+    rollback:'return to BK-FUSPAQ-NU-V470.html'
   };
 })();
 
