@@ -3495,14 +3495,14 @@ window.v75LoadManagementMembers=async function(){
 .v75-dashboard-counters .v75-dashboard-counter{
   cursor:pointer;user-select:none;transition:transform .16s,box-shadow .16s;
   display:flex!important;flex-direction:column!important;justify-content:flex-start!important;
-  min-height:126px!important;padding:13px 14px 10px!important;text-align:left;
+  min-height:92px!important;padding:9px 11px 7px!important;text-align:left;
 }
 .v75-dashboard-counters .v75-dashboard-counter:hover{transform:translateY(-2px);box-shadow:0 10px 22px rgba(0,0,0,.14)!important}
 .v75-dashboard-counters .v75-dashboard-counter:focus-visible{outline:3px solid rgba(255,255,255,.82);outline-offset:2px}
 .v173-counter-title{font-size:13px;font-weight:800;opacity:.96;line-height:1.2}
-.v173-counter-number{font-size:29px!important;font-weight:950!important;line-height:1.05;margin-top:8px}
-.v173-counter-help{font-size:11px;line-height:1.3;margin-top:5px;opacity:.88}
-.v173-counter-detail{margin-top:auto;padding-top:9px;border-top:1px solid rgba(255,255,255,.24);font-size:11px;font-weight:850;line-height:1.2;opacity:.98}
+.v173-counter-number{font-size:24px!important;font-weight:950!important;line-height:1.05;margin-top:4px}
+.v173-counter-help{font-size:10px;line-height:1.2;margin-top:3px;opacity:.88}
+.v173-counter-detail{margin-top:auto;padding-top:5px;border-top:1px solid rgba(255,255,255,.24);font-size:10px;font-weight:850;line-height:1.15;opacity:.98}
 .v173-counter-detail::after{content:'  ›';font-size:14px}
 .v173-dashboard-detail{position:fixed;inset:0;z-index:1200;display:grid;place-items:center;padding:10px;background:rgba(0,0,0,.44)}
 .v173-dashboard-detail-sheet{width:min(700px,calc(100vw - 18px));height:min(760px,calc(100dvh - 18px));overflow:hidden;background:#fff;border-radius:20px;box-shadow:0 24px 70px rgba(0,0,0,.28);display:flex;flex-direction:column}
@@ -3519,8 +3519,8 @@ window.v75LoadManagementMembers=async function(){
 .v173-dashboard-detail-empty{padding:30px 12px;text-align:center;color:#6b7c70;background:#fff;border:1px dashed #cbd8cf;border-radius:13px}
 @media(max-width:700px){
  .v75-dashboard-counters{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
- .v75-dashboard-counters .v75-dashboard-counter{min-height:116px!important;padding:12px!important}
- .v173-counter-number{font-size:25px!important}
+ .v75-dashboard-counters .v75-dashboard-counter{min-height:82px!important;padding:8px 9px 7px!important}
+ .v173-counter-number{font-size:22px!important}
 }
 @media(max-width:420px){.v173-counter-help{display:none}.v173-counter-detail{padding-top:7px}}
 @media(max-width:600px){
@@ -3557,7 +3557,7 @@ const quickByRole={
  ANGGOTA:[['Ujian','exams'],['Pengujian','pengujian'],['Wisuda','graduation'],['Lembaga','institutions'],['Home','home'],['Notifikasi','notifications']],
  OPERATOR:[['Keuangan','finance'],['Kegiatan','activities'],['Home','home'],['Wisuda','graduation'],['Lembaga','institutions']]
 };
-const detailTitles={institutions:'Detail Lembaga',activities:'Detail Kegiatan',bills:'Detail Tagihan',payments:dashboardPrimaryRole()==='OPERATOR'?'Pembayaran Lembaga Saya':'Detail Pembayaran',graduation_participants:'Detail Peserta Wisuda',notifications:'Detail Notifikasi'};
+const detailTitles={institutions:'Detail Lembaga',activities:'Detail Kegiatan',bills:'Detail Tagihan',payments:dashboardPrimaryRole()==='OPERATOR'?'Pembayaran Lembaga Saya':'Detail Pembayaran',graduation_participants:'Detail Peserta Wisuda',notifications:'Detail Notifikasi',exam_pra_tashih:'Detail Peserta Pra Tashih',exam_tashih:'Detail Peserta Tashih'};
 const detailRows={};
 window.closeDashboardDetail=function(){document.getElementById('v173DashboardDetail')?.remove()};
 function renderRows(key,rows){
@@ -3567,6 +3567,8 @@ function renderRows(key,rows){
   bills:x=>`<div><div class="row"><strong>${E(x.bill_number||x.id||'-')}</strong><span class="status">${E(window.bkfHumanStatusV420(x.status||'-','payment'))}</span></div><div class="small muted">${date(x.bill_date)} · Jatuh tempo ${date(x.due_date)}</div><div class="small" style="margin-top:4px">Total ${fmt(x.total_amount)} · Terbayar ${fmt(x.paid_amount)} · Sisa ${fmt(x.outstanding_amount)}</div>${x.institution_name?`<div class="small muted" style="margin-top:4px">Lembaga: ${E(x.institution_name)}</div>`:''}</div>`,
   payments:x=>`<div class="v228-data-row"><div class="v228-main"><div><strong>${E(x.institution_name||'Lembaga')}</strong><div class="v228-meta">No. Pembayaran: ${E(x.payment_number||x.id||'-')} · ${date(x.payment_date)} · ${E(x.payment_method||'-')}</div><div class="v228-meta">Tagihan: ${E(x.bill_number||'-')}</div></div><span class="status">${E(window.bkfHumanStatusV420(x.status||'-','payment'))}</span></div><div class="v228-meta"><strong>Rincian item:</strong> ${E(x.item_description||'-')} · Jumlah item: ${E(x.item_quantity??1)}</div><div class="v228-amount">Jumlah pembayaran ${fmt(x.amount)}</div>${x.notes?`<div class="v228-meta">Keterangan: ${E(x.notes)}</div>`:''}</div>`,
   graduation_participants:x=>`<div><div class="row"><strong>${E(x.name||'-')}</strong><span class="status">${E(x.status||'-')}</span></div><div class="small muted">NIS ${E(x.nis||'-')} · Urutan ${E(x.graduation_order??'-')}</div>${x.registration_number?`<div class="small" style="margin-top:4px">${E(x.registration_number)}</div>`:''}</div>`,
+  exam_pra_tashih:x=>`<div><div class="row"><strong>${E(x.name||'-')}</strong><span class="status">${E(x.status||'Terdaftar')}</span></div><div class="small muted">Nomor ujian: ${E(x.exam_number||'-')} · NIS: ${E(x.nis||'-')}</div><div class="small muted">Lembaga: ${E(x.institution_name||'-')} · Registrasi: ${E(x.registration_number||'-')}</div></div>`,
+  exam_tashih:x=>`<div><div class="row"><strong>${E(x.name||'-')}</strong><span class="status">${E(x.status||'Terdaftar')}</span></div><div class="small muted">Nomor ujian: ${E(x.exam_number||'-')} · NIS: ${E(x.nis||'-')}</div><div class="small muted">Lembaga: ${E(x.institution_name||'-')} · Registrasi: ${E(x.registration_number||'-')} · ${x.wave?`Gelombang ${E(x.wave)}`:'Gelombang belum ditetapkan'}</div></div>`,
   notifications:x=>{const tx=[x.related_table,x.event_scope,x.event_type,x.type,x.title,x.message].join(' ').toLowerCase();const d=(/exam|ujian|tashih/.test(tx)||['exam_registrations','exam_participants','exam_sessions','exam_results'].includes(x.related_table))?'exam':(/payment|pembayaran|tagihan|bill|iuran/.test(tx)||['bills','bill_items','payments','selapanan_dues_obligations'].includes(x.related_table))?'payment':'';return `<div><div class="row"><strong>${E(d?window.bkfHumanizeDomainTextV420(x.title||'Notifikasi',d):(x.title||'Notifikasi'))}</strong><span class="status ${x.read_at?'':'ok'}">${x.read_at?'Sudah dibaca':'Belum dibaca'}</span></div><div class="small muted">${date(x.created_at)} · ${E(x.type||'')}</div>${x.institution_name?`<div class="small muted" style="margin-top:5px">Lembaga: ${E(x.institution_name)}</div>`:''}${x.item_name?`<div class="small muted">Item: ${E(x.item_name)}</div>`:''}<div class="small" style="margin-top:7px;white-space:pre-line;overflow-wrap:anywhere;word-break:break-word">${E(d?window.bkfHumanizeDomainTextV420(x.message||'-',d):(x.message||'-'))}</div><div class="bkf-notification-brand" style="margin-left:0">Notifikasi ini dikirim otomatis oleh Daneva.studio</div></div>`},
  };
  return rows.length?rows.map(x=>`<div class="v173-dashboard-detail-row">${render[key]?render[key](x):E(x.name||x.title||x.id||'-')}</div>`).join(''):'<div class="v173-dashboard-detail-empty">Belum ada data yang dapat ditampilkan.</div>';
@@ -3579,7 +3581,60 @@ function applyFilter(key){
  body.innerHTML=renderRows(key,rows);
  const count=document.getElementById('v173DashboardDetailCount');if(count)count.textContent=q?`${rows.length} data ditemukan`:`${(detailRows[key]||[]).length} data`;
 }
+async function fetchDashboardExamParticipants(type){
+ const isOperator=Array.isArray(state.roles)&&state.roles.includes('OPERATOR');
+ let institutionIds=[];
+ if(isOperator){
+  const ownInst=await window.bkfOperatorInstitutionId();
+  if(!ownInst)throw new Error('Lembaga akun Operator belum terhubung.');
+  institutionIds=[ownInst];
+ }else{
+  const pid=state.profile?.id;
+  if(!pid)throw new Error('Profil akun belum tersedia.');
+  const roles=await sb.from('user_roles').select('organization_id').eq('user_id',pid).eq('status','ACTIVE').not('organization_id','is',null).limit(20);
+  if(roles.error)throw roles.error;
+  const orgIds=[...new Set((roles.data||[]).map(x=>x.organization_id).filter(Boolean))];
+  if(!orgIds.length)throw new Error('Organisasi akun pengurus belum terhubung.');
+  const inst=await sb.from('institutions').select('id').in('organization_id',orgIds);
+  if(inst.error)throw inst.error;
+  institutionIds=[...new Set((inst.data||[]).map(x=>x.id))];
+ }
+ if(!institutionIds.length)return [];
+ const regs=[];
+ for(let from=0;;from+=1000){
+  let q=sb.from('exam_registrations').select('id,registration_number,exam_type,institution_id,wave,status').eq('exam_type',type).in('institution_id',institutionIds).neq('status','DIBATALKAN').order('created_at',{ascending:false}).range(from,from+999);
+  const r=await q;if(r.error)throw r.error;regs.push(...(r.data||[]));if((r.data||[]).length<1000)break;
+ }
+ const regMap=new Map(regs.map(r=>[r.id,r]));const regIds=regs.map(r=>r.id);
+ if(!regIds.length)return [];
+ const instIds=[...new Set(regs.map(r=>r.institution_id).filter(Boolean))];
+ const instQ=instIds.length?await sb.from('institutions').select('id,name').in('id',instIds):{data:[],error:null};if(instQ.error)throw instQ.error;
+ const instMap=new Map((instQ.data||[]).map(x=>[x.id,x.name]));const participants=[];
+ for(let i=0;i<regIds.length;i+=400){
+  const batch=regIds.slice(i,i+400);
+  for(let from=0;;from+=1000){
+   const r=await sb.from('exam_participants').select('id,name,nis,exam_number,status,exam_registration_id,created_at').in('exam_registration_id',batch).or('status.is.null,status.neq.BATAL').order('name').range(from,from+999);
+   if(r.error)throw r.error;const chunk=r.data||[];participants.push(...chunk);if(chunk.length<1000)break;
+  }
+ }
+ return participants.map(p=>{const r=regMap.get(p.exam_registration_id)||{};return {...p,exam_type:r.exam_type,registration_number:r.registration_number||'',institution_name:instMap.get(r.institution_id)||'-',wave:r.wave||null}}).sort((a,b)=>String(a.name||'').localeCompare(String(b.name||''),'id'));
+}
+async function loadDashboardExamCards(){
+ const host=document.getElementById('dashboardExamParticipantCards');if(!host)return;
+ host.innerHTML='';
+ try{
+  const [pra,tashih]=await Promise.all([fetchDashboardExamParticipants('PRA_TASHIH'),fetchDashboardExamParticipants('TASHIH')]);
+  detailRows.exam_pra_tashih=pra;detailRows.exam_tashih=tashih;
+  const cards=[];
+  if(pra.length)cards.push({key:'exam_pra_tashih',title:'PRA TASHIH',count:pra.length,help:'Seluruh peserta terdaftar',color:'linear-gradient(135deg,#175b3a,#25865a)'});
+  if(tashih.length)cards.push({key:'exam_tashih',title:'TASHIH',count:tashih.length,help:'Seluruh peserta terdaftar',color:'linear-gradient(135deg,#253e7b,#4169b5)'});
+  host.innerHTML=cards.map(c=>`<button type="button" class="card v75-dashboard-counter" data-dashboard-detail="${c.key}" aria-label="Lihat detail ${c.title}" style="background:${c.color};color:#fff;border:0"><div class="v173-counter-title">${c.title}</div><div class="metric v173-counter-number">${c.count.toLocaleString('id-ID')}</div><div class="v173-counter-help">${c.help}</div><div class="v173-counter-detail">Ketuk untuk detail</div></button>`).join('');
+  host.querySelectorAll('[data-dashboard-detail]').forEach(card=>card.addEventListener('click',()=>openDashboardDetail(card.dataset.dashboardDetail)));
+ }catch(e){console.error('[Dashboard exam participant cards]',e);host.innerHTML='';}
+}
 async function fetchDashboardDetail(key){
+ if(key==='exam_pra_tashih')return {data:detailRows.exam_pra_tashih||[],error:null};
+ if(key==='exam_tashih')return {data:detailRows.exam_tashih||[],error:null};
  const isOperator=Array.isArray(state.roles)&&state.roles.includes('OPERATOR');
  const ownInst=isOperator?await window.bkfOperatorInstitutionId():null;
  if(isOperator&&!ownInst)return {data:[],error:{message:'Lembaga akun Operator belum terhubung.'}};
@@ -3668,8 +3723,9 @@ window.showHome=async function(){
  const counters=visibleCounters.map(x=>`<button type="button" class="card v75-dashboard-counter" data-dashboard-detail="${E(x[1])}" aria-label="Lihat detail ${E(x[0])}"><div class="v173-counter-title">${E(x[0])}</div><div class="metric v173-counter-number" id="metric-${E(x[1])}">…</div><div class="v173-counter-help">Ringkasan data saat ini</div><div class="v173-counter-detail">Ketuk untuk detail</div></button>`).join('');
  const roleQuick=quickByRole[dashboardPrimaryRole()]||quickByRole.ANGGOTA||[];
  const quickHtml='<div class="module-card-grid">'+roleQuick.map(x=>'<button class="btn secondary menu-item quick-module module-card-btn" type="button" onclick="navigate(\''+x[1]+'\')"><strong>'+E(x[0])+'</strong></button>').join('')+'</div>';
- host.innerHTML='<div class="card hero v35-welcome"><div style="font-size:14px;color:#6b7c70;font-weight:700">Assalamu\'alaikum Wr. Wb.</div><h2 class="v41-user-name" style="margin:6px 0 2px">'+E(name)+'</h2><div class="row" style="justify-content:flex-start;gap:8px;margin:6px 0 10px"><span class="status ok">'+E(role)+'</span><span class="status '+(status==='ACTIVE'?'ok':'bad')+'">'+E(status==='ACTIVE'?'Aktif':status)+'</span><button type="button" class="darus-quran-link" onclick="openDarusQuranViewer()" aria-label="Buka Darus Al-Qur\'an di dalam aplikasi"><span class="darus-quran-icon" aria-hidden="true">☪</span><span>Darus Al-Qur\'an</span><span class="darus-quran-arrow" aria-hidden="true">↗</span></button></div><p class="v35-message" style="margin:8px 0 4px">Selamat datang di Sistem Informasi BK FUSPAQ NU.</p><p class="small muted" style="margin:0">'+E(dashboardGreeting())+'</p></div><div class="v75-dashboard-counters">'+counters+'</div><div class="card"><div class="row"><h3 style="margin:0">Akses cepat</h3><span class="status ok">'+E((state.roles||[]).map(roleLabel).join(' · ')||'Pengguna')+'</span></div><div class="menu-grid" style="margin-top:10px">'+quickHtml+'</div></div>';
+ host.innerHTML='<div class="card hero v35-welcome"><div style="font-size:14px;color:#6b7c70;font-weight:700">Assalamu\'alaikum Wr. Wb.</div><h2 class="v41-user-name" style="margin:6px 0 2px">'+E(name)+'</h2><div class="row" style="justify-content:flex-start;gap:8px;margin:6px 0 10px"><span class="status ok">'+E(role)+'</span><span class="status '+(status==='ACTIVE'?'ok':'bad')+'">'+E(status==='ACTIVE'?'Aktif':status)+'</span><button type="button" class="darus-quran-link" onclick="openDarusQuranViewer()" aria-label="Buka Darus Al-Qur\'an di dalam aplikasi"><span class="darus-quran-icon" aria-hidden="true">☪</span><span>Darus Al-Qur\'an</span><span class="darus-quran-arrow" aria-hidden="true">↗</span></button></div><p class="v35-message" style="margin:8px 0 4px">Selamat datang di Sistem Informasi BK FUSPAQ NU.</p><p class="small muted" style="margin:0">'+E(dashboardGreeting())+'</p></div><div class="v75-dashboard-counters">'+counters+'</div><div id="dashboardExamParticipantCards" class="v75-dashboard-counters" style="margin-top:8px"></div><div class="card"><div class="row"><h3 style="margin:0">Akses cepat</h3><span class="status ok">'+E((state.roles||[]).map(roleLabel).join(' · ')||'Pengguna')+'</span></div><div class="menu-grid" style="margin-top:10px">'+quickHtml+'</div></div>';
  host.querySelectorAll('[data-dashboard-detail]').forEach(card=>card.addEventListener('click',()=>openDashboardDetail(card.dataset.dashboardDetail)));
+ await loadDashboardExamCards();
  try{if(typeof loadMetrics==='function')await loadMetrics()}catch(e){console.warn('[Dashboard metrics]',e)}
 };
 })();
@@ -4758,7 +4814,7 @@ const roleMenus={
  KETUA:new Set(menu.map(x=>x[0])),
  SEKRETARIS:new Set(['home','activities','exams','pengujian','graduation','secretariat','distribution','reports','notifications','management','institutions','organization','album','governance']),
  BENDAHARA:new Set(['home','payments','finance','distribution','reports','notifications','management','institutions','organization','album','governance']),
- ANGGOTA:new Set(['home','exams','pengujian','graduation','notifications','management','institutions','organization','album','governance']),
+ ANGGOTA:new Set(['home','exams','graduation','notifications','management','institutions','organization','album','governance']),
  OPERATOR:new Set(['home','activities','exams','graduation','finance','distribution','reports','notifications','institutions','organization','album','governance'])
 };
 const actionRoles={
@@ -4776,11 +4832,26 @@ const actionRoles={
  'settings.manage':new Set(['KETUA']),'audit.view':new Set(['KETUA','SEKRETARIS'])
 };
 function normalizedRoles(){return Array.isArray(state?.roles)?state.roles.map(r=>String(r).toUpperCase()):[]}
+let examinerAssignmentAccess={userId:null,allowed:false,checkedAt:0};
+async function refreshExaminerAssignmentAccess(force=false){
+ const uid=state.profile?.id||state.user?.id||null;
+ if(!uid){examinerAssignmentAccess={userId:null,allowed:false,checkedAt:Date.now()};return false}
+ if(!force&&examinerAssignmentAccess.userId===uid&&Date.now()-examinerAssignmentAccess.checkedAt<30000)return examinerAssignmentAccess.allowed;
+ try{
+  const q=await sb.from('examiner_assignments').select('exam_session_id').eq('examiner_user_id',uid).eq('status','ACTIVE').limit(1);
+  if(q.error)throw q.error;
+  examinerAssignmentAccess={userId:uid,allowed:Array.isArray(q.data)&&q.data.length>0,checkedAt:Date.now()};
+ }catch(e){console.warn('[BK EXAMINER MENU ACCESS]',e);examinerAssignmentAccess={userId:uid,allowed:false,checkedAt:Date.now()}}
+ return examinerAssignmentAccess.allowed;
+}
 function allowed(route){
  const id=String(route||'home').trim().toLowerCase();
  const menuId=id.startsWith('pengujian-')?'pengujian':id;
  if(menuId==='home'||menuId==='notifications')return true;
  const roles=normalizedRoles();
+ // Anggota hanya melihat/membuka modul penilaian jika benar-benar memiliki
+ // penugasan penguji aktif; role keanggotaan saja tidak memberi akses.
+ if(menuId==='pengujian'&&roles.includes('ANGGOTA'))return examinerAssignmentAccess.allowed;
  if(roles.includes('KETUA'))return true;
  const role=roles.find(r=>roleMenus[r]);
  return !!role && roleMenus[role].has(menuId);
@@ -4796,7 +4867,8 @@ window.bkfCanRoute=allowed;
 window.bkfRequirePermission=function(permission,message){if(hasPermission(permission))return true;toast(message||'Akses tidak diizinkan.','error');return false};
 
 /* One drawer implementation. Older drawer implementations are no longer used. */
-window.openDrawer=function(){
+window.openDrawer=async function(){
+ await refreshExaminerAssignmentAccess(true);
  const allowedMenu=menu.filter(([id])=>allowed(id));
  document.getElementById('drawer')?.remove();
  document.body.insertAdjacentHTML('beforeend',`<div class="drawer" id="drawer"><aside class="drawer-panel"><div class="drawer-head"><strong>Menu BK FUSPAQ NU</strong><button class="btn secondary" id="closeDrawer">Tutup</button></div><div class="section-title">Menu utama</div>${allowedMenu.map(([id,n])=>`<button class="btn secondary menu-item" type="button" data-d="${E(id)}" style="width:100%;margin-top:6px;text-align:left;justify-content:flex-start"><strong class="menu-label">${typeof icon==='function'?icon(id):''} ${E(n)}</strong></button>`).join('')||'<div class="empty">Belum ada menu yang diberikan kepada akun ini.</div>'}<button class="btn danger" style="width:100%;margin-top:16px" id="logout">Keluar</button></aside></div>`);
@@ -4812,6 +4884,7 @@ const routeHandlers={
 window.navigate=async function(route){
  const requested=String(route||'home').trim().toLowerCase();
  const target=Object.prototype.hasOwnProperty.call(routeHandlers,requested)?requested:'home';
+ if(target==='pengujian'||target==='pengujian-pra'||target==='pengujian-tashih')await refreshExaminerAssignmentAccess(true);
  if(!allowed(target)){deny(target);state.route='home';return await routeHandlers.home?.()}
  state.route=target;
  const host=document.getElementById('page');
