@@ -1,3 +1,5 @@
+<!-- BK-FUSPAQ-NU V516: Fitur Pemantauan Pengguna dihapus sesuai keputusan pengguna; perubahan lain dipertahankan. -->
+<!-- BK-FUSPAQ-NU V515: Pemantauan Pengguna dan heartbeat dihapus dari HTML; database tidak diubah. -->
 <!-- BK-FUSPAQ-NU V498: Sembunyikan tombol Kembali pada dashboard/home saja; tombol modul/form dipertahankan. Baseline V497; tanpa perubahan database. -->
 <!-- BK-FUSPAQ-NU V483: Perbaikan cakupan fungsi escaping pada tombol hapus barang distribusi; baseline V483; tanpa perubahan database. -->
 <!-- BK-FUSPAQ-NU V479: Perbaikan submit form edit nominal iuran Selapanan dan penagihan Selapanan; tombol dicari secara aman. Baseline HTML V478. -->
@@ -19,7 +21,7 @@
 <!-- BK-FUSPAQ-NU V481: Tombol dan mode edit Aturan Ujian & Wisuda; revisi aturan tetap berversi, biaya tetap terkendali. Baseline V480. -->
 
 <html><head>
-<!-- BK-FUSPAQ-NU-V430: targeted registration save-state fix based on V429; no schema changes. --><!-- BK-FUSPAQ-NU V456: fokus keyboard berurutan pada form Penilaian dan Pendaftaran Ujian; baseline V455; hanya dua alur ini yang diubah. --><meta content="V500 - Menu Seleksi 10 Besar disembunyikan dari Operator; informasi resmi lembaga melalui Notifikasi" name="bkf-version"/><meta charset="utf-8"><meta content="width=device-width,initial-scale=1" name="viewport"/><title>BK FUSPAQ NU</title><style>
+<!-- BK-FUSPAQ-NU-V430: targeted registration save-state fix based on V429; no schema changes. --><!-- BK-FUSPAQ-NU V456: fokus keyboard berurutan pada form Penilaian dan Pendaftaran Ujian; baseline V455; hanya dua alur ini yang diubah. --><meta content="V509 - Penyelarasan data UI pemantauan dengan respons backend" name="bkf-version"/><meta charset="utf-8"><meta content="width=device-width,initial-scale=1" name="viewport"/><title>BK FUSPAQ NU</title><style>
 :root{--green:#176b3a;--green2:#0f542d;--gold:#b78a24;--bg:#f6f8f6;--card:#fff;--line:#dce5df;--muted:#66756d;--text:#18231d;--ok:#176b3a;--danger:#a33a35;--warn:#8a6500;--radius:16px;--shadow:0 6px 22px rgba(25,55,38,.07);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text)}button,input,select,textarea{font:inherit}a{color:inherit}
 
 body{min-height:100vh}.shell{min-height:100vh;padding-top:76px;padding-bottom:20px}
@@ -114,7 +116,33 @@ button[aria-label*="hapus" i] svg,button[title*="hapus" i] svg,button[aria-label
 .v227-data-item strong{display:block;line-height:1.35;overflow-wrap:anywhere}
 @media(max-width:700px){.v227-scroll-list{max-height:58vh}.v227-data-item{padding:11px}.v227-data-item .row{gap:8px;align-items:flex-start}.v227-data-item .status{flex:0 0 auto}}
 </style>
-<style id="v228-friendly-data-lists">.v228-data-list{display:flex;flex-direction:column;border-top:1px solid var(--line);background:transparent}.v228-data-row{padding:13px 4px;border-bottom:1px solid var(--line);background:transparent}.v228-data-row:last-child{border-bottom:0}.v228-data-row strong{display:block;line-height:1.35;overflow-wrap:anywhere}.v228-data-row .v228-main{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}.v228-data-row .v228-main>div:first-child{min-width:0;flex:1}.v228-data-row .v228-meta{margin-top:4px;color:var(--muted);font-size:12px;line-height:1.45}.v228-data-row .v228-amount{margin-top:5px;font-weight:800}.v228-section{padding:0 2px}.paid-stamp{display:inline-block;border:2px solid #28734a;color:#28734a;font-weight:900;font-size:16px;letter-spacing:2px;padding:4px 9px;transform:rotate(-4deg);border-radius:4px}.v228-paid-stamp{display:inline-flex;align-items:center;justify-content:center;border:2px solid #28734a;color:#28734a;font-weight:900;font-size:11px;letter-spacing:.8px;padding:4px 7px;transform:rotate(-3deg);border-radius:4px;white-space:nowrap}@media(max-width:600px){.v228-data-row{padding:12px 2px}.v228-data-row .v228-main{gap:8px}.v228-paid-stamp{font-size:10px;padding:3px 6px}}</style></meta><style id="bkf-network-error-v396">#bkfNetworkError{position:fixed;inset:0;z-index:100000;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(15,42,27,.52);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px)}#bkfNetworkError.show{display:flex}#bkfNetworkError .bkf-network-card{width:min(430px,100%);background:var(--app-card,#fff);border:1px solid var(--line,#dce5df);border-radius:18px;padding:24px 20px 20px;box-shadow:0 18px 45px rgba(13,55,32,.22);text-align:center}#bkfNetworkError .bkf-network-icon{width:62px;height:62px;margin:0 auto 15px;border-radius:18px;display:grid;place-items:center;background:linear-gradient(135deg,#eaf5ee,#f7efd8);border:1px solid #d8e5db;color:var(--primary-dark,var(--green,#176b3a));font-size:30px;font-weight:900;box-shadow:0 6px 16px rgba(20,55,37,.10)}#bkfNetworkError h2{margin:0;color:var(--primary-dark,var(--green,#176b3a));font-size:20px;line-height:1.25;font-weight:850}#bkfNetworkError .bkf-network-stopped{margin-top:4px;color:var(--text-main,var(--text,#18231d));font-size:16px;font-weight:750}#bkfNetworkError .bkf-network-message{margin:16px 0 20px;color:var(--muted,#66756d);font-size:14px;line-height:1.55}#bkfNetworkError .bkf-network-retry{width:100%;min-height:46px;border:0;border-radius:11px;padding:10px 16px;background:linear-gradient(135deg,var(--primary-dark,var(--green2,#0f542d)),var(--primary,var(--green,#176b3a)),var(--primary-light,#3b8b5a));color:#fff;font-size:14px;font-weight:800;cursor:pointer;box-shadow:0 5px 14px rgba(22,107,59,.18)}#bkfNetworkError .bkf-network-retry:active{transform:scale(.985)}#bkfNetworkError .bkf-network-hint{margin-top:10px;color:var(--muted,#66756d);font-size:11px;line-height:1.4}@media(max-width:480px){#bkfNetworkError{padding:14px}#bkfNetworkError .bkf-network-card{padding:22px 16px 17px;border-radius:16px}#bkfNetworkError .bkf-network-icon{width:56px;height:56px;font-size:27px;margin-bottom:13px}}</style></head><body><div id="app"></div><div id="bkfNetworkError" role="alertdialog" aria-modal="true" aria-labelledby="bkfNetworkErrorTitle" aria-describedby="bkfNetworkErrorMessage"><div class="bkf-network-card"><div class="bkf-network-icon" aria-hidden="true">!</div><h2 id="bkfNetworkErrorTitle">APLIKASI SIMFAQ</h2><div class="bkf-network-stopped">terhenti</div><div id="bkfNetworkErrorMessage" class="bkf-network-message">Tidak ada internet atau jaringan terputus.</div><button id="bkfNetworkRetry" class="bkf-network-retry" type="button">Coba lagi</button><div class="bkf-network-hint">Periksa koneksi internet, kemudian coba lagi.</div></div><script id="bkf-network-error-v396">(function(){const overlay=document.getElementById('bkfNetworkError'),retry=document.getElementById('bkfNetworkRetry');if(!overlay||!retry)return;let retrying=false;const show=()=>overlay.classList.add('show');const hide=()=>{overlay.classList.remove('show');retrying=false;retry.disabled=false};const update=()=>{if(typeof navigator!=='undefined'&&navigator.onLine===false)show()};retry.addEventListener('click',()=>{if(retrying)return;retrying=true;retry.disabled=true;if(typeof navigator!=='undefined'&&navigator.onLine===false){retrying=false;retry.disabled=false;show();return}hide();setTimeout(()=>{try{window.location.reload()}catch(_){update()}},80)});window.addEventListener('offline',show,false);window.addEventListener('online',hide,false);window.addEventListener('pageshow',update,false);update()})();</script><!-- V238: Loader aturan ujian memuat rincian rule sekali, bukan query detail per tahap. -->
+<style id="v228-friendly-data-lists">.v228-data-list{display:flex;flex-direction:column;border-top:1px solid var(--line);background:transparent}.v228-data-row{padding:13px 4px;border-bottom:1px solid var(--line);background:transparent}.v228-data-row:last-child{border-bottom:0}.v228-data-row strong{display:block;line-height:1.35;overflow-wrap:anywhere}.v228-data-row .v228-main{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}.v228-data-row .v228-main>div:first-child{min-width:0;flex:1}.v228-data-row .v228-meta{margin-top:4px;color:var(--muted);font-size:12px;line-height:1.45}.v228-data-row .v228-amount{margin-top:5px;font-weight:800}.v228-section{padding:0 2px}.paid-stamp{display:inline-block;border:2px solid #28734a;color:#28734a;font-weight:900;font-size:16px;letter-spacing:2px;padding:4px 9px;transform:rotate(-4deg);border-radius:4px}.v228-paid-stamp{display:inline-flex;align-items:center;justify-content:center;border:2px solid #28734a;color:#28734a;font-weight:900;font-size:11px;letter-spacing:.8px;padding:4px 7px;transform:rotate(-3deg);border-radius:4px;white-space:nowrap}@media(max-width:600px){.v228-data-row{padding:12px 2px}.v228-data-row .v228-main{gap:8px}.v228-paid-stamp{font-size:10px;padding:3px 6px}}</style></meta><style id="bkf-network-error-v396">#bkfNetworkError{position:fixed;inset:0;z-index:100000;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(15,42,27,.52);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px)}#bkfNetworkError.show{display:flex}#bkfNetworkError .bkf-network-card{width:min(430px,100%);background:var(--app-card,#fff);border:1px solid var(--line,#dce5df);border-radius:18px;padding:24px 20px 20px;box-shadow:0 18px 45px rgba(13,55,32,.22);text-align:center}#bkfNetworkError .bkf-network-icon{width:62px;height:62px;margin:0 auto 15px;border-radius:18px;display:grid;place-items:center;background:linear-gradient(135deg,#eaf5ee,#f7efd8);border:1px solid #d8e5db;color:var(--primary-dark,var(--green,#176b3a));font-size:30px;font-weight:900;box-shadow:0 6px 16px rgba(20,55,37,.10)}#bkfNetworkError h2{margin:0;color:var(--primary-dark,var(--green,#176b3a));font-size:20px;line-height:1.25;font-weight:850}#bkfNetworkError .bkf-network-stopped{margin-top:4px;color:var(--text-main,var(--text,#18231d));font-size:16px;font-weight:750}#bkfNetworkError .bkf-network-message{margin:16px 0 20px;color:var(--muted,#66756d);font-size:14px;line-height:1.55}#bkfNetworkError .bkf-network-retry{width:100%;min-height:46px;border:0;border-radius:11px;padding:10px 16px;background:linear-gradient(135deg,var(--primary-dark,var(--green2,#0f542d)),var(--primary,var(--green,#176b3a)),var(--primary-light,#3b8b5a));color:#fff;font-size:14px;font-weight:800;cursor:pointer;box-shadow:0 5px 14px rgba(22,107,59,.18)}#bkfNetworkError .bkf-network-retry:active{transform:scale(.985)}#bkfNetworkError .bkf-network-hint{margin-top:10px;color:var(--muted,#66756d);font-size:11px;line-height:1.4}@media(max-width:480px){#bkfNetworkError{padding:14px}#bkfNetworkError .bkf-network-card{padding:22px 16px 17px;border-radius:16px}#bkfNetworkError .bkf-network-icon{width:56px;height:56px;font-size:27px;margin-bottom:13px}}</style>
+<style id="v516-dashboard-glossy-colors">
+/* V516: Revisi warna hanya untuk delapan card ringkasan dashboard. Layout dan fungsi tetap. */
+#dashboardAllCounters > .v75-dashboard-counter:nth-child(1){background:#174BC5!important}
+#dashboardAllCounters > .v75-dashboard-counter:nth-child(2){background:#087E83!important}
+#dashboardAllCounters > .v75-dashboard-counter:nth-child(3){background:#B96A00!important}
+#dashboardAllCounters > .v75-dashboard-counter:nth-child(4){background:#087A43!important}
+#dashboardAllCounters > .v75-dashboard-counter:nth-child(5){background:#6426A8!important}
+#dashboardAllCounters .v75-dashboard-counter[data-dashboard-detail="exam_pra_tashih"]{background:#12613C!important}
+#dashboardAllCounters .v75-dashboard-counter[data-dashboard-detail="exam_tashih"]{background:#173C91!important}
+#dashboardAllCounters .v75-dashboard-counter[data-dashboard-detail="graduation_participants"]{background:#A01878!important}
+#dashboardAllCounters .v75-dashboard-counter{
+  color:#fff!important;position:relative!important;isolation:isolate;overflow:hidden!important;
+  border:1px solid rgba(255,255,255,.2)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.22),0 5px 12px rgba(15,23,42,.13)!important;
+  text-shadow:0 1px 2px rgba(0,0,0,.16);
+}
+#dashboardAllCounters .v75-dashboard-counter::before{
+  content:"";position:absolute;inset:0;pointer-events:none;z-index:0;
+  background:linear-gradient(180deg,rgba(255,255,255,.24) 0%,rgba(255,255,255,.09) 16%,rgba(255,255,255,0) 48%,rgba(0,0,0,.07) 100%);
+}
+#dashboardAllCounters .v75-dashboard-counter > *{position:relative;z-index:1;color:#fff!important}
+#dashboardAllCounters .v75-dashboard-counter .v173-counter-detail{border-top-color:rgba(255,255,255,.3)!important}
+#dashboardAllCounters .v75-dashboard-counter:hover{filter:brightness(1.045);box-shadow:inset 0 1px 0 rgba(255,255,255,.28),0 9px 20px rgba(15,23,42,.19)!important}
+</style>
+
+</head><body><div id="app"></div><div id="bkfNetworkError" role="alertdialog" aria-modal="true" aria-labelledby="bkfNetworkErrorTitle" aria-describedby="bkfNetworkErrorMessage"><div class="bkf-network-card"><div class="bkf-network-icon" aria-hidden="true">!</div><h2 id="bkfNetworkErrorTitle">APLIKASI SIMFAQ</h2><div class="bkf-network-stopped">terhenti</div><div id="bkfNetworkErrorMessage" class="bkf-network-message">Tidak ada internet atau jaringan terputus.</div><button id="bkfNetworkRetry" class="bkf-network-retry" type="button">Coba lagi</button><div class="bkf-network-hint">Periksa koneksi internet, kemudian coba lagi.</div></div><script id="bkf-network-error-v396">(function(){const overlay=document.getElementById('bkfNetworkError'),retry=document.getElementById('bkfNetworkRetry');if(!overlay||!retry)return;let retrying=false;const show=()=>overlay.classList.add('show');const hide=()=>{overlay.classList.remove('show');retrying=false;retry.disabled=false};const update=()=>{if(typeof navigator!=='undefined'&&navigator.onLine===false)show()};retry.addEventListener('click',()=>{if(retrying)return;retrying=true;retry.disabled=true;if(typeof navigator!=='undefined'&&navigator.onLine===false){retrying=false;retry.disabled=false;show();return}hide();setTimeout(()=>{try{window.location.reload()}catch(_){update()}},80)});window.addEventListener('offline',show,false);window.addEventListener('online',hide,false);window.addEventListener('pageshow',update,false);update()})();</script><!-- V238: Loader aturan ujian memuat rincian rule sekali, bukan query detail per tahap. -->
 <script id="bk-supabase-loader">
 window.BKF_CONFIG={supabaseUrl:'https://yhxetkdsuogbehxnarhk.supabase.co',supabasePublishableKey:'sb_publishable_ZnikYPnzJtTD_H8wUq2aiw_4hecYQW_'};
 (function(){
@@ -2768,7 +2796,7 @@ html,body{margin:0;padding:0;background:#fff!important;color:#111;font-family:Ar
     if(!event){list.innerHTML='<div class="empty">Belum ada acara wisuda.</div>';return}
     const ownInst=isOperator?await window.bkfOperatorInstitutionId():null;
     if(isOperator&&!ownInst){list.innerHTML='<p class="error">Lembaga akun Operator belum terhubung.</p>';return}
-    let regQuery=sb.from('graduation_registrations').select('id,institution_id,source_type,graduation_participants(id,name,nis,graduation_order,status,motto)').eq('graduation_event_id',event.id);
+    let regQuery=sb.from('graduation_registrations').select('id,institution_id,source_type,graduation_participants(id,name,nis,graduation_order,status,motto,media_id)').eq('graduation_event_id',event.id);
     if(isOperator)regQuery=regQuery.eq('institution_id',ownInst);
     const {data:regs,error:re}=await regQuery;
     if(re){list.innerHTML=`<p class="error">${E(err(re))}</p>`;return}
@@ -2825,8 +2853,64 @@ html,body{margin:0;padding:0;background:#fff!important;color:#111;font-family:Ar
       if(ha!==hb)return ha?-1:1;
       return String(a.name||'').localeCompare(String(b.name||''),'id',{numeric:true,sensitivity:'base'});
     });
-    list.innerHTML=rows.length?rows.map(x=>`<div class="list-item"><div class="row"><div><strong>${E(x.graduation_order?x.graduation_order+'. ':'')}${E(x.name)}</strong><div class="small muted">${E(x.institution)} · ${x.source==='SPECIAL'?'Daftar wisuda':'Dari Tashih'}</div></div><div class="compact-actions">${canAction('graduation.participant.edit')?`<button class="btn secondary" onclick="editGraduationParticipant('${x.id}')">Edit</button>`:''}${canGradManage()?`<button class="btn secondary" onclick="editGraduationNumberV40('${x.id}','${E(x.graduation_order||'')}')">Nomor</button>`:''}</div></div><div class="small">NIS: ${E(x.nis||'-')} · Motto: ${E(x.motto||'-')}</div></div>`).join(''):'<div class="empty">Belum ada peserta wisuda.</div>';
+    list.innerHTML=rows.length?rows.map(x=>`<div class="list-item"><div class="row"><div><strong>${E(x.graduation_order?x.graduation_order+'. ':'')}${E(x.name)}</strong><div class="small muted">${E(x.institution)} · ${x.source==='SPECIAL'?'Daftar wisuda':'Dari Tashih'}</div></div><div class="compact-actions">${canAction('graduation.participant.edit')?`<button class="btn secondary" onclick="editGraduationParticipant('${x.id}')">Edit</button>`:''}${canGradManage()?`<button class="btn secondary" onclick="editGraduationNumberV40('${x.id}','${E(x.graduation_order||'')}')">Nomor</button><button class="btn danger" onclick="deleteGraduationParticipantV504('${x.id}')">Hapus</button>`:''}</div></div><div class="small">NIS: ${E(x.nis||'-')} · Motto: ${E(x.motto||'-')}</div></div>`).join(''):'<div class="empty">Belum ada peserta wisuda.</div>';
   };
+  // V504: hapus peserta wisuda beserta foto fisik dengan pemeriksaan referensi silang.
+  window.deleteGraduationParticipantV504=async function(id){
+    if(!canGradManage()){toast('Penghapusan peserta wisuda hanya dapat dilakukan Ketua atau Sekretaris.','error');return}
+    const found=await sb.from('graduation_participants').select('id,name,nis,media_id').eq('id',id).maybeSingle();
+    if(found.error){toast(err(found.error),'error');return}
+    const p=found.data;
+    if(!p){toast('Peserta wisuda tidak ditemukan atau sudah dihapus.','error');return}
+    const label=String(p.name||'peserta ini');
+    if(!(await window.bkfSystemConfirm('Hapus peserta wisuda "'+label+'"? Data peserta akan dihapus permanen. Foto juga akan dihapus dari penyimpanan jika tidak dipakai data lain.')))return;
+    const removed=await sb.from('graduation_participants').delete().eq('id',id).select('id').maybeSingle();
+    if(removed.error){toast('Peserta belum berhasil dihapus: '+err(removed.error),'error');return}
+    if(!removed.data?.id){toast('Penghapusan peserta belum terverifikasi. Muat ulang daftar untuk memeriksa statusnya.','error');return}
+    let cleanupNote='';
+    if(p.media_id){
+      try{
+        const refs=await Promise.all([
+          sb.from('exam_participants').select('id').eq('media_id',p.media_id).limit(1),
+          sb.from('graduation_participants').select('id').eq('media_id',p.media_id).limit(1),
+          sb.from('alumni').select('id').eq('media_id',p.media_id).limit(1)
+        ]);
+        const refErr=refs.find(q=>q.error);
+        if(refErr)throw refErr.error;
+        if(refs.some(q=>(q.data||[]).length)){
+          cleanupNote=' Foto dipertahankan karena masih digunakan oleh data lain.';
+        }else{
+          const mq=await sb.from('participant_media').select('id,storage_path').eq('id',p.media_id).maybeSingle();
+          if(mq.error)throw mq.error;
+          if(mq.data){
+            const raw=String(mq.data.storage_path||'').trim();
+            let objectPath='';
+            if(raw&&!/^https?:\/\//i.test(raw))objectPath=raw.replace(/^\/+/, '');
+            else if(raw){
+              const u=new URL(raw);
+              const markers=['/storage/v1/object/public/bkfuspaq-media/','/storage/v1/object/sign/bkfuspaq-media/','/storage/v1/object/authenticated/bkfuspaq-media/'];
+              const marker=markers.find(m=>u.pathname.includes(m));
+              if(!marker)throw new Error('Alamat foto tidak cocok dengan bucket bkfuspaq-media; metadata dipertahankan agar foto dapat diperiksa.');
+              objectPath=u.pathname.slice(u.pathname.indexOf(marker)+marker.length).split('/').map(x=>decodeURIComponent(x)).join('/');
+            }
+            if(objectPath){
+              if(objectPath.split('/').some(part=>part==='..'))throw new Error('Jalur foto tidak aman; foto tidak dihapus.');
+              const fileQ=await sb.storage.from('bkfuspaq-media').remove([objectPath]);
+              if(fileQ.error)throw fileQ.error;
+            }
+            const md=await sb.from('participant_media').delete().eq('id',p.media_id).select('id').maybeSingle();
+            if(md.error)throw md.error;
+          }
+        }
+      }catch(cleanErr){
+        console.error('[BKF WISUDA HAPUS FOTO]',{participantId:id,mediaId:p.media_id,error:cleanErr});
+        cleanupNote=' Data peserta sudah terhapus, tetapi pembersihan foto/metadata belum selesai. Periksa izin Storage dan metadata foto.';
+      }
+    }
+    if(cleanupNote){toast('Peserta wisuda berhasil dihapus.'+cleanupNote,'error')}else{toast('Peserta wisuda dan foto terkait berhasil dihapus.','success')}
+    await showGraduation();
+  };
+
   window.editGraduationNumberV40=async function(id,current){if(!canAction('graduation.manage')){toast('Anda tidak memiliki izin untuk mengubah nomor wisuda.','error');return}const n=await window.bkfSystemPrompt('Masukkan nomor wisuda:',current||'');if(n===null)return;const num=Number(n);if(!Number.isInteger(num)||num<1){toast('Nomor wisuda harus bilangan positif.','error');return}const q=await sb.rpc('update_graduation_number',{p_participant_id:id,p_graduation_number:num});if(q.error){toast(err(q.error),'error');return}toast('Nomor wisuda berhasil diperbarui.');showGraduation()};
   // ------------------------------------------------------------
   // SEKRETARIAT: tombol tulis surat sesuai form yang telah disepakati.
@@ -3622,7 +3706,7 @@ window.v75LoadManagementMembers=async function(){
 (function(){
 'use strict';
 const E=window.esc||((v)=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])));
-const homeCounters=[['Lembaga','institutions'],['Kegiatan','activities'],['Tagihan Belum Lunas','bills'],['Pembayaran','payments'],['Peserta Wisuda','graduation_participants'],['Notifikasi Baru','notifications']];
+const homeCounters=[['Lembaga','institutions'],['Kegiatan','activities'],['Tagihan Belum Lunas','bills'],['Pembayaran','payments'],['Notifikasi Baru','notifications']];
 // Dashboard harus mandiri dari IIFE roster; primaryRole/greeting tidak boleh bergantung pada scope script lain.
 const dashboardPrimaryRole=()=>Array.isArray(state?.roles)&&state.roles.length?String(state.roles[0]).toUpperCase():'OPERATOR';
 const dashboardGreeting=()=>({KETUA:'Semoga amanah dalam memimpin, mengayomi lembaga, dan menjaga kemaslahatan bersama.',SEKRETARIS:'Semoga dimudahkan dalam mengelola administrasi, agenda, surat, dan tugas kesekretariatan.',BENDAHARA:'Semoga dimudahkan dalam menjaga amanah kas, pembayaran, pemasukan, pengeluaran, dan laporan keuangan.',ANGGOTA:'Semoga dimudahkan dalam menjalankan tugas pengurus dan memberikan manfaat bagi BK FUSPAQ NU.',OPERATOR:'Semoga dimudahkan dalam melayani lembaga, peserta didik, ujian, wisuda, dan administrasi lembaga.'}[dashboardPrimaryRole()]||'Semoga kehadiran Anda membawa manfaat dan kemudahan dalam menjalankan amanah.');
@@ -3699,16 +3783,24 @@ async function loadDashboardExamCards(){
  const host=document.getElementById('dashboardExamParticipantCards');if(!host)return;
  host.innerHTML='';
  try{
-  const [pra,tashih]=await Promise.all([fetchDashboardExamParticipants('PRA_TASHIH'),fetchDashboardExamParticipants('TASHIH')]);
-  detailRows.exam_pra_tashih=pra;detailRows.exam_tashih=tashih;
+  const [pra,tashih,graduationResult]=await Promise.all([
+   fetchDashboardExamParticipants('PRA_TASHIH'),
+   fetchDashboardExamParticipants('TASHIH'),
+   fetchDashboardDetail('graduation_participants')
+  ]);
+  if(graduationResult?.error)throw graduationResult.error;
+  const graduation=graduationResult?.data||[];
+  detailRows.exam_pra_tashih=pra;detailRows.exam_tashih=tashih;detailRows.graduation_participants=graduation;
   const cards=[];
   if(pra.length)cards.push({key:'exam_pra_tashih',title:'PRA TASHIH',count:pra.length,help:'Seluruh peserta terdaftar',color:'linear-gradient(135deg,#175b3a,#25865a)'});
   if(tashih.length)cards.push({key:'exam_tashih',title:'TASHIH',count:tashih.length,help:'Seluruh peserta terdaftar',color:'linear-gradient(135deg,#253e7b,#4169b5)'});
+  if(graduation.length)cards.push({key:'graduation_participants',title:'PESERTA WISUDA',count:graduation.length,help:'Seluruh peserta wisuda',color:'linear-gradient(135deg,#a21caf,#d946ef)'});
   host.innerHTML=cards.map(c=>`<button type="button" class="card v75-dashboard-counter" data-dashboard-detail="${c.key}" aria-label="Lihat detail ${c.title}" style="background:${c.color};color:#fff;border:0"><div class="v173-counter-title">${c.title}</div><div class="metric v173-counter-number">${c.count.toLocaleString('id-ID')}</div><div class="v173-counter-help">${c.help}</div><div class="v173-counter-detail">Ketuk untuk detail</div></button>`).join('');
   host.querySelectorAll('[data-dashboard-detail]').forEach(card=>card.addEventListener('click',()=>openDashboardDetail(card.dataset.dashboardDetail)));
  }catch(e){console.error('[Dashboard exam participant cards]',e);host.innerHTML='';}
 }
 async function fetchDashboardDetail(key){
+ if(key==='graduation_participants'&&Array.isArray(detailRows.graduation_participants))return {data:detailRows.graduation_participants,error:null};
  if(key==='exam_pra_tashih')return {data:detailRows.exam_pra_tashih||[],error:null};
  if(key==='exam_tashih')return {data:detailRows.exam_tashih||[],error:null};
  const isOperator=Array.isArray(state.roles)&&state.roles.includes('OPERATOR');
@@ -3799,7 +3891,7 @@ window.showHome=async function(){
  const counters=visibleCounters.map(x=>`<button type="button" class="card v75-dashboard-counter" data-dashboard-detail="${E(x[1])}" aria-label="Lihat detail ${E(x[0])}"><div class="v173-counter-title">${E(x[0])}</div><div class="metric v173-counter-number" id="metric-${E(x[1])}">…</div><div class="v173-counter-help">Ringkasan data saat ini</div><div class="v173-counter-detail">Ketuk untuk detail</div></button>`).join('');
  const roleQuick=quickByRole[dashboardPrimaryRole()]||quickByRole.ANGGOTA||[];
  const quickHtml='<div class="module-card-grid">'+roleQuick.map(x=>'<button class="btn secondary menu-item quick-module module-card-btn" type="button" onclick="navigate(\''+x[1]+'\')"><strong>'+E(x[0])+'</strong></button>').join('')+'</div>';
- host.innerHTML='<div class="card hero v35-welcome"><div style="font-size:14px;color:#6b7c70;font-weight:700">Assalamu\'alaikum Wr. Wb.</div><h2 class="v41-user-name" style="margin:6px 0 2px">'+E(name)+'</h2><div class="row" style="justify-content:flex-start;gap:8px;margin:6px 0 10px"><span class="status ok">'+E(role)+'</span><span class="status '+(status==='ACTIVE'?'ok':'bad')+'">'+E(status==='ACTIVE'?'Aktif':status)+'</span><button type="button" class="darus-quran-link" onclick="openDarusQuranViewer()" aria-label="Buka Darus Al-Qur\'an di dalam aplikasi"><span class="darus-quran-icon" aria-hidden="true">☪</span><span>Darus Al-Qur\'an</span><span class="darus-quran-arrow" aria-hidden="true">↗</span></button></div><p class="v35-message" style="margin:8px 0 4px">Selamat datang di Sistem Informasi BK FUSPAQ NU.</p><p class="small muted" style="margin:0">'+E(dashboardGreeting())+'</p></div><div class="v75-dashboard-counters">'+counters+'</div><div id="dashboardExamParticipantCards" class="v75-dashboard-counters" style="margin-top:8px"></div><div class="card"><div class="row"><h3 style="margin:0">Akses cepat</h3><span class="status ok">'+E((state.roles||[]).map(roleLabel).join(' · ')||'Pengguna')+'</span></div><div class="menu-grid" style="margin-top:10px">'+quickHtml+'</div></div>';
+ host.innerHTML='<div class="card hero v35-welcome"><div style="font-size:14px;color:#6b7c70;font-weight:700">Assalamu\'alaikum Wr. Wb.</div><h2 class="v41-user-name" style="margin:6px 0 2px">'+E(name)+'</h2><div class="row" style="justify-content:flex-start;gap:8px;margin:6px 0 10px"><span class="status ok">'+E(role)+'</span><span class="status '+(status==='ACTIVE'?'ok':'bad')+'">'+E(status==='ACTIVE'?'Aktif':status)+'</span><button type="button" class="darus-quran-link" onclick="openDarusQuranViewer()" aria-label="Buka Darus Al-Qur\'an di dalam aplikasi"><span class="darus-quran-icon" aria-hidden="true">☪</span><span>Darus Al-Qur\'an</span><span class="darus-quran-arrow" aria-hidden="true">↗</span></button></div><p class="v35-message" style="margin:8px 0 4px">Selamat datang di Sistem Informasi BK FUSPAQ NU.</p><p class="small muted" style="margin:0">'+E(dashboardGreeting())+'</p></div><div class="v75-dashboard-counters" id="dashboardAllCounters">'+counters+'<div id="dashboardExamParticipantCards" style="display:contents"></div></div><div class="card"><div class="row"><h3 style="margin:0">Akses cepat</h3><span class="status ok">'+E((state.roles||[]).map(roleLabel).join(' · ')||'Pengguna')+'</span></div><div class="menu-grid" style="margin-top:10px">'+quickHtml+'</div></div>';
  const welcomeCard=host.querySelector('.v35-welcome');
  try{
    const orgIdsQ=await sb.rpc('current_organization_ids');
@@ -6188,6 +6280,10 @@ window.showExamGovernance=async function(){const host=document.getElementById('p
   if(typeof window.showExamReports!=='function' && typeof window.showExamReportsV32==='function')
     window.showExamReports=window.showExamReportsV32;
 
+  // V515: Fitur Pemantauan Pengguna dihapus sesuai keputusan pengguna.
+  // CSS berikut hanya mempertahankan tata letak kartu dashboard yang tidak terkait fitur tersebut.
+  (function(){if(document.getElementById('v515DashboardGridStyles'))return;const st=document.createElement('style');st.id='v515DashboardGridStyles';st.textContent=`#dashboardAllCounters{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:9px!important;margin-bottom:12px!important}#dashboardExamParticipantCards{display:contents!important}#dashboardAllCounters .v75-dashboard-counter{width:100%!important;min-width:0!important;margin:0!important;box-sizing:border-box!important}#dashboardAllCounters .v75-dashboard-counter .v173-counter-title{overflow-wrap:anywhere!important}@media(max-width:700px){#dashboardAllCounters{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important}}`;document.head.appendChild(st)})();
+
   // V471: Pengaturan menjadi pusat kategori kas, Audit & Backup, dan Riwayat Login.
   try{for(let i=menu.length-1;i>=0;i--)if(menu[i]?.[0]==='auditbackup')menu.splice(i,1)}catch(_){}
   window.showSettings=async function(){
@@ -6247,3 +6343,11 @@ window.showExamGovernance=async function(){const host=document.getElementById('p
 })();
 </script>
 </html>
+
+<!-- V515: fitur Pemantauan Pengguna dihapus dari HTML; tidak ada perubahan database. -->
+
+<!-- BK-FUSPAQ-NU V511: refresh daftar Pemantauan Pengguna setiap 30 detik; card Peserta Wisuda menjadi card interaktif sejenis TASHIH. Tanpa perubahan skema database. -->
+
+<!-- BK-FUSPAQ-NU V512: koreksi sesuai klarifikasi pengguna; Peserta Wisuda tersembunyi bila kosong, angka ringkasan presence terlihat. -->
+
+<!-- BK-FUSPAQ-NU V513: seluruh card dashboard memakai satu grid responsif agar tidak menyisakan ruang antar-kelompok; angka ringkasan pemantauan memakai kelas khusus agar tidak tertimpa CSS .metric. Tidak ada perubahan skema database. -->
