@@ -1264,8 +1264,48 @@ window.printExamCards=async function(){
  const bucket='bkfuspaq-media';
  async function uploadImage(file,path){
    if(!file)return '';
-   const blob=await new Promise((resolve,reject)=>{const r=new FileReader();r.onerror=reject;r.onload=()=>{const im=new Image();im.onerror=reject;im.onload=()=>{const sc=Math.min(1,720/im.width,960/im.height),w=Math.max(1,Math.round(im.width*sc)),h=Math.max(1,Math.round(im.height*sc)),c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,w,h);x.drawImage(im,0,0,w,h);c.toBlob(b=>b?resolve(b):reject(new Error('Gagal memproses foto.')),'image/jpeg',.78)};im.src=r.result};r.readAsDataURL(file)});
-   const q=await sb.storage.from(bucket).upload(path,blob,{contentType:'image/jpeg',upsert:true,cacheControl:'31536000'});if(q.error)throw q.error;return sb.storage.from(bucket).getPublicUrl(path).data.publicUrl;
+   // V517: hindari FileReader -> base64 -> Image, yang pada sebagian perangkat
+   // dapat gagal setelah pratinjau berhasil dan hanya mengembalikan ProgressEvent.
+   // Decode langsung dari File dengan createImageBitmap, lalu fallback ke object URL.
+   let decoded=null,objectUrl=null,bitmapError=null;
+   try{
+     if(typeof createImageBitmap==='function'){
+       try{decoded=await createImageBitmap(file)}catch(e){bitmapError=e}
+     }
+     if(!decoded){
+       objectUrl=URL.createObjectURL(file);
+       decoded=await new Promise((resolve,reject)=>{
+         const im=new Image();
+         im.onload=()=>resolve(im);
+         im.onerror=()=>reject(new Error('Browser tidak dapat membuka foto untuk diproses.'+(bitmapError?.message?' Detail decoder: '+bitmapError.message:'')));
+         im.src=objectUrl;
+       });
+     }
+     const iw=Number(decoded.naturalWidth||decoded.width||0),ih=Number(decoded.naturalHeight||decoded.height||0);
+     if(!iw||!ih)throw new Error('Ukuran gambar tidak terbaca. Simpan ulang foto sebagai JPG/PNG/WebP lalu pilih kembali.');
+     const sc=Math.min(1,720/iw,960/ih),w=Math.max(1,Math.round(iw*sc)),h=Math.max(1,Math.round(ih*sc));
+     const c=document.createElement('canvas');c.width=w;c.height=h;
+     const x=c.getContext('2d');if(!x)throw new Error('Canvas foto tidak tersedia di browser ini.');
+     x.fillStyle='#fff';x.fillRect(0,0,w,h);x.drawImage(decoded,0,0,w,h);
+     const blob=await new Promise((resolve,reject)=>{
+       try{c.toBlob(b=>b?resolve(b):reject(new Error('Browser gagal mengonversi foto ke JPEG. Coba simpan ulang foto atau gunakan browser Chrome terbaru.')),'image/jpeg',.78)}
+       catch(e){reject(new Error('Konversi foto gagal: '+(e?.message||String(e))))}
+     });
+     if(!blob||!blob.size)throw new Error('Hasil pemrosesan foto kosong. Pilih foto lain atau simpan ulang sebagai JPG.');
+     if(typeof decoded.close==='function')decoded.close();
+     decoded=null;
+     if(objectUrl){URL.revokeObjectURL(objectUrl);objectUrl=null}
+     const q=await sb.storage.from(bucket).upload(path,blob,{contentType:'image/jpeg',upsert:true,cacheControl:'31536000'});
+     if(q.error)throw new Error('Supabase Storage menolak unggahan'+(q.error.statusCode?' (HTTP '+q.error.statusCode+')':'')+': '+(q.error.message||String(q.error)));
+     const publicUrl=sb.storage.from(bucket).getPublicUrl(path).data?.publicUrl;
+     if(!publicUrl)throw new Error('Foto terunggah, tetapi alamat foto publik tidak berhasil dibuat.');
+     return publicUrl;
+   }catch(e){
+     if(decoded&&typeof decoded.close==='function')try{decoded.close()}catch(_){}
+     if(objectUrl)try{URL.revokeObjectURL(objectUrl)}catch(_){}
+     if(e instanceof Error)throw e;
+     throw new Error('Pemrosesan foto gagal: '+(e?.message||String(e)||'Kesalahan browser tidak diketahui.'));
+   }
  }
  window.bkfUploadImage=uploadImage;
  window.openGraduationPhotoForm=async function(participantId,participantName){
@@ -2604,7 +2644,7 @@ window.__showActivitiesCore=async function(){
         if(saved){msg.className='small success';msg.textContent='Peserta Pra-Tashih sudah tersimpan. Jika tampilan form belum terbarui, muat ulang daftar peserta sebelum mencoba mendaftarkan ulang.'}
         else{
           msg.className='error';const raw=String(e2?.message||e2||'Terjadi kesalahan.');const friendly=window.friendlyError?window.friendlyError(e2):raw;
-          msg.textContent=stage==='mengunggah foto'?('Foto gagal diunggah. Periksa koneksi internet, pastikan foto JPG/PNG/WebP dan maksimal 5 MB, lalu coba lagi. Detail: '+raw):((friendly==='Tindakan belum berhasil. Silakan periksa data lalu coba lagi.'||friendly==='Fitur atau data yang diminta belum tersedia.')?('Pendaftaran Pra-Tashih gagal pada tahap '+stage+'. '+raw):friendly);
+          msg.textContent=stage==='mengunggah foto'?('Foto belum berhasil diproses/diunggah. Periksa koneksi, lalu coba lagi. Jika masalah berulang, detail tahap pemrosesan: '+raw):((friendly==='Tindakan belum berhasil. Silakan periksa data lalu coba lagi.'||friendly==='Fitur atau data yang diminta belum tersedia.')?('Pendaftaran Pra-Tashih gagal pada tahap '+stage+'. '+raw):friendly);
           // Bersihkan foto hanya jika RPC belum dikirim, atau Supabase sudah
           // mengembalikan respons pasti yang gagal. Jika jaringan putus setelah
           // RPC dikirim tanpa respons, jangan hapus foto: transaksi mungkin sukses.
