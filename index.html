@@ -2474,7 +2474,24 @@ window.v12TogglePassword=function(id,btn){const e=document.getElementById(id);if
       if(t==='notifications'){const pid=state.profile?.id;if(!pid)return [t,0];q=await sb.from('notifications').select('id',{count:'exact',head:true}).eq('user_id',pid).is('read_at',null)}
       else if(isOperator&&t==='institutions')q=await sb.from('institutions').select('id',{count:'exact',head:true}).eq('status','ACTIVE');
       else if(t==='activities'){q=await sb.from('activities').select('id,status,start_at');if(q.error)return [t,null];const active=(q.data||[]).filter(a=>!['SELESAI','DIBATALKAN'].includes(window.bkfActivityStatus(a)));return [t,active.length]}
-      else if(isOperator&&t==='bills'){if(!operatorInstitutionId)return [t,0];q=await sb.from('bills').select('id',{count:'exact',head:true}).eq('institution_id',operatorInstitutionId).neq('status','PAID')}
+      else if(t==='bills'){
+        if(isOperator&&!operatorInstitutionId)return [t,'Rp0'];
+        const billRows=[];
+        for(let from=0;;from+=1000){
+          let bq=sb.from('bills').select('id,total_amount').neq('status','PAID').order('bill_date',{ascending:false}).range(from,from+999);
+          if(isOperator)bq=bq.eq('institution_id',operatorInstitutionId);
+          const br=await bq;if(br.error)return [t,null];
+          billRows.push(...(br.data||[]));if((br.data||[]).length<1000)break;
+        }
+        const billIds=billRows.map(b=>b.id).filter(Boolean),paidByBill=new Map();
+        for(let i=0;i<billIds.length;i+=400){
+          const pr=await sb.from('payments').select('bill_id,amount,status').in('bill_id',billIds.slice(i,i+400));
+          if(pr.error)return [t,null];
+          (pr.data||[]).forEach(p=>{if(p.status==='CONFIRMED')paidByBill.set(p.bill_id,(paidByBill.get(p.bill_id)||0)+Number(p.amount||0))});
+        }
+        const remaining=billRows.reduce((sum,b)=>sum+Math.max(Number(b.total_amount||0)-(paidByBill.get(b.id)||0),0),0);
+        return [t,new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(remaining)];
+      }
       else if(isOperator&&t==='payments'){if(!operatorInstitutionId)return [t,0];const bq=await sb.from('bills').select('id').eq('institution_id',operatorInstitutionId);if(bq.error)return [t,null];const ids=(bq.data||[]).map(x=>x.id).filter(Boolean);if(!ids.length)return [t,0];q=await sb.from('payments').select('id',{count:'exact',head:true}).in('bill_id',ids)}
       else if(isOperator&&t==='graduation_participants'){if(!operatorInstitutionId)return [t,0];const rq=await sb.from('graduation_registrations').select('id').eq('institution_id',operatorInstitutionId);if(rq.error)return [t,null];const ids=(rq.data||[]).map(x=>x.id).filter(Boolean);if(!ids.length)return [t,0];q=await sb.from('graduation_participants').select('id',{count:'exact',head:true}).in('registration_id',ids).neq('status','BATAL')}
       else q=await sb.from(t).select('id',{count:'exact',head:true});
@@ -3930,7 +3947,7 @@ window.showHome=async function(){
  const status=state.profile?.status||'ACTIVE';
  const anggotaPengurus=Array.isArray(state?.roles)&&state.roles.includes('ANGGOTA');
  const visibleCounters=homeCounters.filter(x=>!(anggotaPengurus&&(x[1]==='bills'||x[1]==='payments')));
- const counters=visibleCounters.map(x=>`<button type="button" class="card v75-dashboard-counter" data-dashboard-detail="${E(x[1])}" aria-label="Lihat detail ${E(x[0])}"><div class="v173-counter-title">${E(x[0])}</div><div class="metric v173-counter-number" id="metric-${E(x[1])}">…</div><div class="v173-counter-help">Ringkasan data saat ini</div><div class="v173-counter-detail">Ketuk untuk detail</div></button>`).join('');
+ const counters=visibleCounters.map(x=>`<button type="button" class="card v75-dashboard-counter" data-dashboard-detail="${E(x[1])}" aria-label="Lihat detail ${E(x[0])}"><div class="v173-counter-title">${E(x[0])}</div><div class="metric v173-counter-number" id="metric-${E(x[1])}"${x[1]==='bills'?' style="font-size:clamp(13px,3.6vw,20px);overflow-wrap:anywhere"':''}>…</div><div class="v173-counter-help">${x[1]==='bills'?'Total sisa nominal tagihan':'Ringkasan data saat ini'}</div><div class="v173-counter-detail">Ketuk untuk detail</div></button>`).join('');
  const roleQuick=quickByRole[dashboardPrimaryRole()]||quickByRole.ANGGOTA||[];
  const quickHtml='<div class="module-card-grid">'+roleQuick.map(x=>'<button class="btn secondary menu-item quick-module module-card-btn" type="button" onclick="navigate(\''+x[1]+'\')"><strong>'+E(x[0])+'</strong></button>').join('')+'</div>';
  host.innerHTML='<div class="card hero v35-welcome"><div style="font-size:14px;color:#6b7c70;font-weight:700">Assalamu\'alaikum Wr. Wb.</div><h2 class="v41-user-name" style="margin:6px 0 2px">'+E(name)+'</h2><div class="row" style="justify-content:flex-start;gap:8px;margin:6px 0 10px"><span class="status ok">'+E(role)+'</span><span class="status '+(status==='ACTIVE'?'ok':'bad')+'">'+E(status==='ACTIVE'?'Aktif':status)+'</span><button type="button" class="darus-quran-link" onclick="openDarusQuranViewer()" aria-label="Buka Darus Al-Qur\'an di dalam aplikasi"><span class="darus-quran-icon" aria-hidden="true">☪</span><span>Darus Al-Qur\'an</span><span class="darus-quran-arrow" aria-hidden="true">↗</span></button></div><p class="v35-message" style="margin:8px 0 4px">Selamat datang di Sistem Informasi BK FUSPAQ NU.</p><p class="small muted" style="margin:0">'+E(dashboardGreeting())+'</p></div><div class="v75-dashboard-counters" id="dashboardAllCounters">'+counters+'<div id="dashboardExamParticipantCards" style="display:contents"></div></div><div class="card"><div class="row"><h3 style="margin:0">Akses cepat</h3><span class="status ok">'+E((state.roles||[]).map(roleLabel).join(' · ')||'Pengguna')+'</span></div><div class="menu-grid" style="margin-top:10px">'+quickHtml+'</div></div>';
