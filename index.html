@@ -1262,14 +1262,15 @@ window.printExamCards=async function(){
 (function(){
  const E21=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const bucket='bkfuspaq-media';
- async function uploadImage(file,path){
+ async function uploadImage(file,path,decodedHint){
    if(!file)return '';
-   // V517: hindari FileReader -> base64 -> Image, yang pada sebagian perangkat
-   // dapat gagal setelah pratinjau berhasil dan hanya mengembalikan ProgressEvent.
-   // Decode langsung dari File dengan createImageBitmap, lalu fallback ke object URL.
-   let decoded=null,objectUrl=null,bitmapError=null;
+   // V518: untuk formulir Pra-Tashih, gunakan kembali elemen Image yang sudah
+   // berhasil didekode saat pratinjau. Jangan decode File yang sama untuk kedua
+   // kalinya melalui createImageBitmap/object URL karena jalur itu dapat gagal
+   // pada browser tertentu meskipun pratinjau data URL berhasil.
+   let decoded=decodedHint||null,objectUrl=null,bitmapError=null;
    try{
-     if(typeof createImageBitmap==='function'){
+     if(!decoded && typeof createImageBitmap==='function'){
        try{decoded=await createImageBitmap(file)}catch(e){bitmapError=e}
      }
      if(!decoded){
@@ -2588,7 +2589,7 @@ window.__showActivitiesCore=async function(){
       return '';
     };
     photo.onchange=e=>{
-      const file=e.target.files?.[0];f._photoFile=null;preview.textContent='Belum ada foto.';
+      const file=e.target.files?.[0];f._photoFile=null;f._photoImage=null;preview.textContent='Belum ada foto.';
       if(!file)return;
       const validationError=validateExamPhoto(file);
       if(validationError){photo.value='';preview.className='small error';preview.textContent=validationError;return}
@@ -2598,7 +2599,7 @@ window.__showActivitiesCore=async function(){
       r.onload=()=>{
         const im=new Image();
         im.onerror=()=>{f._photoFile=null;photo.value='';preview.className='small error';preview.textContent='Berkas ini bukan gambar yang dapat dibuka atau fotonya rusak. Gunakan JPG, PNG, atau WebP yang valid.'};
-        im.onload=()=>{f._photoFile=file;preview.className='small muted';preview.innerHTML=`<img src="${E(r.result)}" style="width:90px;height:120px;object-fit:cover;border-radius:10px;border:1px solid #ccc"><div>Foto siap diunggah · ${(file.size/1024/1024).toFixed(2)} MB</div>`;focusRegistrationNext(photo)};
+        im.onload=()=>{f._photoFile=file;f._photoImage=im;preview.className='small muted';preview.innerHTML=`<img src="${E(r.result)}" style="width:90px;height:120px;object-fit:cover;border-radius:10px;border:1px solid #ccc"><div>Foto siap diunggah · ${(file.size/1024/1024).toFixed(2)} MB</div>`;focusRegistrationNext(photo)};
         im.src=r.result;
       };
       r.readAsDataURL(file);
@@ -2622,7 +2623,8 @@ window.__showActivitiesCore=async function(){
         const upload=window.bkfUploadImage||window.v23UploadImage;
         if(typeof upload!=='function')throw new Error('Fungsi penyimpanan foto tidak tersedia.');
         mediaStoragePath='exam-participants/'+crypto.randomUUID()+'.jpg';
-        const url=await upload(f._photoFile,mediaStoragePath);
+        // Gunakan objek Image yang sama dengan pratinjau yang sudah berhasil.
+        const url=await upload(f._photoFile,mediaStoragePath,f._photoImage);
         stage='menyimpan foto peserta';
         const m=await sb.from('participant_media').insert({media_type:'PARTICIPANT',storage_path:url,mime_type:f._photoFile.type||'image/jpeg',file_size:f._photoFile.size,uploaded_by:state.profile?.id||null,status:'ACTIVE'}).select('id').single();
         if(m.error)throw m.error;mediaId=m.data.id;
@@ -2633,7 +2635,7 @@ window.__showActivitiesCore=async function(){
         saved=true;
         // Setelah RPC berhasil, jangan biarkan kegagalan UI/notifikasi dibaca sebagai kegagalan simpan.
         try{
-          f.reset();f._photoFile=null;photo.value='';preview.textContent='Belum ada foto.';
+          f.reset();f._photoFile=null;f._photoImage=null;photo.value='';preview.textContent='Belum ada foto.';
           const instSelect=f.querySelector('[name="institution_id"]');if(instSelect&&keepInstitution)instSelect.value=keepInstitution;
         }catch(uiError){console.error('[BKF PRA-TASHIH UI AFTER SAVE]',uiError)}
         msg.className='small success';msg.textContent='Peserta Pra-Tashih berhasil didaftarkan. Form tetap terbuka untuk peserta berikutnya.';
