@@ -4965,8 +4965,8 @@ window.openParticipantFromPengujian=async function(sessionId,participantId,retur
    const mids=[...new Set((assQ.data||[]).map(x=>x.exam_material_id).filter(Boolean))];
    if(!mids.length)throw new Error('Peserta ini belum memiliki materi yang ditugaskan kepada penguji Anda.');
 
-   // Batas minimal selalu dibaca dari aturan AKTIF pada periode dan jenis ujian ini.
-   // exam_rule_id/rule_snapshot pada sesi hanya menjadi fallback jika aturan aktif belum tersedia.
+   // Batas minimal wajib berasal dari aturan AKTIF pada periode dan jenis ujian ini.
+   // Snapshot aturan pada sesi tidak digunakan sebagai fallback.
    const [matsQ,scoreQ,activeRuleQ]=await Promise.all([
      sb.from('exam_materials').select('id,name,code,sequence').in('id',mids).eq('status','ACTIVE').order('sequence'),
      sb.from('exam_scores').select('exam_material_id,score,status,exam_score_components:exam_score_components_exam_score_id_fkey(component_code,score)').eq('exam_session_id',sessionId).in('exam_material_id',mids),
@@ -4974,23 +4974,23 @@ window.openParticipantFromPengujian=async function(sessionId,participantId,retur
    ]);
    if(matsQ.error)throw matsQ.error;if(scoreQ.error)throw scoreQ.error;if(activeRuleQ.error)throw activeRuleQ.error;
    const activeRule=activeRuleQ.data||null;
-   const detailsQ=activeRule?.id
-     ?await sb.from('exam_rule_details').select('exam_material_id,minimum_score').eq('exam_rule_id',activeRule.id)
-     :(row.exam_rule_id?await sb.from('exam_rule_details').select('exam_material_id,minimum_score').eq('exam_rule_id',row.exam_rule_id):{data:[],error:null});
+   if(!activeRule?.id)throw new Error('Aturan ujian aktif untuk periode dan jenis ujian ini tidak ditemukan. Hubungi pengurus sebelum menyimpan nilai.');
+   const detailsQ=await sb.from('exam_rule_details').select('exam_material_id,minimum_score').eq('exam_rule_id',activeRule.id);
    if(detailsQ.error)throw detailsQ.error;
    const mats=matsQ.data||[],sc=scoreQ.data||[],ruleDetails=detailsQ.data||[];
-   const snapshotDetails=Array.isArray(row.rule_snapshot?.details)?row.rule_snapshot.details:[];
-   const snapshotMinMap=new Map(snapshotDetails.map(x=>[x.exam_material_id,Number(x.minimum_score)]));
+   if(!ruleDetails.length)throw new Error('Materi dan batas minimal pada aturan ujian aktif belum dikonfigurasi.');
    const minMap=new Map(ruleDetails.map(x=>[x.exam_material_id,Number(x.minimum_score)]));
+   const missingActiveDetails=mats.filter(m=>!minMap.has(m.id)||!Number.isFinite(minMap.get(m.id)));
+   if(missingActiveDetails.length)throw new Error('Ada materi tugas penguji yang tidak tercantum pada aturan ujian aktif: '+missingActiveDetails.map(m=>m.name||m.code||m.id).join(', ')+'. Periksa penugasan materi sebelum menyimpan nilai.');
    const scoreMap=new Map(sc.map(x=>[x.exam_material_id,x]));
    const resultLocked=!!resultQ.data?.locked_at||String(resultQ.data?.status||'').toUpperCase()==='LOCKED';
    const photo= p.participant_media?.storage_path?mediaUrl(p.participant_media.storage_path):'';
    p.exam_session_id=sessionId;p.wave=reg.wave??null;p.overall_status=resultLocked?'DIKUNCI':(resultQ.data?.finalized_at?'DIFINALISASI':(p.status||'BELUM_DINILAI'));
-   p.assigned_count=mats.length;p.exam_type=examType;p.photo_url=photo;p.institution_name=instQ.data?.name||'-';p.overall_minimum=Number(activeRule?.overall_minimum??row.rule_snapshot?.overall_minimum??65);p.pengujian_return_route=route;p.pengujian_return_wave=Number(returnWave)===2?2:1;
+   p.assigned_count=mats.length;p.exam_type=examType;p.photo_url=photo;p.institution_name=instQ.data?.name||'-';p.overall_minimum=Number(activeRule.overall_minimum);p.pengujian_return_route=route;p.pengujian_return_wave=Number(returnWave)===2?2:1;
    p.assigned_materials=mats.map(m=>{
      const x=scoreMap.get(m.id)||{},comps={};
      for(const c of x.exam_score_components||[])comps[c.component_code]=c.score;
-     return {material_id:m.id,name:m.name,code:m.code,score:x.score??null,score_status:x.status||'BELUM_DINILAI',minimum_score:activeRule?(minMap.get(m.id)??65):(snapshotMinMap.get(m.id)??minMap.get(m.id)??65),components:comps};
+     return {material_id:m.id,name:m.name,code:m.code,score:x.score??null,score_status:x.status||'BELUM_DINILAI',minimum_score:minMap.get(m.id),components:comps};
    });
    state.participant=p;window.openParticipant(p);
  }catch(e){
