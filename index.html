@@ -1849,11 +1849,10 @@ window.v12TogglePassword=function(id,btn){const e=document.getElementById(id);if
         const materialRows=configured.map(d=>({detail:d,material:d.exam_materials||{},score:scoreMap.get(session.id+'|'+d.exam_material_id)||null}));
         const completedCount=materialRows.filter(x=>x.score&&x.score.score!=null&&String(x.score.status||'').toUpperCase()!=='DRAFT').length;
         const requiredCount=materialRows.length;
-        editableCount=materialRows.filter(x=>editable&&x.score&&x.score.score!=null&&String(x.score.status||'').toUpperCase()!=='DRAFT').length;
+        const editableCount=materialRows.filter(x=>editable&&x.score&&x.score.score!=null&&String(x.score.status||'').toUpperCase()!=='DRAFT').length;
         const legacyIncomplete=!!session&&requiredCount>0&&completedCount<requiredCount&&(finalized||locked);
         const statusText=participantStatus==='BATAL'||participantStatus==='DIBATALKAN'?'Dibatalkan':legacyIncomplete?(locked?'Nilai sudah dikunci · materi ujian belum lengkap':'Perlu ditinjau ulang · materi ujian belum lengkap'):locked?'Nilai sudah dikunci':finalized?'Hasil ujian sudah ditetapkan':result?window.bkfHumanStatusV420(result.status||'BELUM_LULUS','exam'):session?'Hasil ujian belum tersedia':'Sesi ujian belum tersedia';
         const statusClass=legacyIncomplete?'bad':locked||finalized||String(result?.status||'').startsWith('LULUS')?'ok':result&&(result.status==='REMEDIAL'||result.status==='BELUM_LULUS'||result.status==='GAGAL')?'bad':'';
-        let editableCount=0;
         let actions='';
         if(session&&editable&&editableCount>0)actions+=`<button class="btn secondary" type="button" onclick="window.bkfSaveExamList('${_E(session.id)}')">Simpan Koreksi Nilai</button>`;
         if(session&&result&&!finalized&&!locked&&(String(result.status||'').startsWith('LULUS')||(type==='TASHIH'&&result.status==='GAGAL'))&&canFinalize&&requiredCount>0&&completedCount===requiredCount)actions+=`<button class="btn primary" type="button" onclick="v11FinalizeSession('${_E(session.id)}')">Finalisasi Nilai</button>`;
