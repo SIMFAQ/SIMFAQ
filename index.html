@@ -3165,6 +3165,14 @@ html,body{margin:0;padding:0;background:#fff!important;color:#111;font-family:Ar
     if(cq.error){box.innerHTML=`<div class="error">${E(err(cq.error))}</div>`;return}
     const rows=q.data||[];
     if(Array.isArray(state?.roles)&&state.roles.some(r=>String(r).toUpperCase()==='OPERATOR'))rows.forEach(n=>{if(String(n.event_type||'').toUpperCase()==='EXAM_SELECTION_FINAL')n.message=window.bkfInstitutionSelectionNoticeTextV500(n)});
+    // Notifikasi Iuran Selapanan ditampilkan dengan nama kegiatan, tanggal, dan tempat;
+    // UUID asli tetap tersimpan di database dan hanya diganti pada teks tampilan.
+    const noticeActivityIds=[...new Set(rows.filter(n=>n.related_table==='selapanan_dues_obligations'||n.activity_id).map(n=>n.activity_id).filter(Boolean))];
+    const noticeActivitiesQ=noticeActivityIds.length?await sb.from('activities').select('id,name,start_at,venue').in('id',noticeActivityIds):{data:[],error:null};
+    const noticeActivityMap=new Map((noticeActivitiesQ.data||[]).map(a=>[a.id,a]));
+    const noticeActivityLabel=id=>{const a=noticeActivityMap.get(id);if(!a)return '';const d=a.start_at?new Date(a.start_at).toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric',timeZone:'Asia/Jakarta'}):'tanggal belum ditentukan';const v=String(a.venue||'').trim().replace(/\s+/g,' ');const short=v?(v.length>48?v.slice(0,45).trim()+'…':v):'lokasi belum ditentukan';return `Selapanan ${d} · ${short}`};
+    const humanizeSelapananNotice=value=>{let out=String(value??'');for(const id of noticeActivityIds){const label=noticeActivityLabel(id);if(label)out=out.split(id).join(label)}return out.replace(/\bISSUED\b/g,'Belum dibayar').replace(/\bUNPAID\b/g,'Belum dibayar').replace(/\bPAID\b/g,'Lunas').replace(/\bPARTIAL\b/g,'Dibayar sebagian').replace(/\bCANCELLED\b|\bCANCELED\b/g,'Dibatalkan').replace(/\bCONFIRMED\b/g,'Pembayaran dikonfirmasi').replace(/\bPENDING\b/g,'Menunggu konfirmasi').replace(/selapanan_dues_obligations/gi,'tagihan Iuran Selapanan').replace(/activity_id/gi,'kegiatan')};
+    rows.forEach(n=>{if(n.activity_id&&noticeActivityMap.has(n.activity_id)){n.context_name=noticeActivityLabel(n.activity_id);n.context_description=humanizeSelapananNotice(n.context_description||'')}if(n.related_table==='selapanan_dues_obligations'){n.title=humanizeSelapananNotice(n.title||'Pengingat Iuran Selapanan');n.message=humanizeSelapananNotice(n.message||'');}});
     const instIds=[...new Set(rows.map(n=>n.institution_id).filter(Boolean))];
     const iq=instIds.length?await sb.from('institutions').select('id,name').in('id',instIds):{data:[],error:null};
     if(iq.error){box.innerHTML=`<div class="error">${E(err(iq.error))}</div>`;return}
@@ -4378,15 +4386,40 @@ window.financeBudget2=async function(p){const {data,error}=await sb.from('budget
     </div>`;
   };
   window.financeDues2=async function(p){
-    const period=await window.bkfLoadSelectedPeriod();
-    const [{data,error},{data:insts},ruleQ]=await Promise.all([
-      sb.from('selapanan_dues_obligations').select('id,institution_id,amount,status,activity_id,rule_id').order('status'),
-      sb.from('institutions').select('id,name').eq('status','ACTIVE').order('name'),
-      period?.id?sb.from('selapanan_dues_rules').select('id,amount,effective_from,effective_until,status').eq('management_period_id',period.id).eq('status','ACTIVE').order('effective_from',{ascending:false}).limit(1).maybeSingle():Promise.resolve({data:null,error:null})
-    ]);
-    const im=new Map((insts||[]).map(x=>[x.id,x.name]));const activeRule=ruleQ?.data||null;
-    const canManage=Array.isArray(state?.roles)&&state.roles.some(r=>['KETUA','BENDAHARA'].includes(String(r).toUpperCase()));
-    p.innerHTML=`<div class="card"><div class="row"><div><h3>Iuran Selapanan</h3><div class="small muted">${activeRule?`Nominal master aktif: <strong>${fmt(activeRule.amount)}</strong> · berlaku mulai ${date(activeRule.effective_from)}`:'Nominal master Iuran Selapanan belum ditetapkan.'}</div></div>${canManage?`<div class="compact-actions"><button class="btn secondary" type="button" onclick="v123IuranRuleForm('${activeRule?.id||''}')">${activeRule?'Edit Nominal':'Tetapkan Nominal'}</button><button class="btn primary" type="button" onclick="openSelapananBillingForm()">Penagihan Selapanan</button></div>`:''}</div><div class="list" style="margin-top:10px">${error?`<p class="error">${E(friendlyError(error))}</p>`:(data||[]).map(x=>`<div class="list-item"><div class="row"><div><strong>${E(im.get(x.institution_id)||'Lembaga')}</strong><div class="small muted">Iuran Selapanan · ${E(x.activity_id||'-')}</div></div><span class="status ${x.status==='LUNAS'?'ok':'lock'}">${E(financeStatusLabel(x.status))}</span></div><div class="small">Nominal kewajiban: ${fmt(x.amount)}</div></div>`).join('')||'<div class="empty">Belum ada kewajiban Selapanan. Gunakan Penagihan Selapanan untuk membuatnya.</div>'}</div></div>`;
+    const E2=window.esc||((v)=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])));
+    p.innerHTML='<div class="card muted">Memuat Iuran Selapanan...</div>';
+    let stage='menyiapkan periode';
+    try {
+      const period=await window.bkfLoadSelectedPeriod();
+      stage='mengambil data kewajiban Iuran';
+      const [obligationsQ,instsQ,ruleQ]=await Promise.all([
+        sb.from('selapanan_dues_obligations').select('id,institution_id,amount,status,activity_id,rule_id').order('status'),
+        sb.from('institutions').select('id,name').eq('status','ACTIVE').order('name'),
+        period?.id?sb.from('selapanan_dues_rules').select('id,amount,effective_from,effective_until,status').eq('management_period_id',period.id).eq('status','ACTIVE').order('effective_from',{ascending:false}).limit(1).maybeSingle():Promise.resolve({data:null,error:null})
+      ]);
+      // Kewajiban adalah data utama. Tampilkan error spesifik bila tabel ini gagal,
+      // tetapi jangan membuat seluruh halaman gagal hanya karena data pelengkap.
+      if(obligationsQ.error) throw new Error('Data kewajiban Iuran gagal dimuat: '+(obligationsQ.error.message||String(obligationsQ.error)));
+      const data=obligationsQ.data||[];
+      const activityIds=[...new Set(data.map(x=>x.activity_id).filter(Boolean))];
+      const activitiesQ=activityIds.length?await sb.from('activities').select('id,name,start_at,venue').in('id',activityIds):{data:[],error:null};
+      const activityMap=new Map((activitiesQ.data||[]).map(a=>[a.id,a]));
+      const humanDate=v=>{if(!v)return 'tanggal belum ditentukan';const d=new Date(v);return Number.isNaN(d.getTime())?'tanggal belum ditentukan':d.toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric',timeZone:'Asia/Jakarta'})};
+      const shortVenue=v=>{let t=String(v||'').trim().replace(/\s+/g,' ');if(!t)return 'lokasi belum ditentukan';t=t.replace(/^(di|tempat)\s+/i,'');return t.length>48?t.slice(0,45).trim()+'…':t};
+      const activityLabel=id=>{const a=activityMap.get(id);if(!a)return 'kegiatan Selapanan';const venue=shortVenue(a.venue);return `Selapanan ${humanDate(a.start_at)}${venue==='lokasi belum ditentukan'?'':' · '+venue}`};
+      const insts=instsQ.error?[]:(instsQ.data||[]);
+      const im=new Map(insts.map(x=>[x.id,x.name]));
+      const activeRule=ruleQ?.error?null:(ruleQ?.data||null);
+      const canManage=Array.isArray(state?.roles)&&state.roles.some(r=>['KETUA','BENDAHARA'].includes(String(r).toUpperCase()));
+      const warning=instsQ.error?`<p class="error">Nama lembaga tidak dapat dimuat: ${E2(instsQ.error.message||instsQ.error)}</p>`:'';
+      const activityWarning=activitiesQ.error?'<p class="small muted">Sebagian keterangan tanggal/lokasi kegiatan belum dapat dimuat.</p>':'';
+      const ruleWarning=ruleQ?.error?`<p class="error">Nominal master belum dapat diperiksa: ${E2(ruleQ.error.message||ruleQ.error)}</p>`:'';
+      p.innerHTML=`<div class="card"><div class="row"><div><h3>Iuran Selapanan</h3><div class="small muted">${activeRule?`Nominal iuran: <strong>${fmt(activeRule.amount)}</strong> · berlaku mulai ${date(activeRule.effective_from)}`:'Nominal iuran Selapanan belum ditetapkan.'}</div></div>${canManage?`<div class="compact-actions"><button class="btn secondary" type="button" onclick="v123IuranRuleForm('${activeRule?.id||''}')">${activeRule?'Ubah Nominal':'Tetapkan Nominal'}</button><button class="btn primary" type="button" onclick="openSelapananBillingForm()">Buat Tagihan Selapanan</button></div>`:''}</div>${warning}${activityWarning}${ruleWarning}<div class="list" style="margin-top:10px">${data.map(x=>{const status=String(x.status||'ISSUED').toUpperCase();const statusLabel=({PAID:'Lunas',LUNAS:'Lunas',PARTIAL:'Dibayar sebagian',CANCELLED:'Dibatalkan',CANCELED:'Dibatalkan',ISSUED:'Belum dibayar',UNPAID:'Belum dibayar',PENDING:'Menunggu konfirmasi',CONFIRMED:'Pembayaran dikonfirmasi'})[status]||status.replace(/_/g,' ').toLowerCase();return `<div class="list-item"><div class="row"><div><strong>${E2(im.get(x.institution_id)||'Lembaga')}</strong><div class="small muted">${E2(activityLabel(x.activity_id))}</div></div><span class="status ${['PAID','LUNAS'].includes(status)?'ok':'lock'}">${E2(statusLabel)}</span></div><div class="small">Jumlah iuran: ${fmt(x.amount)}</div></div>`}).join('')||'<div class="empty">Belum ada tagihan Selapanan. Gunakan tombol Buat Tagihan Selapanan untuk memulai penagihan.</div>'}</div></div>`;
+    } catch(err) {
+      const raw=String(err?.message||err||'Kesalahan tidak diketahui');
+      console.error('[BKF IURAN LOAD]',{stage,error:err});
+      p.innerHTML=`<div class="card"><h3>Iuran Selapanan belum dapat dimuat</h3><p class="error">Tahap: ${E2(stage)}.</p><p class="error">${E2(raw)}</p><button class="btn secondary" type="button" onclick="window.v97FinanceTab?window.v97FinanceTab('dues',document.querySelector('[data-fin-tab=\"dues\"]')):window.financeTab2('dues',document.querySelector('[data-fin-tab=\"dues\"]'))">Coba lagi</button></div>`;
+    }
   };
   window.openSelapananBillingForm=async function(){
     const roles=Array.isArray(state?.roles)?state.roles.map(r=>String(r).toUpperCase()):[];
@@ -4394,13 +4427,13 @@ window.financeBudget2=async function(p){const {data,error}=await sb.from('budget
     const period=await window.bkfLoadSelectedPeriod();if(!period?.id)return toast('Periode kepengurusan aktif belum tersedia.','error');
     const typeQ=await sb.from('activity_types').select('id,name,code').eq('code','SELAPANAN').eq('is_active',true).maybeSingle();if(typeQ.error)throw typeQ.error;
     if(!typeQ.data)return toast('Jenis kegiatan Selapanan belum tersedia.','error');
-    const aq=await sb.from('activities').select('id,name,start_at,status,is_published,management_period_id,activity_type_id').eq('management_period_id',period.id).eq('activity_type_id',typeQ.data.id).order('start_at',{ascending:false}).limit(50);if(aq.error)throw aq.error;
+    const aq=await sb.from('activities').select('id,name,start_at,venue,status,is_published,management_period_id,activity_type_id').eq('management_period_id',period.id).eq('activity_type_id',typeQ.data.id).order('start_at',{ascending:false}).limit(50);if(aq.error)throw aq.error;
     if(!(aq.data||[]).length)return toast('Belum ada kegiatan Selapanan pada periode aktif. Buat/publikasikan kegiatan Selapanan terlebih dahulu.','error');
     const rq=await sb.from('selapanan_dues_rules').select('id,amount,effective_from,effective_until,status').eq('management_period_id',period.id).eq('status','ACTIVE').order('effective_from',{ascending:false}).limit(1).maybeSingle();if(rq.error)throw rq.error;
     if(!rq.data)return toast('Nominal master Iuran Selapanan belum ditetapkan.','error');
     document.getElementById('selapananBillingModal')?.remove();
-    document.body.insertAdjacentHTML('beforeend',`<div class="backdrop" id="selapananBillingModal"><div class="modal-sheet"><div class="row"><div><h3>Penagihan Selapanan</h3><div class="small muted">Pilih satu kegiatan. Sistem menagihkan satu kewajiban dan satu tagihan untuk setiap lembaga aktif yang belum ditagihkan.</div></div><button class="btn secondary" type="button" onclick="document.getElementById('selapananBillingModal')?.remove()">Tutup</button></div><form id="selapananBillingForm"><div class="field"><label>Kegiatan Selapanan</label><select name="activity" id="selapananBillingActivity" required>${(aq.data||[]).map(a=>`<option value="${E(a.id)}">${E(a.name)} · ${a.start_at?date(a.start_at):'-'}${a.is_published?' · Terbit':''}</option>`).join('')}</select></div><div id="selapananBillingPreview" class="small muted" style="margin-top:10px">Memeriksa status tagihan...</div><button class="btn primary" type="submit" style="width:100%;margin-top:12px">TAGIHKAN SELAPANAN</button></form></div></div>`);
-    const preview=async()=>{const id=document.getElementById('selapananBillingActivity')?.value;if(!id)return;const oq=await sb.from('selapanan_dues_obligations').select('id,institution_id,status').eq('activity_id',id);const ids=new Set((oq.data||[]).map(x=>x.institution_id));const iq=await sb.from('institutions').select('id,name').eq('status','ACTIVE').order('name');const pending=(iq.data||[]).filter(i=>!ids.has(i.id));document.getElementById('selapananBillingPreview').innerHTML=`${iq.data?.length||0} lembaga aktif · <strong>${pending.length}</strong> belum ditagihkan · ${ids.size} sudah memiliki kewajiban untuk kegiatan ini.`};
+    document.body.insertAdjacentHTML('beforeend',`<div class="backdrop" id="selapananBillingModal"><div class="modal-sheet"><div class="row"><div><h3>Penagihan Selapanan</h3><div class="small muted">Pilih kegiatan Selapanan berdasarkan tanggal dan tempatnya. Sistem hanya membuat tagihan bagi lembaga aktif yang belum memiliki tagihan untuk kegiatan tersebut.</div></div><button class="btn secondary" type="button" onclick="document.getElementById('selapananBillingModal')?.remove()">Tutup</button></div><form id="selapananBillingForm"><div class="field"><label>Kegiatan Selapanan</label><select name="activity" id="selapananBillingActivity" required>${(aq.data||[]).map(a=>`<option value="${E(a.id)}">${E(a.name)} · ${a.start_at?date(a.start_at):'Tanggal belum ditentukan'}${a.venue?' · '+E(a.venue):' · Lokasi belum ditentukan'}${a.is_published?' · Sudah diumumkan':''}</option>`).join('')}</select></div><div id="selapananBillingPreview" class="small muted" style="margin-top:10px">Memeriksa status tagihan...</div><button class="btn primary" type="submit" style="width:100%;margin-top:12px">Buat Tagihan Selapanan</button></form></div></div>`);
+    const preview=async()=>{const id=document.getElementById('selapananBillingActivity')?.value;if(!id)return;const oq=await sb.from('selapanan_dues_obligations').select('id,institution_id,status').eq('activity_id',id);const ids=new Set((oq.data||[]).map(x=>x.institution_id));const iq=await sb.from('institutions').select('id,name').eq('status','ACTIVE').order('name');const pending=(iq.data||[]).filter(i=>!ids.has(i.id));document.getElementById('selapananBillingPreview').innerHTML=`${iq.data?.length||0} lembaga aktif · <strong>${pending.length}</strong> lembaga belum memiliki tagihan · ${ids.size} lembaga sudah memiliki tagihan untuk kegiatan ini.`};
     document.getElementById('selapananBillingActivity').onchange=preview;await preview();
     document.getElementById('selapananBillingForm').onsubmit=async e=>{e.preventDefault();const btn=e.target.querySelector('button[type="submit"]')||e.target.querySelector('button.btn.primary');if(btn){btn.disabled=true;btn.textContent='Menagihkan...'}try{const q=await sb.rpc('tagihkan_selapanan_v408',{p_activity_id:document.getElementById('selapananBillingActivity').value});if(q.error)throw q.error;document.getElementById('selapananBillingModal')?.remove();const d=q.data||{};toast(`Penagihan selesai. ${d.created_obligations||0} kewajiban dan ${d.created_bills||0} tagihan baru dibuat.`,'success');await financeTab2('dues')}catch(ex){toast(friendlyError(ex),'error')}finally{if(btn){btn.disabled=false;btn.textContent='TAGIHKAN SELAPANAN'}}};
   };
