@@ -564,18 +564,40 @@ async function showPayments(){
   const form=document.getElementById('payForm'),instSel=document.getElementById('payInstitution'),billSel=document.getElementById('payBill'),info=document.getElementById('payBillInfo'),amountEl=document.getElementById('payAmount'),msg=document.getElementById('payMsg'),submit=document.getElementById('paySubmit');
   let bills=[];
   const resetBillSelection=()=>{billSel.value='';info.style.display='none';info.innerHTML='';amountEl.value='';amountEl.removeAttribute('max')};
-  const renderBillInfo=()=>{const b=bills.find(x=>x.bill_id===billSel.value);if(!b){resetBillSelection();return}info.style.display='block';info.innerHTML=`<strong>Lembaga: ${esc(b.institution_name||instSel.options[instSel.selectedIndex]?.text||'-')}</strong><div class="small" style="margin-top:5px">Item: ${esc(b.bill_title||b.bill_number||'Tagihan')}</div><div class="small">Keterangan: ${esc(b.bill_title||'Tagihan')}</div><div class="small">Nominal: ${fmt(b.total_amount)} · Terbayar ${fmt(b.paid_amount)} · <strong>Sisa ${fmt(b.outstanding_amount)}</strong></div><div class="small">Status: ${esc(b.status||'ISSUED')}</div>`;amountEl.max=String(Number(b.outstanding_amount||0));};
+  const paymentStatusLabel=value=>({ISSUED:'Belum dibayar',UNPAID:'Belum dibayar',PENDING:'Menunggu konfirmasi',PARTIAL:'Dibayar sebagian',PAID:'Lunas',CONFIRMED:'Dikonfirmasi',CANCELLED:'Dibatalkan',CANCELED:'Dibatalkan'})[String(value||'ISSUED').toUpperCase()]||'Belum dibayar';
+  const paymentActivityDate=value=>{if(!value)return 'Tanggal kegiatan belum ditentukan';const d=new Date(value);return Number.isNaN(d.getTime())?'Tanggal kegiatan belum ditentukan':d.toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric',timeZone:'Asia/Jakarta'})};
+  const paymentActivityVenue=value=>{const t=String(value||'').trim().replace(/\s+/g,' ');return t||'Lokasi belum ditentukan'};
+  const paymentBillLabel=b=>b?.payment_display_label||b?.bill_title||'Tagihan';
+  const renderBillInfo=()=>{const b=bills.find(x=>x.bill_id===billSel.value);if(!b){resetBillSelection();return}info.style.display='block';const isSelapanan=!!b.is_selapanan;const detail=isSelapanan?`<div class="small">Kegiatan: ${esc(b.selapanan_activity?.name||'Selapanan')}</div><div class="small">Tanggal: ${esc(paymentActivityDate(b.selapanan_activity?.start_at))}</div><div class="small">Lokasi: ${esc(paymentActivityVenue(b.selapanan_activity?.venue))}</div>`:`<div class="small">Keterangan: ${esc(b.bill_title||'Tagihan')}</div>`;info.innerHTML=`<strong>Lembaga: ${esc(b.institution_name||instSel.options[instSel.selectedIndex]?.text||'-')}</strong><div class="small" style="margin-top:5px">Jenis tagihan: ${esc(paymentBillLabel(b))}</div>${detail}<div class="small">Total tagihan: ${fmt(b.total_amount)} · Sudah dibayar: ${fmt(b.paid_amount)} · <strong>Sisa: ${fmt(b.outstanding_amount)}</strong></div><div class="small">Status: ${esc(paymentStatusLabel(b.status))}</div>`;amountEl.max=String(Number(b.outstanding_amount||0));};
   const loadBills=async institutionId=>{
-    bills=[];resetBillSelection();billSel.disabled=true;billSel.innerHTML='<option value="">Memuat jenis/nama tagihan...</option>';
-    if(!institutionId){billSel.innerHTML='<option value="">— Pilih nama lembaga terlebih dahulu —</option>';return}
+    bills=[];resetBillSelection();billSel.disabled=true;billSel.innerHTML='<option value="">Memuat daftar tagihan...</option>';
+    if(!institutionId){billSel.innerHTML='<option value="">— Pilih lembaga terlebih dahulu —</option>';return}
     const br=await sb.from('v_institution_bill_balance').select('*').eq('institution_id',institutionId).gt('outstanding_amount',0).order('bill_date',{ascending:false});
     if(br.error){billSel.innerHTML='<option value="">Tagihan gagal dimuat</option>';throw br.error}
     bills=br.data||[];
-    const ids=bills.map(x=>x.bill_id).filter(Boolean);let titles=[];
-    if(ids.length){const ir=await sb.from('bill_items').select('bill_id,description').in('bill_id',ids).order('id',{ascending:true});if(ir.error)throw ir.error;titles=ir.data||[]}
+    const ids=bills.map(x=>x.bill_id).filter(Boolean);let titles=[],obligations=[];
+    if(ids.length){const ir=await sb.from('bill_items').select('*').in('bill_id',ids).order('id',{ascending:true});if(ir.error)throw ir.error;titles=ir.data||[]}
+    // Hubungkan tagihan Selapanan hanya melalui penanda relasi yang benar-benar tersimpan.
+    // Tidak mengubah tagihan, pembayaran, nomor, maupun data kewajiban yang sudah ada.
+    if(bills.length){const oq=await sb.from('selapanan_dues_obligations').select('*').eq('institution_id',institutionId);if(oq.error)throw oq.error;obligations=oq.data||[]}
+    const activityIds=[...new Set(obligations.map(o=>o.activity_id).filter(Boolean))];let activities=[];
+    if(activityIds.length){const aq=await sb.from('activities').select('id,name,start_at,venue').in('id',activityIds);if(aq.error)throw aq.error;activities=aq.data||[]}
+    const activityMap=new Map(activities.map(a=>[String(a.id),a]));
+    const itemRowsByBill=new Map();titles.forEach(it=>{const k=String(it.bill_id||'');if(!itemRowsByBill.has(k))itemRowsByBill.set(k,[]);itemRowsByBill.get(k).push(it)});
+    const linkedObligation=(bill)=>{
+      const rows=itemRowsByBill.get(String(bill.bill_id))||[];
+      const direct=obligations.filter(o=>[o.bill_id,o.invoice_id,o.related_bill_id].some(v=>v&&String(v)===String(bill.bill_id))||rows.some(it=>[it.obligation_id,it.source_id,it.source_record_id,it.reference_id].some(v=>v&&String(v)===String(o.id))));
+      if(direct.length===1)return direct[0];
+      const searchable=[bill.bill_number,bill.bill_title,...rows.flatMap(it=>[it.description,it.source_type,it.source_id,it.source_record_id,it.reference_id])].filter(Boolean).join(' ');
+      const byEmbeddedId=obligations.filter(o=>[o.id,o.activity_id].some(v=>v&&searchable.includes(String(v))));
+      if(byEmbeddedId.length===1)return byEmbeddedId[0];
+      const isSelapanan=/selapanan/i.test(searchable)||direct.length>0;
+      if(isSelapanan){const byAmount=obligations.filter(o=>Number(o.amount)===Number(bill.total_amount));if(byAmount.length===1)return byAmount[0];if(obligations.length===1)return obligations[0]}
+      return null;
+    };
     const firstTitle={};titles.forEach(x=>{if(!firstTitle[x.bill_id]&&x.description)firstTitle[x.bill_id]=x.description});
-    bills=bills.map(x=>({...x,bill_title:firstTitle[x.bill_id]||x.bill_number||'Tagihan'}));
-    billSel.innerHTML='<option value="">— Pilih item tagihan —</option>'+bills.map(x=>`<option value="${esc(x.bill_id)}">${esc(x.bill_title)} · ${esc(x.bill_number||'')} · Sisa ${fmt(x.outstanding_amount)}</option>`).join('');
+    bills=bills.map(x=>{const billTitle=firstTitle[x.bill_id]||x.bill_number||'Tagihan',obligation=linkedObligation({...x,bill_title:billTitle}),activity=obligation?.activity_id?activityMap.get(String(obligation.activity_id)):null,isSelapanan=!!activity||/selapanan/i.test(String(billTitle));const displayLabel=isSelapanan?`Iuran Selapanan${activity?` · ${paymentActivityDate(activity.start_at)} · ${paymentActivityVenue(activity.venue)}`:''}`:billTitle;return {...x,bill_title:billTitle,selapanan_activity:activity||null,is_selapanan:isSelapanan,payment_display_label:displayLabel}});
+    billSel.innerHTML='<option value="">— Pilih tagihan yang akan dibayar —</option>'+bills.map(x=>`<option value="${esc(x.bill_id)}">${esc(x.payment_display_label)} · Sisa ${fmt(x.outstanding_amount)}</option>`).join('');
     billSel.disabled=false;if(!bills.length)billSel.innerHTML='<option value="">— Tidak ada tagihan yang masih harus dibayar —</option>';
   };
   const askPrintReceipt=()=>new Promise(resolve=>{
@@ -2496,14 +2518,6 @@ window.v12TogglePassword=function(id,btn){const e=document.getElementById(id);if
     ['BENDAHARA','Bendahara Pengurus','Ustadzah Sri Mujazanah'],
     ['ANGGOTA','Anggota Pengurus','Ustadz Muhammad Rosidin; Ustadz Muhammad Muhlisin. S.pd; Ustadz Suyono; Ky. M. Ishaq; Ustadz M. Irfan; Ustadz M. Zuhron; Ustadz Arismiyati. Al- hafidzoh; Nyai Maesaroh. S.pd']
   ];
-  const EXAM_MASTER=[
-    ['TAJWID','Tajwid + Makhorijul Huruf','Ky. Ahmad Fathunnur. C.Eq'],
-    ['GHORIB','Ghorib','Ky. M. Ishaq'],
-    ['SURAT_PENDEK','Surat Pendek','Nyi Maesaroh'],
-    ['DOA_HARIAN',"Do'a Harian",'Ustadzah Arismiyati. Al- hafidzoh'],
-    ['SHOLAT','Sholat','Ustadz Muhammad Rosidin'],
-    ['BTA','BTA','Ustadz Yusuf Tri Waluyo. S.pd']
-  ];
   const welcomeByRole={
     KETUA:'Semoga amanah dalam memimpin, mengayomi lembaga, dan menjaga kemaslahatan bersama.',
     SEKRETARIS:'Semoga dimudahkan dalam mengelola administrasi, agenda, surat, dan tugas kesekretariatan.',
@@ -2522,13 +2536,9 @@ window.v12TogglePassword=function(id,btn){const e=document.getElementById(id);if
     }).join('');
     return '<div class="card" id="v35RosterCard"><div class="row"><div><h3 style="margin:0">Susunan Pengurus</h3><div class="small muted">Daftar awal sesuai jabatan yang telah ditetapkan. Data yang belum lengkap dapat dilengkapi melalui Edit.</div></div><span class="status ok">Master</span></div><div class="list" style="margin-top:10px">'+rows+'</div></div>';
   }
-  function examinerCard(){
-    const rows=EXAM_MASTER.map(function(x){return '<div class="list-item"><div class="row"><strong>'+E(x[1])+'</strong><span class="status">'+E(x[0])+'</span></div><div class="small" style="margin-top:5px">Penguji: <strong>'+E(x[2])+'</strong></div></div>';}).join('');
-    return '<div class="card" id="v35ExaminerMasterCard"><div class="row"><div><h3 style="margin:0">Daftar Penguji & Materi</h3><div class="small muted">Penempatan materi mengikuti daftar yang telah ditetapkan.</div></div><span class="status ok">Master</span></div><div class="list" style="margin-top:10px">'+rows+'</div></div>';
-  }
-  
   const oldAssignment=window.openExaminerAssignmentForm;
-  window.V35_MASTER={roles:ROLE_MASTER,examiners:EXAM_MASTER};
+  // Master daftar penguji statis dihapus. Penugasan penguji menggunakan data akun/profil dinamis.
+  window.V35_MASTER={roles:ROLE_MASTER};
 })();
 </script>
 <script id="v37-institution-users-motto-ui">
