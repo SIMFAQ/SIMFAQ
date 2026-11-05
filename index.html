@@ -885,7 +885,7 @@ async function v10PrepareExaminerAssignmentForm(){
   const [periodQ,ems,ts]=await Promise.all([
    sb.from('management_periods').select('id').in('organization_id',orgIds).eq('status','ACTIVE').order('start_date',{ascending:false}).limit(10),
    sb.from('exam_materials').select('id,code,name').eq('status','ACTIVE').order('sequence'),
-   sb.from('examiner_assignment_templates').select('exam_type,exam_material_id,examiner_user_id').eq('status','ACTIVE')
+   sb.from('examiner_assignment_templates').select('exam_type,exam_material_id,examiner_user_id').eq('status','ACTIVE').in('organization_id',orgIds).in('management_period_id',pids)
   ]);if(periodQ.error||ems.error||ts.error)throw(periodQ.error||ems.error||ts.error);
   const pids=(periodQ.data||[]).map(x=>x.id),members=pids.length?(await sb.from('management_members').select('user_id,role_id').in('management_period_id',pids).eq('status','ACTIVE')).data||[]:[];
   const roleIds=[...new Set(members.map(x=>x.role_id).filter(Boolean))],userIds=[...new Set(members.map(x=>x.user_id).filter(Boolean))];
