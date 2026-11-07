@@ -24,7 +24,7 @@
 <!-- BK-FUSPAQ-NU V481: Tombol dan mode edit Aturan Ujian & Wisuda; revisi aturan tetap berversi, biaya tetap terkendali. Baseline V480. -->
 
 <html><head>
-<!-- BK-FUSPAQ-NU-V430: targeted registration save-state fix based on V429; no schema changes. --><!-- BK-FUSPAQ-NU V456: fokus keyboard berurutan pada form Penilaian dan Pendaftaran Ujian; baseline V455; hanya dua alur ini yang diubah. --><meta content="V526 - Footer sticky role-aware + WhatsApp konsultasi SIMFAQ" name="bkf-version"/><meta charset="utf-8"><meta content="width=device-width,initial-scale=1" name="viewport"/><title>BK FUSPAQ NU V542</title><style>
+<!-- BK-FUSPAQ-NU-V430: targeted registration save-state fix based on V429; no schema changes. --><!-- BK-FUSPAQ-NU V456: fokus keyboard berurutan pada form Penilaian dan Pendaftaran Ujian; baseline V455; hanya dua alur ini yang diubah. --><meta content="V526 - Footer sticky role-aware + WhatsApp konsultasi SIMFAQ" name="bkf-version"/><meta charset="utf-8"><meta content="width=device-width,initial-scale=1" name="viewport"/><meta name="theme-color" content="#176b3a"><meta name="application-name" content="SIMFAQ - BK FUSPAQ NU"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" href="./icons/icon-512.png"><link rel="apple-touch-icon" href="./icons/icon-512.png"><title>BK FUSPAQ NU V542</title><style>
 :root{--green:#176b3a;--green2:#0f542d;--gold:#b78a24;--bg:#f6f8f6;--card:#fff;--line:#dce5df;--muted:#66756d;--text:#18231d;--ok:#176b3a;--danger:#a33a35;--warn:#8a6500;--radius:16px;--shadow:0 6px 22px rgba(25,55,38,.07);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text)}button,input,select,textarea{font:inherit}a{color:inherit}
 
 body{min-height:100vh}.shell{min-height:100vh;padding-top:76px;padding-bottom:20px}
@@ -885,7 +885,7 @@ async function v10PrepareExaminerAssignmentForm(){
   const [periodQ,ems,ts]=await Promise.all([
    sb.from('management_periods').select('id').in('organization_id',orgIds).eq('status','ACTIVE').order('start_date',{ascending:false}).limit(10),
    sb.from('exam_materials').select('id,code,name').eq('status','ACTIVE').order('sequence'),
-   sb.from('examiner_assignment_templates').select('exam_type,exam_material_id,examiner_user_id').eq('status','ACTIVE').in('organization_id',orgIds).in('management_period_id',pids)
+   sb.from('examiner_assignment_templates').select('exam_type,exam_material_id,examiner_user_id').eq('status','ACTIVE')
   ]);if(periodQ.error||ems.error||ts.error)throw(periodQ.error||ems.error||ts.error);
   const pids=(periodQ.data||[]).map(x=>x.id),members=pids.length?(await sb.from('management_members').select('user_id,role_id').in('management_period_id',pids).eq('status','ACTIVE')).data||[]:[];
   const roleIds=[...new Set(members.map(x=>x.role_id).filter(Boolean))],userIds=[...new Set(members.map(x=>x.user_id).filter(Boolean))];
@@ -6061,7 +6061,7 @@ window.showMemoryAlbum=async function(eventId=''){
   function currentUserId(){return typeof state!=='undefined'&&state.profile&&state.profile.id?state.profile.id:null}
   function b64ToUint8Array(base64){var padding="=".repeat((4-base64.length%4)%4),raw=atob((base64+padding).replace(/-/g,"+").replace(/_/g,"/")),out=new Uint8Array(raw.length);for(var i=0;i<raw.length;i++)out[i]=raw.charCodeAt(i);return out}
   function supported(){return window.isSecureContext&&("Notification" in window)&&("serviceWorker" in navigator)&&("PushManager" in window)}
-  async function registerSW(){if(!("serviceWorker" in navigator))throw new Error("Browser tidak mendukung Service Worker.");if(!swPromise)swPromise=navigator.serviceWorker.register("./sw.js",{scope:"./"});return await swPromise}
+  async function registerSW(){if(!("serviceWorker" in navigator))throw new Error("Browser tidak mendukung Service Worker.");if(!swPromise){swPromise=(window.bkfPwaRegistration||navigator.serviceWorker.register(new URL("./sw.js",document.baseURI).href,{scope:new URL("./",document.baseURI).pathname})).catch(function(e){swPromise=null;throw e})}return await swPromise}
   function subJson(sub){var j=sub.toJSON();return {endpoint:j.endpoint,p256dh:j.keys&&j.keys.p256dh,auth:j.keys&&j.keys.auth}}
   async function saveSub(sub){var uid=currentUserId();if(!uid)throw new Error("Profil akun belum siap.");var x=subJson(sub);if(!x.endpoint||!x.p256dh||!x.auth)throw new Error("Data subscription perangkat tidak lengkap.");var q=await sb.from("push_subscriptions").upsert({user_id:uid,endpoint:x.endpoint,p256dh:x.p256dh,auth:x.auth,user_agent:navigator.userAgent,updated_at:new Date().toISOString()},{onConflict:"user_id,endpoint"});if(q.error)throw q.error;return x}
   async function subscribe(){if(!currentUserId())throw new Error("Profil akun belum tersedia.");if(!supported())throw new Error("Browser/perangkat ini belum mendukung notifikasi push.");var permission=Notification.permission;if(permission!=="granted")permission=await Notification.requestPermission();if(permission!=="granted")throw new Error(permission==="denied"?"Izin notifikasi diblokir oleh browser.":"Izin notifikasi belum diberikan.");var reg=await registerSW();var sub=await reg.pushManager.getSubscription();if(!sub)sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:b64ToUint8Array(VAPID_PUBLIC_KEY)});await saveSub(sub);return sub}
@@ -6958,6 +6958,26 @@ window.showExamGovernance=async function(){const host=document.getElementById('p
 })();
 </script>
 
+
+<script id="bkf-pwa-registration-v1">
+(function(){
+  'use strict';
+  // PWA web runtime only; preserve the existing Kodular/AppInventor bridge.
+  try { if (window.bkfAppBridge && window.bkfAppBridge.hasNative && window.bkfAppBridge.hasNative()) return; } catch (_) {}
+  if (!window.isSecureContext || !("serviceWorker" in navigator)) return;
+  var appBase = new URL("./", document.baseURI);
+  if (appBase.origin !== window.location.origin) return;
+  var scriptUrl = new URL("sw.js", appBase).href;
+  window.bkfPwaRegistration = navigator.serviceWorker.register(scriptUrl, { scope: appBase.pathname }).catch(function(err){
+    window.bkfPwaRegistration = null;
+    throw err;
+  });
+  // Registration failure must not break normal SIMFAQ startup.
+  window.bkfPwaRegistration.catch(function(err){
+    console.warn("[SIMFAQ PWA] Service Worker belum terdaftar:", err);
+  });
+})();
+</script>
 </html>
 
 <!-- V515: fitur Pemantauan Pengguna dihapus dari HTML; tidak ada perubahan database. -->
