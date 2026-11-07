@@ -1,10 +1,15 @@
 /* SIMFAQ PWA Service Worker. Cache only same-origin app documents/assets. */
 'use strict';
 const CACHE_PREFIX = 'simfaq-pwa-';
-const CACHE_VERSION = 'v1';
+const CACHE_VERSION = 'v2';
 const CACHE_NAME = CACHE_PREFIX + CACHE_VERSION;
 const APP_BASE = new URL('./', self.registration.scope);
 const OFFLINE_URL = new URL('offline.html', APP_BASE).href;
+
+
+self.addEventListener('message', event => {
+  if (event.data && event.data.type === 'SKIP_WAITING') self.skipWaiting();
+});
 
 self.addEventListener('install', event => {
   event.waitUntil((async () => {
@@ -72,7 +77,9 @@ self.addEventListener('push', event => {
     body: payload.body || payload.message || 'Ada informasi terbaru dari SIMFAQ.',
     icon: new URL('icons/icon-192.png', APP_BASE).href,
     badge: new URL('icons/icon-192.png', APP_BASE).href,
-    data: {url: payload.url || './'}
+    data: {url: payload.url || './'},
+    lang: 'id-ID',
+    dir: 'auto'
   };
   event.waitUntil(self.registration.showNotification(title, options));
 });
