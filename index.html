@@ -119,30 +119,56 @@ button[aria-label*="hapus" i] svg,button[title*="hapus" i] svg,button[aria-label
 .v227-data-item strong{display:block;line-height:1.35;overflow-wrap:anywhere}
 @media(max-width:700px){.v227-scroll-list{max-height:58vh}.v227-data-item{padding:11px}.v227-data-item .row{gap:8px;align-items:flex-start}.v227-data-item .status{flex:0 0 auto}}
 </style>
-<style id="v228-friendly-data-lists">.v228-data-list{display:flex;flex-direction:column;border-top:1px solid var(--line);background:transparent}.v228-data-row{padding:13px 4px;border-bottom:1px solid var(--line);background:transparent}.v228-data-row:last-child{border-bottom:0}.v228-data-row strong{display:block;line-height:1.35;overflow-wrap:anywhere}.v228-data-row .v228-main{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}.v228-data-row .v228-main>div:first-child{min-width:0;flex:1}.v228-data-row .v228-meta{margin-top:4px;color:var(--muted);font-size:12px;line-height:1.45}.v228-data-row .v228-amount{margin-top:5px;font-weight:800}.v228-section{padding:0 2px}.paid-stamp{display:inline-block;border:2px solid #28734a;color:#28734a;font-weight:900;font-size:16px;letter-spacing:2px;padding:4px 9px;transform:rotate(-4deg);border-radius:4px}.v228-paid-stamp{display:inline-flex;align-items:center;justify-content:center;border:2px solid #28734a;color:#28734a;font-weight:900;font-size:11px;letter-spacing:.8px;padding:4px 7px;transform:rotate(-3deg);border-radius:4px;white-space:nowrap}@media(max-width:600px){.v228-data-row{padding:12px 2px}.v228-data-row .v228-main{gap:8px}.v228-paid-stamp{font-size:10px;padding:3px 6px}}</style></meta><style id="bkf-network-error-v396">#bkfNetworkError{position:fixed;inset:0;z-index:100000;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(15,42,27,.52);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px)}#bkfNetworkError.show{display:flex}#bkfNetworkError .bkf-network-card{width:min(430px,100%);background:var(--app-card,#fff);border:1px solid var(--line,#dce5df);border-radius:18px;padding:24px 20px 20px;box-shadow:0 18px 45px rgba(13,55,32,.22);text-align:center}#bkfNetworkError .bkf-network-icon{width:62px;height:62px;margin:0 auto 15px;border-radius:18px;display:grid;place-items:center;background:linear-gradient(135deg,#eaf5ee,#f7efd8);border:1px solid #d8e5db;color:var(--primary-dark,var(--green,#176b3a));font-size:30px;font-weight:900;box-shadow:0 6px 16px rgba(20,55,37,.10)}#bkfNetworkError h2{margin:0;color:var(--primary-dark,var(--green,#176b3a));font-size:20px;line-height:1.25;font-weight:850}#bkfNetworkError .bkf-network-stopped{margin-top:4px;color:var(--text-main,var(--text,#18231d));font-size:16px;font-weight:750}#bkfNetworkError .bkf-network-message{margin:16px 0 20px;color:var(--muted,#66756d);font-size:14px;line-height:1.55}#bkfNetworkError .bkf-network-retry{width:100%;min-height:46px;border:0;border-radius:11px;padding:10px 16px;background:linear-gradient(135deg,var(--primary-dark,var(--green2,#0f542d)),var(--primary,var(--green,#176b3a)),var(--primary-light,#3b8b5a));color:#fff;font-size:14px;font-weight:800;cursor:pointer;box-shadow:0 5px 14px rgba(22,107,59,.18)}#bkfNetworkError .bkf-network-retry:active{transform:scale(.985)}#bkfNetworkError .bkf-network-hint{margin-top:10px;color:var(--muted,#66756d);font-size:11px;line-height:1.4}@media(max-width:480px){#bkfNetworkError{padding:14px}#bkfNetworkError .bkf-network-card{padding:22px 16px 17px;border-radius:16px}#bkfNetworkError .bkf-network-icon{width:56px;height:56px;font-size:27px;margin-bottom:13px}}</style>
+<style id="v228-friendly-data-lists">.v228-data-list{display:flex;flex-direction:column;border-top:1px solid var(--line);background:transparent}.v228-data-row{padding:13px 4px;border-bottom:1px solid var(--line);background:transparent}.v228-data-row:last-child{border-bottom:0}.v228-data-row strong{display:block;line-height:1.35;overflow-wrap:anywhere}.v228-data-row .v228-main{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}.v228-data-row .v228-main>div:first-child{min-width:0;flex:1}.v228-data-row .v228-meta{margin-top:4px;color:var(--muted);font-size:12px;line-height:1.45}.v228-data-row .v228-amount{margin-top:5px;font-weight:800}.v228-section{padding:0 2px}.paid-stamp{display:inline-block;border:2px solid #28734a;color:#28734a;font-weight:900;font-size:16px;letter-spacing:2px;padding:4px 9px;transform:rotate(-4deg);border-radius:4px}.v228-paid-stamp{display:inline-flex;align-items:center;justify-content:center;border:2px solid #28734a;color:#28734a;font-weight:900;font-size:11px;letter-spacing:.8px;padding:4px 7px;transform:rotate(-3deg);border-radius:4px;white-space:nowrap}@media(max-width:600px){.v228-data-row{padding:12px 2px}.v228-data-row .v228-main{gap:8px}.v228-paid-stamp{font-size:10px;padding:3px 6px}}</style></meta>
 <style id="v516-dashboard-glossy-colors">
-/* V516: Revisi warna hanya untuk delapan card ringkasan dashboard. Layout dan fungsi tetap. */
-#dashboardAllCounters > .v75-dashboard-counter:nth-child(1){background:#174BC5!important}
-#dashboardAllCounters > .v75-dashboard-counter:nth-child(2){background:#087E83!important}
-#dashboardAllCounters > .v75-dashboard-counter:nth-child(3){background:#B96A00!important}
-#dashboardAllCounters > .v75-dashboard-counter:nth-child(4){background:#087A43!important}
-#dashboardAllCounters > .v75-dashboard-counter:nth-child(5){background:#6426A8!important}
-#dashboardAllCounters .v75-dashboard-counter[data-dashboard-detail="exam_pra_tashih"]{background:#12613C!important}
-#dashboardAllCounters .v75-dashboard-counter[data-dashboard-detail="exam_tashih"]{background:#173C91!important}
-#dashboardAllCounters .v75-dashboard-counter[data-dashboard-detail="graduation_participants"]{background:#A01878!important}
+/* V542: glossy 3D treatment; preserve existing card dimensions, grid, content and behavior. */
+#dashboardAllCounters > .v75-dashboard-counter:nth-child(1){background:linear-gradient(145deg,#2457c7 0%,#1743a4 54%,#102f79 100%)!important}
+#dashboardAllCounters > .v75-dashboard-counter:nth-child(2){background:linear-gradient(145deg,#0a8b8b 0%,#087276 54%,#07545b 100%)!important}
+#dashboardAllCounters > .v75-dashboard-counter:nth-child(3){background:linear-gradient(145deg,#c17a12 0%,#a75b00 54%,#783f00 100%)!important}
+#dashboardAllCounters > .v75-dashboard-counter:nth-child(4){background:linear-gradient(145deg,#15965a 0%,#087341 54%,#07502f 100%)!important}
+#dashboardAllCounters > .v75-dashboard-counter:nth-child(5){background:linear-gradient(145deg,#7739b7 0%,#5a238f 54%,#3d1764 100%)!important}
+#dashboardAllCounters .v75-dashboard-counter[data-dashboard-detail="exam_pra_tashih"]{background:linear-gradient(145deg,#19764d 0%,#105b3a 55%,#0b3f29 100%)!important}
+#dashboardAllCounters .v75-dashboard-counter[data-dashboard-detail="exam_tashih"]{background:linear-gradient(145deg,#24549c 0%,#173d7b 55%,#102951 100%)!important}
+#dashboardAllCounters .v75-dashboard-counter[data-dashboard-detail="graduation_participants"]{background:linear-gradient(145deg,#b52a83 0%,#8c1d65 55%,#641348 100%)!important}
 #dashboardAllCounters .v75-dashboard-counter{
   color:#fff!important;position:relative!important;isolation:isolate;overflow:hidden!important;
-  border:1px solid rgba(255,255,255,.2)!important;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.22),0 5px 12px rgba(15,23,42,.13)!important;
-  text-shadow:0 1px 2px rgba(0,0,0,.16);
+  border:1px solid rgba(255,255,255,.38)!important;
+  box-shadow:inset 0 2px 0 rgba(255,255,255,.52),inset 0 -5px 12px rgba(0,0,0,.18),0 8px 18px rgba(15,35,28,.22),0 2px 4px rgba(15,35,28,.12)!important;
+  text-shadow:0 1px 2px rgba(0,0,0,.2);background-blend-mode:screen;
 }
 #dashboardAllCounters .v75-dashboard-counter::before{
-  content:"";position:absolute;inset:0;pointer-events:none;z-index:0;
-  background:linear-gradient(180deg,rgba(255,255,255,.24) 0%,rgba(255,255,255,.09) 16%,rgba(255,255,255,0) 48%,rgba(0,0,0,.07) 100%);
+  content:"";position:absolute;inset:0;pointer-events:none;z-index:0;border-radius:inherit;
+  background:linear-gradient(164deg,rgba(255,255,255,.48) 0%,rgba(255,255,255,.20) 13%,rgba(255,255,255,.045) 34%,transparent 54%,rgba(0,0,0,.13) 100%);
+}
+#dashboardAllCounters .v75-dashboard-counter::after{
+  content:"";position:absolute;left:8%;right:8%;top:2px;height:34%;border-radius:999px;pointer-events:none;z-index:0;
+  background:linear-gradient(180deg,rgba(255,255,255,.22),rgba(255,255,255,0));filter:blur(2px);
 }
 #dashboardAllCounters .v75-dashboard-counter > *{position:relative;z-index:1;color:#fff!important}
-#dashboardAllCounters .v75-dashboard-counter .v173-counter-detail{border-top-color:rgba(255,255,255,.3)!important}
-#dashboardAllCounters .v75-dashboard-counter:hover{filter:brightness(1.045);box-shadow:inset 0 1px 0 rgba(255,255,255,.28),0 9px 20px rgba(15,23,42,.19)!important}
+#dashboardAllCounters .v75-dashboard-counter .v173-counter-detail{border-top-color:rgba(255,255,255,.36)!important}
+#dashboardAllCounters .v75-dashboard-counter:hover{filter:brightness(1.055);box-shadow:inset 0 2px 0 rgba(255,255,255,.58),inset 0 -5px 12px rgba(0,0,0,.2),0 11px 22px rgba(15,35,28,.26)!important}
+#page > .v35-welcome{
+  position:relative;isolation:isolate;overflow:hidden;
+  background:linear-gradient(145deg,#ffffff 0%,#f0f8f2 46%,#e1eee5 100%)!important;
+  border:1px solid rgba(255,255,255,.92)!important;
+  box-shadow:inset 0 2px 0 rgba(255,255,255,.98),inset 0 -5px 14px rgba(30,82,53,.075),0 10px 25px rgba(20,67,42,.14),0 2px 5px rgba(20,67,42,.08)!important;
+}
+#page > .v35-welcome::after{
+  content:"";position:absolute;inset:0;z-index:0;pointer-events:none;border-radius:inherit;
+  background:linear-gradient(155deg,rgba(255,255,255,.66) 0%,rgba(255,255,255,.18) 23%,transparent 48%,rgba(30,90,54,.035) 100%);
+}
+#page > .v35-welcome > :not(.v493-welcome-logo){position:relative;z-index:1}
+.darus-quran-link,.bkf-update-app-link{box-shadow:inset 0 1px 0 rgba(255,255,255,.85),0 3px 0 rgba(73,76,40,.13),0 6px 12px rgba(38,65,44,.13)!important}
+.bkf-update-app-link{
+  appearance:none;display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:34px;
+  padding:6px 12px;border:1px solid #a9d3b5;border-radius:999px;
+  background:linear-gradient(145deg,#f5fff7 0%,#ccebd4 48%,#9dd3ad 100%);
+  color:#14532d;font:800 13px/1.2 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  cursor:pointer;white-space:nowrap;transition:transform .15s ease,filter .15s ease;
+}
+.bkf-update-app-link:active{transform:translateY(1px);filter:brightness(.97)}
+.bkf-update-app-link:focus-visible{outline:3px solid #176b3a;outline-offset:2px}
+@media(prefers-reduced-motion:reduce){#dashboardAllCounters .v75-dashboard-counter,.bkf-update-app-link{transition:none!important}}
 </style>
 
 
@@ -208,7 +234,7 @@ button[aria-label*="hapus" i] svg,button[title*="hapus" i] svg,button[aria-label
 .v542-bill-table .v542-money{font-weight:700;white-space:nowrap}
 @media(max-width:600px){.v542-bill-summary{grid-template-columns:1fr 1fr}.v542-bill-summary>div:first-child{grid-column:1/-1}.v542-bill-group>summary{padding:12px 10px;gap:8px}.v542-group-total{font-size:.92rem}}
 </style>
-</head><body><div id="app"></div><div id="bkfNetworkError" role="alertdialog" aria-modal="true" aria-labelledby="bkfNetworkErrorTitle" aria-describedby="bkfNetworkErrorMessage"><div class="bkf-network-card"><div class="bkf-network-icon" aria-hidden="true">!</div><h2 id="bkfNetworkErrorTitle">APLIKASI SIMFAQ</h2><div class="bkf-network-stopped">terhenti</div><div id="bkfNetworkErrorMessage" class="bkf-network-message">Tidak ada internet atau jaringan terputus.</div><button id="bkfNetworkRetry" class="bkf-network-retry" type="button">Coba lagi</button><div class="bkf-network-hint">Periksa koneksi internet, kemudian coba lagi.</div></div><script id="bkf-network-error-v396">(function(){const overlay=document.getElementById('bkfNetworkError'),retry=document.getElementById('bkfNetworkRetry');if(!overlay||!retry)return;let retrying=false;const show=()=>overlay.classList.add('show');const hide=()=>{overlay.classList.remove('show');retrying=false;retry.disabled=false};const update=()=>{if(typeof navigator!=='undefined'&&navigator.onLine===false)show()};retry.addEventListener('click',()=>{if(retrying)return;retrying=true;retry.disabled=true;if(typeof navigator!=='undefined'&&navigator.onLine===false){retrying=false;retry.disabled=false;show();return}hide();setTimeout(()=>{try{window.location.reload()}catch(_){update()}},80)});window.addEventListener('offline',show,false);window.addEventListener('online',hide,false);window.addEventListener('pageshow',update,false);update()})();</script><!-- V238: Loader aturan ujian memuat rincian rule sekali, bukan query detail per tahap. -->
+</head><body><div id="app"></div><!-- V238: Loader aturan ujian memuat rincian rule sekali, bukan query detail per tahap. -->
 <script id="bk-supabase-loader">
 window.BKF_CONFIG={supabaseUrl:'https://yhxetkdsuogbehxnarhk.supabase.co',supabasePublishableKey:'sb_publishable_ZnikYPnzJtTD_H8wUq2aiw_4hecYQW_'};
 (function(){
@@ -328,7 +354,10 @@ async function boot(){
     try{const r=await client.auth.getUser();if(r.error)throw r.error;state.user=r.data?.user||null;}catch(e){state.user=null;}
     if(!state.user)return renderLogin();
   }else state.user=session.user;
-  await loadIdentity();renderShell();navigate(state.route||'home');
+  await loadIdentity();renderShell();
+  // Pulihkan pendaftaran push untuk akun yang baru masuk tanpa meminta izin ulang.
+  try{const pushSync=window.bkfSyncPushSubscription?.();if(pushSync?.catch)pushSync.catch(e=>console.warn("[BK PUSH SYNC]",e))}catch(e){console.warn("[BK PUSH SYNC]",e)}
+  navigate(state.route||'home');
   if(window.__BKF_CARD_QUERY__&&typeof window.bkfShowCardValidation==='function')setTimeout(()=>window.bkfShowCardValidation(window.__BKF_CARD_QUERY__),0);
 }
 initAuthRecovery();
@@ -3655,6 +3684,9 @@ html,body{margin:0;padding:0;background:#fff!important;color:#111;font-family:Ar
     try{if(window.notificationInterval)clearInterval(window.notificationInterval)}catch(_){}
     try{if(window.cleanupInterval)clearInterval(window.cleanupInterval)}catch(_){}
     let signedOut=false;
+    let pushCleanupOk=true;
+    // Lepas hanya relasi akun-perangkat di server. Subscription browser dan izin Android tetap dipertahankan.
+    try{if(typeof window.bkfRemovePushSubscriptionForLogout==='function')await window.bkfRemovePushSubscriptionForLogout()}catch(e){pushCleanupOk=false;console.warn('[BK PUSH LOGOUT]',e)}
     try{
       if(window.sb?.auth?.signOut){
         let r=await window.sb.auth.signOut({scope:'local'});
@@ -3665,12 +3697,12 @@ html,body{margin:0;padding:0;background:#fff!important;color:#111;font-family:Ar
     }catch(e){console.warn('[BKF LOGOUT]',e)}
     // Hapus hanya token autentikasi Supabase milik proyek ini; jangan menghapus data aplikasi lain.
     try{localStorage.removeItem('sb-yhxetkdsuogbehxnarhk-auth-token')}catch(_){}
-    try{if(window.caches&&typeof window.caches.keys==='function'){const keys=await window.caches.keys();await Promise.all(keys.map(k=>window.caches.delete(k)))}}catch(e){console.warn('[BKF CACHE CLEAR]',e)}
-    try{if(navigator.serviceWorker?.getRegistrations){const regs=await navigator.serviceWorker.getRegistrations();await Promise.all(regs.map(r=>r.unregister()))}}catch(e){console.warn('[BKF SERVICE WORKER CLEAR]',e)}
+    // Cache aplikasi dan Service Worker PWA dipertahankan saat logout.
+    // Sesi Supabase tetap diakhiri di atas; pengguna berikutnya tetap harus login.
     let native=false;
-    try{if(window.bkfAppBridge?.hasNative?.()){window.bkfAppBridge.send('CLEAR_CACHE');native=!!window.bkfAppBridge.send('LOGOUT')}}catch(e){console.warn('[BKF APK LOGOUT]',e)}
+    try{if(window.bkfAppBridge?.hasNative?.()){native=!!window.bkfAppBridge.send('LOGOUT')}}catch(e){console.warn('[BKF APK LOGOUT]',e)}
     // Browser fallback kembali ke login; pada APK penanda tetap melindungi pembukaan berikutnya.
-    if(!native){try{window.close()}catch(_){};try{if(typeof window.renderLogin==='function')window.renderLogin()}catch(_){}}
+    if(!native){try{window.close()}catch(_){};try{if(typeof window.renderLogin==='function')window.renderLogin(pushCleanupOk?'':'Sesi sudah diakhiri, tetapi pendaftaran notifikasi perangkat belum berhasil dilepas. Perangkat mungkin masih menerima notifikasi akun ini sampai koneksi tersedia dan proses logout diulang.')}catch(_){}}
     return signedOut;
   };
 })();
@@ -3699,8 +3731,13 @@ html,body{margin:0;padding:0;background:#fff!important;color:#111;font-family:Ar
 </script>
 <style id="v52-audit-notification-center">
 .toast-wrap{position:fixed!important;left:50%!important;right:auto!important;top:50%!important;bottom:auto!important;transform:translate(-50%,-50%)!important;z-index:2147483000!important;width:min(420px,calc(100vw - 32px))!important;max-height:min(72vh,520px);overflow:visible;display:grid!important;gap:10px!important;pointer-events:none!important;justify-items:stretch}
-.toast-wrap .toast{width:100%;box-sizing:border-box;pointer-events:auto;box-shadow:0 18px 48px rgba(0,0,0,.22);border-radius:16px;padding:15px 17px;font-size:14px}
-.toast-wrap .toast strong{font-size:14px}.toast-wrap .toast div:last-child{font-size:13px;line-height:1.45}
+.toast-wrap .toast{position:relative;isolation:isolate;width:100%;box-sizing:border-box;pointer-events:auto;overflow:hidden;border:1px solid #d8e6d9!important;border-left:5px solid #26734a!important;border-radius:17px!important;padding:15px 17px!important;background:linear-gradient(145deg,#fff 0%,#f4f8f1 58%,#eaf2e8 100%)!important;color:#244333!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.98),inset 0 -3px 9px rgba(30,82,53,.045),0 16px 38px rgba(20,55,37,.20)!important;font-size:14px}
+.toast-wrap .toast::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;opacity:.25;background:repeating-linear-gradient(45deg,transparent 0 13px,rgba(23,107,58,.045) 13px 14px),repeating-linear-gradient(-45deg,transparent 0 13px,rgba(23,107,58,.035) 13px 14px)}
+.toast-wrap .toast.error{border-left-color:#a95a48!important}.toast-wrap .toast.warn{border-left-color:#b18a3b!important}
+.toast-wrap .toast strong{font-size:14px;color:#185536!important}.toast-wrap .toast div:last-child{font-size:13px;line-height:1.5;color:#4d6556!important}
+.toast-wrap .toast .toast-icon{filter:none;color:#26734a}
+.bkf-notification-item{background-color:#fbf8ec!important;border-color:#d9d0ad!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 4px 12px rgba(72,54,22,.075)!important}
+.bkf-notification-brand{font-size:9px!important;color:#718174!important;font-weight:600!important;border-top-color:rgba(49,90,69,.15)!important}
 @media print{.toast-wrap{display:none!important}}
 </style>
 <script id="v52-audit-notification-runtime">
@@ -3708,9 +3745,38 @@ html,body{margin:0;padding:0;background:#fff!important;color:#111;font-family:Ar
 'use strict';
 function ensureToastWrap52(){let wrap=document.querySelector('.toast-wrap');if(!wrap){wrap=document.createElement('div');wrap.className='toast-wrap';wrap.setAttribute('aria-live','polite');wrap.setAttribute('aria-atomic','false')}if(wrap.parentElement!==document.body)document.body.appendChild(wrap);wrap.style.setProperty('position','fixed','important');wrap.style.setProperty('z-index','2147483647','important');wrap.style.setProperty('pointer-events','none','important');wrap.style.setProperty('isolation','isolate','important');return wrap}
 // Toast validasi khusus dua formulir pendaftaran; gunakan satu implementasi agar tidak ada handler duplikat.
-window.bkfRegistrationToast=function(title,missing,detail){const wrap=ensureToastWrap52();const el=document.createElement('div');el.className='toast error';el.setAttribute('role','alert');el.style.cssText='position:relative;pointer-events:auto;display:flex;align-items:flex-start;gap:10px;padding:15px 42px 15px 16px;border-left:5px solid #dc2626;background:#fff;color:#111;border-radius:14px;box-shadow:0 18px 48px rgba(0,0,0,.24);width:100%;box-sizing:border-box';const icon=document.createElement('div');icon.className='toast-icon';icon.textContent='⚠️';icon.setAttribute('aria-hidden','true');const box=document.createElement('div');box.style.cssText='min-width:0;flex:1';const heading=document.createElement('strong');heading.textContent=String(title||'Pendaftaran belum lengkap');heading.style.cssText='display:block;font-size:14px;margin:0 0 5px;color:#991b1b';const list=document.createElement('div');list.style.cssText='font-size:13px;line-height:1.45;color:#333';if(Array.isArray(missing)&&missing.length){const intro=document.createElement('div');intro.textContent='Bagian yang belum diisi:';list.appendChild(intro);const ul=document.createElement('ul');ul.style.cssText='margin:4px 0 6px;padding-left:20px';missing.forEach(label=>{const li=document.createElement('li');li.textContent=String(label);ul.appendChild(li)});list.appendChild(ul)}const help=document.createElement('div');help.textContent=String(detail||'Lengkapi data wajib sebelum menyimpan.');help.style.cssText='font-size:12px;color:#555';box.append(heading,list,help);const close=document.createElement('button');close.type='button';close.textContent='×';close.setAttribute('aria-label','Tutup peringatan');close.style.cssText='position:absolute;right:8px;top:7px;border:0;background:transparent;color:#555;font-size:24px;line-height:1;cursor:pointer;padding:4px 7px;pointer-events:auto';close.onclick=()=>el.remove();el.append(icon,box,close);wrap.appendChild(el);const timer=setTimeout(()=>el.remove(),8000);close.addEventListener('click',()=>clearTimeout(timer),{once:true});return el};
-window.alert=function(message){const wrap=ensureToastWrap52();const el=document.createElement('div');el.className='toast';el.setAttribute('role','status');const icon=document.createElement('div');icon.className='toast-icon';icon.textContent='✓';const box=document.createElement('div');const title=document.createElement('strong');title.textContent='Informasi';const text=document.createElement('div');text.textContent=String(message??'');box.append(title,text);el.append(icon,box);wrap.appendChild(el);setTimeout(()=>el.remove(),5000)};
-const oldV12Toast=window.v12Toast;if(typeof oldV12Toast==='function'){window.v12Toast=function(message,type){try{const result=oldV12Toast.apply(this,arguments);const wrap=ensureToastWrap52();wrap.style.left='50%';wrap.style.right='auto';wrap.style.top='50%';wrap.style.bottom='auto';wrap.style.transform='translate(-50%,-50%)';wrap.style.zIndex='2147483647';return result}catch(e){return window.bkAlert(message)}}}
+window.bkfRegistrationToast=function(title,missing,detail){const wrap=ensureToastWrap52();const el=document.createElement('div');el.className='toast error';el.setAttribute('role','alert');el.style.cssText='position:relative;isolation:isolate;overflow:hidden;pointer-events:auto;display:flex;align-items:flex-start;gap:10px;padding:15px 42px 15px 16px;border:1px solid #d8e6d9;border-left:5px solid #a95a48;background:linear-gradient(145deg,#fff 0%,#f4f8f1 58%,#eaf2e8 100%);color:#244333;border-radius:17px;box-shadow:inset 0 1px 0 #fff,0 16px 38px rgba(20,55,37,.2);width:100%;box-sizing:border-box';const icon=document.createElement('div');icon.className='toast-icon';icon.textContent='⚠️';icon.setAttribute('aria-hidden','true');const box=document.createElement('div');box.style.cssText='min-width:0;flex:1';const heading=document.createElement('strong');heading.textContent=String(title||'Pendaftaran belum lengkap');heading.style.cssText='display:block;font-size:14px;margin:0 0 5px;color:#185536';const list=document.createElement('div');list.style.cssText='font-size:13px;line-height:1.5;color:#385b43';if(Array.isArray(missing)&&missing.length){const intro=document.createElement('div');intro.textContent='Bagian yang belum diisi:';list.appendChild(intro);const ul=document.createElement('ul');ul.style.cssText='margin:4px 0 6px;padding-left:20px';missing.forEach(label=>{const li=document.createElement('li');li.textContent=String(label);ul.appendChild(li)});list.appendChild(ul)}const help=document.createElement('div');help.textContent=String(detail||'Lengkapi data wajib sebelum menyimpan.');help.style.cssText='font-size:12px;color:#607466';box.append(heading,list,help);const close=document.createElement('button');close.type='button';close.textContent='×';close.setAttribute('aria-label','Tutup peringatan');close.style.cssText='position:absolute;right:8px;top:7px;border:0;background:transparent;color:#555;font-size:24px;line-height:1;cursor:pointer;padding:4px 7px;pointer-events:auto';close.onclick=()=>el.remove();el.append(icon,box,close);wrap.appendChild(el);const timer=setTimeout(()=>el.remove(),8000);close.addEventListener('click',()=>clearTimeout(timer),{once:true});return el};
+window.alert=function(message){const wrap=ensureToastWrap52();const el=document.createElement('div');el.className='toast';el.setAttribute('role','status');const icon=document.createElement('div');icon.className='toast-icon';icon.textContent='☪';const box=document.createElement('div');const title=document.createElement('strong');title.textContent='Informasi';const text=document.createElement('div');text.textContent=String(message??'');box.append(title,text);el.append(icon,box);wrap.appendChild(el);setTimeout(()=>el.remove(),5000)};
+const oldV12Toast=window.v12Toast;if(typeof oldV12Toast==='function'){window.v12Toast=function(message,type){try{if(type==='error'&&/failed to fetch|networkerror|load failed|fetch failed|err_internet_disconnected|network request failed/i.test(String(message||''))&&typeof window.bkfShowCrudNetworkWarning==='function'){window.bkfShowCrudNetworkWarning();return}const result=oldV12Toast.apply(this,arguments);const wrap=ensureToastWrap52();wrap.style.left='50%';wrap.style.right='auto';wrap.style.top='50%';wrap.style.bottom='auto';wrap.style.transform='translate(-50%,-50%)';wrap.style.zIndex='2147483647';return result}catch(e){return window.bkAlert(message)}}}
+window.bkfShowCrudNetworkWarning=function(){
+  var now=Date.now();if(window.__bkfCrudNetworkWarningAt&&now-window.__bkfCrudNetworkWarningAt<8000)return;
+  window.__bkfCrudNetworkWarningAt=now;
+  var wrap=ensureToastWrap52(),el=document.createElement("div");el.className="toast error";el.setAttribute("role","alert");
+  var icon=document.createElement("div");icon.className="toast-icon";icon.textContent="☪";
+  var box=document.createElement("div"),heading=document.createElement("strong"),body=document.createElement("div");
+  heading.textContent="Koneksi Internet Terputus";body.textContent="Mohon maaf, koneksi ke layanan SIMFAQ sedang terputus. Data belum dapat diproses atau dimuat. Periksa jaringan internet, kemudian silakan coba kembali.";var brand=document.createElement("div");brand.textContent="Daneva.Studio";brand.style.cssText="margin-top:7px;font-size:9px;color:#718174;font-weight:600";
+  box.append(heading,body,brand);el.append(icon,box);wrap.appendChild(el);setTimeout(function(){el.remove()},7000);
+};
+(function(){
+  if(typeof window.fetch!=="function"||window.fetch.__bkfCrudNetworkWrapped)return;
+  var original=window.fetch.bind(window);
+  var wrapped=function(input,init){
+    var url=typeof input==="string"?input:(input&&input.url)||"";
+    var method=String((init&&init.method)||(input&&input.method)||"GET").toUpperCase();
+    var isSupabaseApi=/\/rest\/v1\/|\/storage\/v1\/|\/functions\/v1\//i.test(url);
+    var promise=original(input,init);
+    if(!isSupabaseApi)return promise;
+    return promise.then(function(response){
+      if(response&&[502,503,504].includes(response.status))window.bkfShowCrudNetworkWarning();
+      return response;
+    }).catch(function(error){
+      if(error instanceof TypeError||navigator.onLine===false)window.bkfShowCrudNetworkWarning();
+      throw error;
+    });
+  };
+  wrapped.__bkfCrudNetworkWrapped=true;window.fetch=wrapped;
+})();
+
 function E52(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 const style=document.createElement('style');style.textContent='#v52GraduationNumberPrint,#v52ExamNumberPrint{background:#fff;color:#111;padding:12mm;min-height:180mm;box-sizing:border-box}#v52GraduationNumberPrint .number-print-head{display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #222;padding-bottom:5mm;margin-bottom:7mm;font-size:16px}#v52GraduationNumberPrint .number-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8mm}#v52GraduationNumberPrint .number-ticket{border:1px solid #222;border-radius:5mm;padding:6mm;text-align:center;min-height:42mm;box-sizing:border-box;break-inside:avoid}#v52GraduationNumberPrint .number-ticket img{max-width:18mm;max-height:12mm;object-fit:contain;margin-bottom:3mm}#v52GraduationNumberPrint .number-badge{font-size:28px;font-weight:800;margin-bottom:2mm}#v52GraduationNumberPrint .ticket-name{font-size:10px}.empty-print{text-align:center;padding:45mm 10mm;border:1px dashed #777}#v52ExamNumberPrint .report-head{text-align:center;border-bottom:2px solid #222;padding-bottom:5mm;margin-bottom:7mm}#v52ExamNumberPrint table{width:100%;border-collapse:collapse;font-size:10px}#v52ExamNumberPrint th,#v52ExamNumberPrint td{border:1px solid #222;padding:5px;text-align:left}#v52ExamNumberPrint th{text-align:center}#v52ExamNumberPrint .empty-cell{text-align:center;padding:20mm}@media print{#v52GraduationNumberPrint,#v52ExamNumberPrint{padding:0}.no-print{display:none!important}}';document.head.appendChild(style);
 window.__BKFUSPAQ_V52_AUDIT__={notification:'center',nativeAlertReplaced:true,emptyPrintTemplates:['graduation_numbers','exam_numbers']};
@@ -4184,7 +4250,7 @@ window.showHome=async function(){
  const counters=visibleCounters.map(x=>`<button type="button" class="card v75-dashboard-counter" data-dashboard-detail="${E(x[1])}" aria-label="Lihat detail ${E(x[0])}"><div class="v173-counter-title">${E(x[0])}</div><div class="metric v173-counter-number" id="metric-${E(x[1])}"${x[1]==='bills'?' style="font-size:clamp(13px,3.6vw,20px);overflow-wrap:anywhere"':''}>…</div><div class="v173-counter-help">${x[1]==='bills'?'Total sisa nominal tagihan':'Ringkasan data saat ini'}</div><div class="v173-counter-detail">Ketuk untuk detail</div></button>`).join('');
  const roleQuick=quickByRole[dashboardPrimaryRole()]||quickByRole.ANGGOTA||[];
  const quickHtml='<div class="module-card-grid">'+roleQuick.map(x=>'<button class="btn secondary menu-item quick-module module-card-btn" type="button" onclick="navigate(\''+x[1]+'\')"><strong>'+E(x[0])+'</strong></button>').join('')+'</div>';
- host.innerHTML='<div class="card hero v35-welcome"><div style="font-size:14px;color:#6b7c70;font-weight:700">Assalamu\'alaikum Wr. Wb.</div><h2 class="v41-user-name" style="margin:6px 0 2px">'+E(name)+'</h2><div class="row" style="justify-content:flex-start;gap:8px;margin:6px 0 10px"><span class="status ok">'+E(role)+'</span><span class="status '+(status==='ACTIVE'?'ok':'bad')+'">'+E(status==='ACTIVE'?'Aktif':status)+'</span><button type="button" class="darus-quran-link" onclick="openDarusQuranViewer()" aria-label="Buka Darus Al-Qur\'an di dalam aplikasi"><span class="darus-quran-icon" aria-hidden="true">☪</span><span>Darus Al-Qur\'an</span><span class="darus-quran-arrow" aria-hidden="true">↗</span></button></div><p class="v35-message" style="margin:8px 0 4px">Selamat datang di Sistem Informasi BK FUSPAQ NU.</p><p class="small muted" style="margin:0">'+E(dashboardGreeting())+'</p></div><div class="v75-dashboard-counters" id="dashboardAllCounters">'+counters+'<div id="dashboardExamParticipantCards" style="display:contents"></div></div>';
+ host.innerHTML='<div class="card hero v35-welcome"><div style="font-size:14px;color:#6b7c70;font-weight:700">Assalamu\'alaikum Wr. Wb.</div><h2 class="v41-user-name" style="margin:6px 0 2px">'+E(name)+'</h2><div class="row" style="justify-content:flex-start;gap:8px;margin:6px 0 10px"><span class="status ok">'+E(role)+'</span><span class="status '+(status==='ACTIVE'?'ok':'bad')+'">'+E(status==='ACTIVE'?'Aktif':status)+'</span><button type="button" class="darus-quran-link" onclick="openDarusQuranViewer()" aria-label="Buka Darus Al-Qur\'an di dalam aplikasi"><span class="darus-quran-icon" aria-hidden="true">☪</span><span>Darus Al-Qur\'an</span><span class="darus-quran-arrow" aria-hidden="true">↗</span></button><button type="button" class="bkf-update-app-link" id="bkfUpdateAppBtn" onclick="window.bkfPwaInstallOrUpdate?.()" aria-label="Instal atau perbarui aplikasi SIMFAQ"><span aria-hidden="true">↻</span><span>Update Aplikasi</span></button></div><p class="v35-message" style="margin:8px 0 4px">Selamat datang di Sistem Informasi BK FUSPAQ NU.</p><p class="small muted" style="margin:0">'+E(dashboardGreeting())+'</p></div><div class="v75-dashboard-counters" id="dashboardAllCounters">'+counters+'<div id="dashboardExamParticipantCards" style="display:contents"></div></div>';
  const welcomeCard=host.querySelector('.v35-welcome');
  try{
    const orgIdsQ=await sb.rpc('current_organization_ids');
@@ -4198,6 +4264,7 @@ window.showHome=async function(){
  host.querySelectorAll('[data-dashboard-detail]').forEach(card=>card.addEventListener('click',()=>openDashboardDetail(card.dataset.dashboardDetail)));
  await loadDashboardExamCards();
  try{if(typeof loadMetrics==='function')await loadMetrics()}catch(e){console.warn('[Dashboard metrics]',e)}
+ try{window.bkfRenderDashboardPushPrompt?.()}catch(e){console.warn('[Dashboard push prompt]',e)}
 };
 })();
 </script>
@@ -5545,6 +5612,8 @@ window.boot=async function(){
  window.bkfSplash?.status('Memuat profil dan hak akses...');
  const identityOk=await window.loadIdentity();if(explicitLogout()){clearAuthToken();await window.bkfSplash?.hide();return renderLogin()}if(!identityOk){const why=window.__BK_IDENTITY_ERROR__;await window.bkfSplash?.hide();return renderLogin(why?'Login berhasil, tetapi pemeriksaan role gagal: '+why:'Pemeriksaan akun terlalu lama. Silakan coba lagi.')}
  await window.bkfSplash?.hydrate();if(explicitLogout()){clearAuthToken();await window.bkfSplash?.hide();return renderLogin()}window.bkfSplash?.status('Menyiapkan tampilan aplikasi...');renderShell();
+ // Sinkronkan ulang subscription perangkat setelah identitas akun tersedia.
+ try{const pushSync=window.bkfSyncPushSubscription?.();if(pushSync?.catch)pushSync.catch(e=>console.warn("[BK PUSH SYNC]",e))}catch(e){console.warn("[BK PUSH SYNC]",e)}
  // Jangan biarkan splash screen menutupi aplikasi tanpa batas jika pemuatan Beranda tersendat.
  let homeLoaded=false;
  try{await Promise.race([Promise.resolve(window.navigate('home')).then(()=>{homeLoaded=true}),new Promise(resolve=>setTimeout(resolve,15000))]);}catch(e){console.error('[BK HOME STARTUP]',e)}
@@ -6070,8 +6139,21 @@ window.showMemoryAlbum=async function(eventId=''){
   function shouldRemind(){var r=getReminder();if(!r)return true;return (Date.now()-Number(r.at||0))>=REMIND_DAYS*86400000}
   function escText(v){return String(v??"").replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]})}
   async function syncGranted(){try{if(!currentUserId()||!supported()||Notification.permission!=="granted")return null;var reg=await registerSW();var sub=await reg.pushManager.getSubscription();if(!sub)sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:b64ToUint8Array(VAPID_PUBLIC_KEY)});await saveSub(sub);return sub}catch(_){return null}}
+  async function removeCurrentDeviceForLogout(){var uid=currentUserId();if(!uid||!supported()||Notification.permission!=="granted")return true;var reg=await registerSW();var sub=await reg.pushManager.getSubscription();if(!sub)return true;if(!sb||!sb.functions||typeof sb.functions.invoke!=="function")throw new Error("Layanan pelepasan notifikasi belum siap.");var result=await sb.functions.invoke("bkf-push-unsubscribe",{body:{endpoint:sub.endpoint}});if(result&&result.error)throw result.error;return true}
+  window.bkfRemovePushSubscriptionForLogout=removeCurrentDeviceForLogout;
   window.bkfEnablePushNotifications=async function(){var btn=document.getElementById("bkfPushEnableBtn"),st=document.getElementById("bkfPushStatus");if(btn)btn.disabled=true;if(st)st.textContent="Mengaktifkan notifikasi...";try{await subscribe();setReminder("granted");renderPushPanel(true);if(st)st.textContent="Notifikasi berhasil diaktifkan."}catch(e){setReminder(Notification.permission==="denied"?"denied":"declined");if(st)st.textContent=String(e&&e.message||e);if(btn)btn.disabled=false}};
   window.bkfSyncPushSubscription=async function(){var s=await syncGranted();if(s)setReminder("granted");return s};
+  window.bkfRenderDashboardPushPrompt=function(){
+    var host=document.getElementById("page");if(!host||!supported()||Notification.permission==="granted")return;
+    var old=document.getElementById("bkfDashboardPushPrompt");if(old)old.remove();
+    var denied=Notification.permission==="denied";
+    var panel=document.createElement("section");panel.id="bkfDashboardPushPrompt";panel.className="card";
+    panel.style.cssText="margin:0 0 12px;padding:14px 16px;border:1px solid #d6e5d8;border-radius:16px;background:linear-gradient(145deg,#fff,#eef6ef);box-shadow:inset 0 1px 0 #fff,0 5px 14px rgba(23,76,54,.08)";
+    panel.innerHTML='<div style="display:flex;gap:11px;align-items:flex-start"><div aria-hidden="true" style="font-size:24px">☪</div><div style="min-width:0;flex:1"><strong style="color:#185536">Notifikasi SIMFAQ</strong><div class="small" style="margin-top:4px;line-height:1.5;color:#4d6556">'+(denied?'Izin notifikasi pernah diblokir. Aktifkan melalui pengaturan izin situs pada browser/perangkat, lalu buka kembali SIMFAQ.':'Aktifkan notifikasi agar informasi kegiatan, ujian, penilaian, pembayaran, dan pemberitahuan penting dapat diterima pada perangkat ini.')+'</div>'+(!denied?'<button type="button" class="btn primary" id="bkfDashboardPushEnable" style="margin-top:9px">Izinkan Notifikasi</button>':'')+'<div style="font-size:9px;color:#718174;margin-top:7px">Daneva.Studio</div></div></div>';
+    host.insertBefore(panel,host.querySelector("#dashboardAllCounters"));
+    var button=panel.querySelector("#bkfDashboardPushEnable");
+    if(button)button.addEventListener("click",function(){window.bkfEnablePushNotifications?.()});
+  };
   function renderPushPanel(force){var box=document.getElementById("v40Notifs");if(!box)return;var old=document.getElementById("bkfPushPanel");if(old)old.remove();if(!supported())return;var granted=Notification.permission==="granted",denied=Notification.permission==="denied";if(granted){syncGranted();return}if(!force&&!shouldRemind())return;var panel=document.createElement("div");panel.id="bkfPushPanel";panel.className="notice no-print";panel.style.cssText="margin-bottom:14px;padding:16px 17px;border-left:4px solid var(--green,#176b3a);border-radius:12px;background:linear-gradient(135deg,rgba(23,107,58,.12),rgba(23,107,58,.04));box-shadow:0 4px 14px rgba(0,0,0,.06)";var title=denied?"Notifikasi diblokir browser":"Aktifkan Notifikasi";var desc=denied?"Izin notifikasi saat ini diblokir. Aktifkan kembali melalui pengaturan izin situs/browser agar pemberitahuan BK-FUSPAQ-NU dapat diterima.":"Jangan lewatkan informasi penting dari BK-FUSPAQ-NU. Dapatkan pemberitahuan tentang pembayaran, kegiatan, ujian, wisuda, tugas, dan informasi penting lainnya.";panel.innerHTML='<div style="display:flex;gap:12px;align-items:flex-start"><div style="font-size:27px;line-height:1">🔔</div><div style="flex:1"><strong style="font-size:16px">'+title+'</strong><div id="bkfPushStatus" class="small" style="margin-top:6px;line-height:1.55">'+desc+'</div>'+(!denied?'<button id="bkfPushEnableBtn" class="btn primary no-print" style="margin-top:11px;min-width:205px" onclick="bkfEnablePushNotifications()">🔔 Aktifkan Notifikasi</button><div class="small muted" style="margin-top:7px">Anda dapat mengubah izin notifikasi kapan saja melalui pengaturan browser.</div>':'<div class="small muted" style="margin-top:8px">Setelah izin diaktifkan, buka kembali modul notifikasi untuk menyinkronkan perangkat.</div>')+'</div></div>';box.parentNode.insertBefore(panel,box);setReminder(denied?"denied":"shown")}
   function decorate(){var box=document.getElementById("v40Notifs");if(!box)return;var granted=("Notification" in window&&Notification.permission==="granted");if(granted){syncGranted();return}renderPushPanel(false)}
   var oldShow=window.showNotifications;
@@ -6962,20 +7044,88 @@ window.showExamGovernance=async function(){const host=document.getElementById('p
 <script id="bkf-pwa-registration-v1">
 (function(){
   'use strict';
-  // PWA web runtime only; preserve the existing Kodular/AppInventor bridge.
   try { if (window.bkfAppBridge && window.bkfAppBridge.hasNative && window.bkfAppBridge.hasNative()) return; } catch (_) {}
   if (!window.isSecureContext || !("serviceWorker" in navigator)) return;
   var appBase = new URL("./", document.baseURI);
   if (appBase.origin !== window.location.origin) return;
   var scriptUrl = new URL("sw.js", appBase).href;
+  window.bkfPwaInstallPrompt = null;
   window.bkfPwaRegistration = navigator.serviceWorker.register(scriptUrl, { scope: appBase.pathname }).catch(function(err){
-    window.bkfPwaRegistration = null;
-    throw err;
+    window.bkfPwaRegistration = null; throw err;
   });
-  // Registration failure must not break normal SIMFAQ startup.
-  window.bkfPwaRegistration.catch(function(err){
-    console.warn("[SIMFAQ PWA] Service Worker belum terdaftar:", err);
+  window.bkfPwaRegistration.catch(function(err){console.warn("[SIMFAQ PWA] Service Worker belum terdaftar:", err)});
+  window.addEventListener('beforeinstallprompt',function(event){
+    event.preventDefault();window.bkfPwaInstallPrompt=event;
   });
+  window.addEventListener('appinstalled',function(){
+    window.bkfPwaInstallPrompt=null;
+    try{localStorage.setItem('bkf_pwa_installed_once','1')}catch(_){}
+    if(typeof window.v12Toast==='function')window.v12Toast('SIMFAQ berhasil dipasang. Buka aplikasi untuk mengaktifkan notifikasi.','success');
+  });
+  function standalone(){
+    try{return !!(window.matchMedia&&window.matchMedia('(display-mode: standalone)').matches)||window.navigator.standalone===true}catch(_){return false}
+  }
+  function message(title,body,steps){
+    var old=document.getElementById('bkfPwaHelpModal');if(old)old.remove();
+    var overlay=document.createElement('div');overlay.id='bkfPwaHelpModal';overlay.style.cssText='position:fixed;inset:0;z-index:2147482000;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(13,42,27,.58)';
+    var safe=function(v){return String(v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})};
+    overlay.innerHTML='<section role="dialog" aria-modal="true" aria-labelledby="bkfPwaHelpTitle" style="width:min(420px,100%);background:linear-gradient(145deg,#fff,#edf6ef);border:1px solid #cfe1d3;border-radius:20px;padding:20px;box-shadow:inset 0 2px 0 #fff,0 18px 46px #102b1c44;color:#193d29"><div style="text-align:center;font-size:26px;margin-bottom:6px">☪</div><h3 id="bkfPwaHelpTitle" style="margin:0 0 8px;text-align:center;color:#176b3a">'+safe(title)+'</h3><p style="font-size:13px;line-height:1.55;text-align:center;margin:0 0 12px">'+safe(body)+'</p><div style="font-size:13px;line-height:1.65;color:#385b43">'+steps+'</div><div style="font-size:10px;color:#718276;text-align:center;margin-top:12px">Daneva.Studio</div><button type="button" id="bkfPwaHelpClose" style="margin-top:14px;width:100%;min-height:42px;border:0;border-radius:11px;background:linear-gradient(135deg,#176b3a,#2d8d58);color:#fff;font-weight:800">Mengerti</button></section>';
+    document.body.appendChild(overlay);overlay.querySelector('#bkfPwaHelpClose').onclick=function(){overlay.remove()};overlay.addEventListener('click',function(e){if(e.target===overlay)overlay.remove()});
+  }
+  async function installApp(){
+    var promptEvent=window.bkfPwaInstallPrompt;
+    if(!promptEvent){message('Instal SIMFAQ','Untuk memasang aplikasi, gunakan menu browser.','<ol style="padding-left:20px;margin:0"><li>Ketuk menu ⋮ pada Chrome.</li><li>Pilih <strong>Instal aplikasi</strong> atau <strong>Tambahkan ke layar utama</strong>.</li><li>Ikuti petunjuk pada layar.</li></ol>');return}
+    window.bkfPwaInstallPrompt=null;
+    try{await promptEvent.prompt();var choice=await promptEvent.userChoice;if(choice&&choice.outcome==='accepted'){try{localStorage.setItem('bkf_pwa_install_accepted','1')}catch(_){}}}
+    catch(err){console.warn('[SIMFAQ PWA INSTALL]',err);message('Instalasi SIMFAQ','Instalasi belum dapat dimulai. Silakan gunakan menu browser untuk memasang aplikasi.','<p style="margin:0">Buka menu ⋮, lalu pilih <strong>Instal aplikasi</strong> atau <strong>Tambahkan ke layar utama</strong>.</p>')}
+  }
+  async function updateApp(){
+    var btn=document.getElementById('bkfUpdateAppBtn');if(btn){btn.disabled=true;btn.dataset.oldText=btn.innerHTML;btn.innerHTML='<span>↻</span><span>Memeriksa…</span>'}
+    try{
+      var reg=await window.bkfPwaRegistration;if(!reg)throw new Error('Pendaftaran Service Worker belum tersedia.');
+      var hadController=!!navigator.serviceWorker.controller;
+      var updateFound=new Promise(function(resolve){
+        var done=false;var finish=function(v){if(!done){done=true;resolve(v)}};
+        if(reg.waiting){finish(reg.waiting);return}
+        var timer=setTimeout(function(){finish(null)},12000);
+        reg.addEventListener('updatefound',function(){
+          var worker=reg.installing;if(!worker)return;
+          worker.addEventListener('statechange',function(){
+            if(worker.state==='installed'){clearTimeout(timer);finish(hadController?reg.waiting||worker:null)}
+            if(worker.state==='redundant'){clearTimeout(timer);finish(null)}
+          });
+        },{once:true});
+      });
+      await reg.update();
+      var waiting=reg.waiting||await updateFound;
+      if(waiting&&hadController){
+        var changed=new Promise(function(resolve){
+          var done=false;var timer=setTimeout(function(){if(!done){done=true;resolve(false)}},12000);
+          navigator.serviceWorker.addEventListener('controllerchange',function(){if(!done){done=true;clearTimeout(timer);resolve(true)}},{once:true});
+        });
+        waiting.postMessage({type:'SKIP_WAITING'});
+        var activated=await changed;
+        if(activated){if(btn)btn.innerHTML='<span>✓</span><span>Memuat ulang…</span>';window.location.reload();return}
+        if(typeof window.v12Toast==='function')window.v12Toast('Pembaruan sudah diunduh. Tutup lalu buka kembali SIMFAQ untuk menerapkannya.','success');
+      }else if(!hadController&&!standalone()&&window.bkfPwaInstallPrompt){
+        await installApp();
+      }else if(!standalone()&&!window.bkfPwaInstallPrompt){
+        message('Instal SIMFAQ','Browser belum menampilkan pintasan instalasi otomatis. Anda tetap dapat memasang SIMFAQ melalui menu browser.','<ol style="padding-left:20px;margin:0"><li>Ketuk menu ⋮ pada Chrome.</li><li>Pilih <strong>Instal aplikasi</strong> atau <strong>Tambahkan ke layar utama</strong>.</li><li>Konfirmasikan pemasangan.</li></ol>');
+      }else if(typeof window.v12Toast==='function'){
+        window.v12Toast('SIMFAQ sudah menggunakan versi aplikasi terbaru.','success');
+      }
+    }catch(err){
+      console.warn('[SIMFAQ PWA UPDATE]',err);
+      if(typeof window.v12Toast==='function')window.v12Toast('Pembaruan belum dapat diperiksa. Periksa koneksi internet, lalu coba kembali.','error');
+    }finally{
+      if(btn){btn.disabled=false;btn.innerHTML=btn.dataset.oldText||'<span>↻</span><span>Update Aplikasi</span>'}
+    }
+  }
+  window.bkfPwaInstallOrUpdate=async function(){
+    if(standalone()){await updateApp();return}
+    if(window.bkfPwaInstallPrompt){await installApp();return}
+    await updateApp();
+  };
 })();
 </script>
 </html>
