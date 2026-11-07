@@ -121,53 +121,38 @@ button[aria-label*="hapus" i] svg,button[title*="hapus" i] svg,button[aria-label
 </style>
 <style id="v228-friendly-data-lists">.v228-data-list{display:flex;flex-direction:column;border-top:1px solid var(--line);background:transparent}.v228-data-row{padding:13px 4px;border-bottom:1px solid var(--line);background:transparent}.v228-data-row:last-child{border-bottom:0}.v228-data-row strong{display:block;line-height:1.35;overflow-wrap:anywhere}.v228-data-row .v228-main{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}.v228-data-row .v228-main>div:first-child{min-width:0;flex:1}.v228-data-row .v228-meta{margin-top:4px;color:var(--muted);font-size:12px;line-height:1.45}.v228-data-row .v228-amount{margin-top:5px;font-weight:800}.v228-section{padding:0 2px}.paid-stamp{display:inline-block;border:2px solid #28734a;color:#28734a;font-weight:900;font-size:16px;letter-spacing:2px;padding:4px 9px;transform:rotate(-4deg);border-radius:4px}.v228-paid-stamp{display:inline-flex;align-items:center;justify-content:center;border:2px solid #28734a;color:#28734a;font-weight:900;font-size:11px;letter-spacing:.8px;padding:4px 7px;transform:rotate(-3deg);border-radius:4px;white-space:nowrap}@media(max-width:600px){.v228-data-row{padding:12px 2px}.v228-data-row .v228-main{gap:8px}.v228-paid-stamp{font-size:10px;padding:3px 6px}}</style></meta>
 <style id="v516-dashboard-glossy-colors">
-/* V542: glossy 3D treatment; preserve existing card dimensions, grid, content and behavior. */
-#dashboardAllCounters > .v75-dashboard-counter:nth-child(1){background:linear-gradient(145deg,#2457c7 0%,#1743a4 54%,#102f79 100%)!important}
-#dashboardAllCounters > .v75-dashboard-counter:nth-child(2){background:linear-gradient(145deg,#0a8b8b 0%,#087276 54%,#07545b 100%)!important}
-#dashboardAllCounters > .v75-dashboard-counter:nth-child(3){background:linear-gradient(145deg,#c17a12 0%,#a75b00 54%,#783f00 100%)!important}
-#dashboardAllCounters > .v75-dashboard-counter:nth-child(4){background:linear-gradient(145deg,#15965a 0%,#087341 54%,#07502f 100%)!important}
-#dashboardAllCounters > .v75-dashboard-counter:nth-child(5){background:linear-gradient(145deg,#7739b7 0%,#5a238f 54%,#3d1764 100%)!important}
-#dashboardAllCounters .v75-dashboard-counter[data-dashboard-detail="exam_pra_tashih"]{background:linear-gradient(145deg,#19764d 0%,#105b3a 55%,#0b3f29 100%)!important}
-#dashboardAllCounters .v75-dashboard-counter[data-dashboard-detail="exam_tashih"]{background:linear-gradient(145deg,#24549c 0%,#173d7b 55%,#102951 100%)!important}
-#dashboardAllCounters .v75-dashboard-counter[data-dashboard-detail="graduation_participants"]{background:linear-gradient(145deg,#b52a83 0%,#8c1d65 55%,#641348 100%)!important}
+/* V542 dashboard polish: retain the original V75 color identity; add only glossy depth and highlights. */
+#dashboardAllCounters .v75-dashboard-counter[data-dashboard-detail="institutions"]{background:linear-gradient(145deg,#2563eb 0%,#3b82f6 48%,#1d4ed8 100%)!important}
+#dashboardAllCounters .v75-dashboard-counter[data-dashboard-detail="activities"]{background:linear-gradient(145deg,#059669 0%,#10b981 48%,#047857 100%)!important}
+#dashboardAllCounters .v75-dashboard-counter[data-dashboard-detail="bills"]{background:linear-gradient(145deg,#d97706 0%,#f59e0b 48%,#b45309 100%)!important}
+#dashboardAllCounters .v75-dashboard-counter[data-dashboard-detail="payments"]{background:linear-gradient(145deg,#7c3aed 0%,#8b5cf6 48%,#5b21b6 100%)!important}
+#dashboardAllCounters .v75-dashboard-counter[data-dashboard-detail="notifications"]{background:linear-gradient(145deg,#db2777 0%,#ec4899 48%,#9d174d 100%)!important}
 #dashboardAllCounters .v75-dashboard-counter{
   color:#fff!important;position:relative!important;isolation:isolate;overflow:hidden!important;
-  border:1px solid rgba(255,255,255,.38)!important;
-  box-shadow:inset 0 2px 0 rgba(255,255,255,.52),inset 0 -5px 12px rgba(0,0,0,.18),0 8px 18px rgba(15,35,28,.22),0 2px 4px rgba(15,35,28,.12)!important;
-  text-shadow:0 1px 2px rgba(0,0,0,.2);background-blend-mode:screen;
+  border:1px solid rgba(255,255,255,.48)!important;border-radius:16px!important;
+  box-shadow:inset 0 2px 0 rgba(255,255,255,.58),inset 0 -6px 13px rgba(0,0,0,.20),0 8px 18px rgba(15,35,28,.23),0 2px 4px rgba(15,35,28,.13)!important;
+  text-shadow:0 1px 2px rgba(0,0,0,.22);background-blend-mode:normal;
 }
 #dashboardAllCounters .v75-dashboard-counter::before{
   content:"";position:absolute;inset:0;pointer-events:none;z-index:0;border-radius:inherit;
-  background:linear-gradient(164deg,rgba(255,255,255,.48) 0%,rgba(255,255,255,.20) 13%,rgba(255,255,255,.045) 34%,transparent 54%,rgba(0,0,0,.13) 100%);
+  background:linear-gradient(158deg,rgba(255,255,255,.50) 0%,rgba(255,255,255,.22) 15%,rgba(255,255,255,.055) 35%,transparent 56%,rgba(0,0,0,.16) 100%);
 }
 #dashboardAllCounters .v75-dashboard-counter::after{
-  content:"";position:absolute;left:8%;right:8%;top:2px;height:34%;border-radius:999px;pointer-events:none;z-index:0;
-  background:linear-gradient(180deg,rgba(255,255,255,.22),rgba(255,255,255,0));filter:blur(2px);
+  content:"";position:absolute;left:8%;right:8%;top:2px;height:31%;border-radius:999px;pointer-events:none;z-index:0;
+  background:linear-gradient(180deg,rgba(255,255,255,.28),rgba(255,255,255,0));filter:blur(2px);
 }
 #dashboardAllCounters .v75-dashboard-counter > *{position:relative;z-index:1;color:#fff!important}
-#dashboardAllCounters .v75-dashboard-counter .v173-counter-detail{border-top-color:rgba(255,255,255,.36)!important}
-#dashboardAllCounters .v75-dashboard-counter:hover{filter:brightness(1.055);box-shadow:inset 0 2px 0 rgba(255,255,255,.58),inset 0 -5px 12px rgba(0,0,0,.2),0 11px 22px rgba(15,35,28,.26)!important}
-#page > .v35-welcome{
-  position:relative;isolation:isolate;overflow:hidden;
-  background:linear-gradient(145deg,#ffffff 0%,#f0f8f2 46%,#e1eee5 100%)!important;
-  border:1px solid rgba(255,255,255,.92)!important;
-  box-shadow:inset 0 2px 0 rgba(255,255,255,.98),inset 0 -5px 14px rgba(30,82,53,.075),0 10px 25px rgba(20,67,42,.14),0 2px 5px rgba(20,67,42,.08)!important;
-}
-#page > .v35-welcome::after{
-  content:"";position:absolute;inset:0;z-index:0;pointer-events:none;border-radius:inherit;
-  background:linear-gradient(155deg,rgba(255,255,255,.66) 0%,rgba(255,255,255,.18) 23%,transparent 48%,rgba(30,90,54,.035) 100%);
-}
+#dashboardAllCounters .v75-dashboard-counter svg,#dashboardAllCounters .v75-dashboard-counter i,#dashboardAllCounters .v75-dashboard-counter [class*="icon"],#dashboardAllCounters .v75-dashboard-counter [class*="logo"]{color:#fff!important;fill:currentColor!important;stroke:currentColor!important;opacity:1!important}
+#dashboardAllCounters .v75-dashboard-counter .v173-counter-detail{border-top-color:rgba(255,255,255,.42)!important}
+#dashboardAllCounters .v75-dashboard-counter:hover{filter:brightness(1.055);box-shadow:inset 0 2px 0 rgba(255,255,255,.62),inset 0 -6px 13px rgba(0,0,0,.22),0 11px 22px rgba(15,35,28,.27)!important}
+#page > .v35-welcome{position:relative;isolation:isolate;overflow:hidden;background:linear-gradient(145deg,#ffffff 0%,#f0f8f2 46%,#e1eee5 100%)!important;border:1px solid rgba(255,255,255,.92)!important;box-shadow:inset 0 2px 0 rgba(255,255,255,.98),inset 0 -5px 14px rgba(30,82,53,.075),0 10px 25px rgba(20,67,42,.14),0 2px 5px rgba(20,67,42,.08)!important}
+#page > .v35-welcome::after{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;border-radius:inherit;background:linear-gradient(155deg,rgba(255,255,255,.66) 0%,rgba(255,255,255,.18) 23%,transparent 48%,rgba(30,90,54,.035) 100%)}
 #page > .v35-welcome > :not(.v493-welcome-logo){position:relative;z-index:1}
-.darus-quran-link,.bkf-update-app-link{box-shadow:inset 0 1px 0 rgba(255,255,255,.85),0 3px 0 rgba(73,76,40,.13),0 6px 12px rgba(38,65,44,.13)!important}
-.bkf-update-app-link{
-  appearance:none;display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:34px;
-  padding:6px 12px;border:1px solid #a9d3b5;border-radius:999px;
-  background:linear-gradient(145deg,#f5fff7 0%,#ccebd4 48%,#9dd3ad 100%);
-  color:#14532d;font:800 13px/1.2 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-  cursor:pointer;white-space:nowrap;transition:transform .15s ease,filter .15s ease;
-}
+.darus-quran-link,.bkf-update-app-link{box-shadow:inset 0 1px 0 rgba(255,255,255,.85),0 2px 0 rgba(73,76,40,.13),0 4px 9px rgba(38,65,44,.13)!important}
+.bkf-update-app-link{appearance:none;display:inline-flex;align-items:center;justify-content:center;gap:5px;min-height:0;padding:5px 9px;border:1px solid #a9d3b5;border-radius:999px;background:linear-gradient(145deg,#f5fff7 0%,#ccebd4 48%,#9dd3ad 100%);color:#14532d;font:750 12px/1 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;cursor:pointer;white-space:nowrap;transition:transform .15s ease,filter .15s ease}
 .bkf-update-app-link:active{transform:translateY(1px);filter:brightness(.97)}
 .bkf-update-app-link:focus-visible{outline:3px solid #176b3a;outline-offset:2px}
+.darus-quran-center{display:flex;justify-content:center;align-items:center;width:100%;margin:4px 0 8px}
 @media(prefers-reduced-motion:reduce){#dashboardAllCounters .v75-dashboard-counter,.bkf-update-app-link{transition:none!important}}
 </style>
 
@@ -4250,7 +4235,7 @@ window.showHome=async function(){
  const counters=visibleCounters.map(x=>`<button type="button" class="card v75-dashboard-counter" data-dashboard-detail="${E(x[1])}" aria-label="Lihat detail ${E(x[0])}"><div class="v173-counter-title">${E(x[0])}</div><div class="metric v173-counter-number" id="metric-${E(x[1])}"${x[1]==='bills'?' style="font-size:clamp(13px,3.6vw,20px);overflow-wrap:anywhere"':''}>…</div><div class="v173-counter-help">${x[1]==='bills'?'Total sisa nominal tagihan':'Ringkasan data saat ini'}</div><div class="v173-counter-detail">Ketuk untuk detail</div></button>`).join('');
  const roleQuick=quickByRole[dashboardPrimaryRole()]||quickByRole.ANGGOTA||[];
  const quickHtml='<div class="module-card-grid">'+roleQuick.map(x=>'<button class="btn secondary menu-item quick-module module-card-btn" type="button" onclick="navigate(\''+x[1]+'\')"><strong>'+E(x[0])+'</strong></button>').join('')+'</div>';
- host.innerHTML='<div class="card hero v35-welcome"><div style="font-size:14px;color:#6b7c70;font-weight:700">Assalamu\'alaikum Wr. Wb.</div><h2 class="v41-user-name" style="margin:6px 0 2px">'+E(name)+'</h2><div class="row" style="justify-content:flex-start;gap:8px;margin:6px 0 10px"><span class="status ok">'+E(role)+'</span><span class="status '+(status==='ACTIVE'?'ok':'bad')+'">'+E(status==='ACTIVE'?'Aktif':status)+'</span><button type="button" class="darus-quran-link" onclick="openDarusQuranViewer()" aria-label="Buka Darus Al-Qur\'an di dalam aplikasi"><span class="darus-quran-icon" aria-hidden="true">☪</span><span>Darus Al-Qur\'an</span><span class="darus-quran-arrow" aria-hidden="true">↗</span></button><button type="button" class="bkf-update-app-link" id="bkfUpdateAppBtn" onclick="window.bkfPwaInstallOrUpdate?.()" aria-label="Instal atau perbarui aplikasi SIMFAQ"><span aria-hidden="true">↻</span><span>Update Aplikasi</span></button></div><p class="v35-message" style="margin:8px 0 4px">Selamat datang di Sistem Informasi BK FUSPAQ NU.</p><p class="small muted" style="margin:0">'+E(dashboardGreeting())+'</p></div><div class="v75-dashboard-counters" id="dashboardAllCounters">'+counters+'<div id="dashboardExamParticipantCards" style="display:contents"></div></div>';
+ host.innerHTML='<div class="card hero v35-welcome"><div style="font-size:14px;color:#6b7c70;font-weight:700">Assalamu\'alaikum Wr. Wb.</div><h2 class="v41-user-name" style="margin:6px 0 2px">'+E(name)+'</h2><div class="row" style="justify-content:flex-start;align-items:center;gap:8px;margin:6px 0 2px"><span class="status ok">'+E(role)+'</span><span class="status '+(status==='ACTIVE'?'ok':'bad')+'">'+E(status==='ACTIVE'?'Aktif':status)+'</span><button type="button" class="bkf-update-app-link" id="bkfUpdateAppBtn" onclick="window.bkfPwaInstallOrUpdate?.()" aria-label="Instal atau perbarui aplikasi SIMFAQ"><span aria-hidden="true">↻</span><span>Update Aplikasi</span></button></div><div class="darus-quran-center"><button type="button" class="darus-quran-link" onclick="openDarusQuranViewer()" aria-label="Buka Darus Al-Qur\'an di dalam aplikasi"><span class="darus-quran-icon" aria-hidden="true">☪</span><span>Darus Al-Qur\'an</span><span class="darus-quran-arrow" aria-hidden="true">↗</span></button></div><p class="v35-message" style="margin:8px 0 4px">Selamat datang di Sistem Informasi BK FUSPAQ NU.</p><p class="small muted" style="margin:0">'+E(dashboardGreeting())+'</p></div><div class="v75-dashboard-counters" id="dashboardAllCounters">'+counters+'<div id="dashboardExamParticipantCards" style="display:contents"></div></div>';
  const welcomeCard=host.querySelector('.v35-welcome');
  try{
    const orgIdsQ=await sb.rpc('current_organization_ids');
