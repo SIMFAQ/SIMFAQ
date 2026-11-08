@@ -1,7 +1,7 @@
 /* SIMFAQ PWA Service Worker. Cache only same-origin app documents/assets. */
 'use strict';
 const CACHE_PREFIX = 'simfaq-pwa-';
-const CACHE_VERSION = 'v2';
+const CACHE_VERSION = 'v3';
 const CACHE_NAME = CACHE_PREFIX + CACHE_VERSION;
 const APP_BASE = new URL('./', self.registration.scope);
 const OFFLINE_URL = new URL('offline.html', APP_BASE).href;
