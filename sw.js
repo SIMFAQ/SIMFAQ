@@ -1,7 +1,7 @@
 /* SIMFAQ PWA Service Worker. Cache only same-origin app documents/assets. */
 'use strict';
 const CACHE_PREFIX = 'simfaq-pwa-';
-const CACHE_VERSION = 'v3';
+const CACHE_VERSION = 'v4';
 const CACHE_NAME = CACHE_PREFIX + CACHE_VERSION;
 const APP_BASE = new URL('./', self.registration.scope);
 const OFFLINE_URL = new URL('offline.html', APP_BASE).href;
@@ -15,6 +15,7 @@ self.addEventListener('install', event => {
   event.waitUntil((async () => {
     const cache = await caches.open(CACHE_NAME);
     await cache.add(new Request(OFFLINE_URL, {cache: 'reload'}));
+    await self.skipWaiting();
   })());
 });
 
@@ -38,7 +39,7 @@ self.addEventListener('fetch', event => {
   if (request.mode === 'navigate') {
     event.respondWith((async () => {
       try {
-        const response = await fetch(request);
+        const response = await fetch(new Request(request, {cache: 'no-cache'}));
         if (response && response.ok) {
           const cache = await caches.open(CACHE_NAME);
           await cache.put(new Request(new URL('./', APP_BASE).href), response.clone());
