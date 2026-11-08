@@ -159,7 +159,8 @@ button[aria-label*="hapus" i] svg,button[title*="hapus" i] svg,button[aria-label
 .bkf-update-app-link:active{transform:translateY(1px);filter:brightness(.97)}
 .bkf-update-app-link:focus-visible{outline:3px solid #b98b2f;outline-offset:2px}
 @media(prefers-reduced-motion:reduce){#dashboardAllCounters .v75-dashboard-counter,.bkf-update-app-link{transition:none!important}}
-</style><style id="bkf-dashboard-header-controls-v542">.bkf-dashboard-profile-actions{display:flex;flex-wrap:wrap;justify-content:flex-start;align-items:center;gap:8px}.bkf-dashboard-profile-actions .bkf-update-app-link{appearance:none;-webkit-appearance:none;display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;margin:0;padding:5px 9px;border:0;border-radius:999px;font-family:inherit;font-size:12px;font-weight:750;line-height:normal;min-height:0;white-space:nowrap;cursor:pointer;background:linear-gradient(145deg,#fff6c7 0%,#f6d65c 52%,#d9a91d 100%)!important;color:#594000!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.88),0 3px 0 rgba(117,83,0,.16),0 5px 10px rgba(117,83,0,.13)!important}.bkf-darus-center{display:flex;justify-content:center;align-items:center;width:100%;margin:8px 0 2px}</style>
+</style><style id="bkf-dashboard-header-controls-v542">.bkf-dashboard-profile-actions{display:flex;flex-wrap:wrap;justify-content:flex-start;align-items:center;gap:8px}.v35-welcome .bkf-dashboard-profile-actions > button.status.ok.bkf-update-app-link{appearance:none!important;-webkit-appearance:none!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;box-sizing:border-box!important;margin:0!important;padding:5px 9px!important;min-height:0!important;height:auto!important;border:1px solid rgba(153,111,0,.42)!important;border-radius:999px!important;font-family:inherit!important;font-size:12px!important;font-weight:750!important;line-height:normal!important;white-space:nowrap!important;cursor:pointer!important;background:linear-gradient(145deg,#fff6c7 0%,#f6d65c 52%,#d9a91d 100%)!important;color:#594000!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.92),0 3px 0 rgba(117,83,0,.18),0 5px 10px rgba(117,83,0,.14)!important}
+.v35-welcome .bkf-dashboard-profile-actions > button.status.ok.bkf-update-app-link span{font:inherit!important;color:inherit!important}.bkf-darus-center{display:flex;justify-content:center;align-items:center;width:100%;margin:8px 0 2px}</style>
 
 
 <style id="bkf-global-sticky-footer-v524">
@@ -6119,37 +6120,81 @@ window.showMemoryAlbum=async function(eventId=''){
   var REMIND_DAYS=5;
   function currentUserId(){return typeof state!=='undefined'&&state.profile&&state.profile.id?state.profile.id:null}
   function b64ToUint8Array(base64){var padding="=".repeat((4-base64.length%4)%4),raw=atob((base64+padding).replace(/-/g,"+").replace(/_/g,"/")),out=new Uint8Array(raw.length);for(var i=0;i<raw.length;i++)out[i]=raw.charCodeAt(i);return out}
-  function supported(){return window.isSecureContext&&("Notification" in window)&&("serviceWorker" in navigator)&&("PushManager" in window)}
-  async function registerSW(){if(!("serviceWorker" in navigator))throw new Error("Browser tidak mendukung Service Worker.");if(!swPromise){swPromise=(window.bkfPwaRegistration||navigator.serviceWorker.register(new URL("./sw.js",document.baseURI).href,{scope:new URL("./",document.baseURI).pathname})).catch(function(e){swPromise=null;throw e})}return await swPromise}
+  function supported(){return !!(window.isSecureContext&&("Notification" in window)&&("serviceWorker" in navigator)&&("PushManager" in window))}
+  function permission(){return supported()?Notification.permission:"unsupported"}
+  function isInstalledPwa(){try{return window.matchMedia("(display-mode: standalone)").matches||window.navigator.standalone===true}catch(_){return false}}
+  function registerSW(){if(!("serviceWorker" in navigator))return Promise.reject(new Error("Browser tidak mendukung Service Worker."));if(!swPromise){swPromise=(window.bkfPwaRegistration||navigator.serviceWorker.register(new URL("./sw.js",document.baseURI).href,{scope:new URL("./",document.baseURI).pathname,updateViaCache:"none"})).then(function(reg){try{reg.update().catch(function(){})}catch(_){}return reg}).catch(function(e){swPromise=null;throw e})}return swPromise}
   function subJson(sub){var j=sub.toJSON();return {endpoint:j.endpoint,p256dh:j.keys&&j.keys.p256dh,auth:j.keys&&j.keys.auth}}
   async function saveSub(sub){var uid=currentUserId();if(!uid)throw new Error("Profil akun belum siap.");var x=subJson(sub);if(!x.endpoint||!x.p256dh||!x.auth)throw new Error("Data subscription perangkat tidak lengkap.");var q=await sb.from("push_subscriptions").upsert({user_id:uid,endpoint:x.endpoint,p256dh:x.p256dh,auth:x.auth,user_agent:navigator.userAgent,updated_at:new Date().toISOString()},{onConflict:"user_id,endpoint"});if(q.error)throw q.error;return x}
-  async function subscribe(){if(!currentUserId())throw new Error("Profil akun belum tersedia.");if(!supported())throw new Error("Browser/perangkat ini belum mendukung notifikasi push.");var permission=Notification.permission;if(permission!=="granted")permission=await Notification.requestPermission();if(permission!=="granted")throw new Error(permission==="denied"?"Izin notifikasi diblokir oleh browser.":"Izin notifikasi belum diberikan.");var reg=await registerSW();var sub=await reg.pushManager.getSubscription();if(!sub)sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:b64ToUint8Array(VAPID_PUBLIC_KEY)});await saveSub(sub);return sub}
+  async function subscribe(){if(!currentUserId())throw new Error("Profil akun belum tersedia.");if(!supported())throw new Error("Browser/perangkat ini belum mendukung notifikasi push.");var p=Notification.permission;if(p==="denied")throw new Error("Izin notifikasi diblokir. Aktifkan melalui pengaturan browser/perangkat.");if(p==="default")p=await Notification.requestPermission();if(p!=="granted")throw new Error("Izin notifikasi belum diberikan.");var reg=await registerSW();var sub=await reg.pushManager.getSubscription();if(!sub)sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:b64ToUint8Array(VAPID_PUBLIC_KEY)});await saveSub(sub);return sub}
   function getReminder(){try{return JSON.parse(localStorage.getItem(REMIND_KEY)||"null")}catch(_){return null}}
-  function setReminder(status){try{localStorage.setItem(REMIND_KEY,JSON.stringify({status:status,at:Date.now()}))}catch(_){} }
+  function setReminder(status){try{localStorage.setItem(REMIND_KEY,JSON.stringify({status:status,at:Date.now()}))}catch(_){}}
   function shouldRemind(){var r=getReminder();if(!r)return true;return (Date.now()-Number(r.at||0))>=REMIND_DAYS*86400000}
   function escText(v){return String(v??"").replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]})}
-  async function syncGranted(){try{if(!currentUserId()||!supported()||Notification.permission!=="granted")return null;var reg=await registerSW();var sub=await reg.pushManager.getSubscription();if(!sub)sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:b64ToUint8Array(VAPID_PUBLIC_KEY)});await saveSub(sub);return sub}catch(_){return null}}
+  function settingsInstructions(){
+    var ua=String(navigator.userAgent||"");
+    if(/iPhone|iPad|iPod/i.test(ua)&&isInstalledPwa())return '<ol style="margin:7px 0 0;padding-left:19px"><li>Buka Pengaturan perangkat → Notifikasi → SIMFAQ, jika SIMFAQ tercantum.</li><li>Aktifkan <b>Izinkan Notifikasi</b>.</li><li>Buka kembali SIMFAQ dari ikon Layar Utama.</li></ol>';
+    if(isInstalledPwa()&&/Android/i.test(ua))return '<ol style="margin:7px 0 0;padding-left:19px"><li>Tutup SIMFAQ sementara.</li><li>Di layar utama Android, tekan dan tahan ikon SIMFAQ.</li><li>Pilih <b>Info aplikasi</b> atau ikon <b>ⓘ</b>, lalu buka <b>Notifikasi</b>.</li><li>Aktifkan izin notifikasi. Jika tersedia, pastikan kategori notifikasi SIMFAQ juga aktif.</li><li>Buka kembali SIMFAQ dan tunggu status diperiksa ulang.</li></ol><div style="margin-top:7px">Jika izin situs masih diblokir, buka Chrome → Setelan → Setelan situs → Notifikasi → simfaq.github.io → Izinkan.</div>';
+    if(/Android/i.test(ua)&&/Chrome/i.test(ua))return '<ol style="margin:7px 0 0;padding-left:19px"><li>Buka Chrome, lalu tekan menu <b>⋮</b>.</li><li>Pilih <b>Setelan</b> → <b>Setelan situs</b> → <b>Notifikasi</b>.</li><li>Cari <b>simfaq.github.io</b>, lalu ubah menjadi <b>Izinkan</b>.</li><li>Kembali ke SIMFAQ dan muat ulang halaman.</li></ol>';
+    if(/Android/i.test(ua))return '<ol style="margin:7px 0 0;padding-left:19px"><li>Buka pengaturan browser yang digunakan.</li><li>Masuk ke izin situs atau pengaturan notifikasi.</li><li>Cari situs SIMFAQ dan ubah izinnya menjadi <b>Izinkan</b>.</li><li>Buka kembali SIMFAQ.</li></ol>';
+    if(/iPhone|iPad|iPod/i.test(ua))return '<ol style="margin:7px 0 0;padding-left:19px"><li>Pastikan SIMFAQ dibuka dari ikon web app yang sudah ditambahkan ke Layar Utama, jika menggunakan iOS/iPadOS.</li><li>Buka Pengaturan perangkat → Notifikasi → SIMFAQ, jika tersedia.</li><li>Aktifkan Izinkan Notifikasi, lalu buka kembali SIMFAQ.</li></ol>';
+    return '<ol style="margin:7px 0 0;padding-left:19px"><li>Buka pengaturan browser.</li><li>Masuk ke Privasi dan keamanan atau Setelan situs → Notifikasi.</li><li>Cari alamat situs SIMFAQ dan ubah izinnya menjadi <b>Izinkan</b>.</li><li>Kembali ke SIMFAQ dan muat ulang halaman.</li></ol>';
+  }
+  async function syncGranted(){try{if(!currentUserId()||!supported()||Notification.permission!=="granted")return null;var reg=await registerSW();var sub=await reg.pushManager.getSubscription();if(!sub)sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:b64ToUint8Array(VAPID_PUBLIC_KEY)});await saveSub(sub);setReminder("granted");return sub}catch(e){console.warn("[BKF PUSH SYNC]",e);return null}}
   async function removeCurrentDeviceForLogout(){var uid=currentUserId();if(!uid||!supported()||Notification.permission!=="granted")return true;var reg=await registerSW();var sub=await reg.pushManager.getSubscription();if(!sub)return true;if(!sb||!sb.functions||typeof sb.functions.invoke!=="function")throw new Error("Layanan pelepasan notifikasi belum siap.");var result=await sb.functions.invoke("bkf-push-unsubscribe",{body:{endpoint:sub.endpoint}});if(result&&result.error)throw result.error;return true}
   window.bkfRemovePushSubscriptionForLogout=removeCurrentDeviceForLogout;
-  window.bkfEnablePushNotifications=async function(){var btn=document.getElementById("bkfPushEnableBtn"),st=document.getElementById("bkfPushStatus");if(btn)btn.disabled=true;if(st)st.textContent="Mengaktifkan notifikasi...";try{await subscribe();setReminder("granted");renderPushPanel(true);if(st)st.textContent="Notifikasi berhasil diaktifkan."}catch(e){setReminder(Notification.permission==="denied"?"denied":"declined");if(st)st.textContent=String(e&&e.message||e);if(btn)btn.disabled=false}};
-  window.bkfSyncPushSubscription=async function(){var s=await syncGranted();if(s)setReminder("granted");return s};
+  function refreshVisiblePrompt(){
+    var host=document.getElementById("page");
+    if(permission()==="granted"){
+      ["bkfDashboardPushPrompt","bkfPushPanel"].forEach(function(id){var el=document.getElementById(id);if(el)el.remove()});
+    }
+    if(host&&typeof window.bkfRenderDashboardPushPrompt==="function")window.bkfRenderDashboardPushPrompt();
+    if(permission()==="granted"&&currentUserId())syncGranted();
+  }
+  window.bkfEnablePushNotifications=async function(){
+    var btn=document.getElementById("bkfPushEnableBtn")||document.getElementById("bkfDashboardPushEnable");
+    var st=document.getElementById("bkfPushStatus");
+    if(btn)btn.disabled=true;if(st)st.textContent="Mengaktifkan notifikasi...";
+    try{await subscribe();setReminder("granted");renderPushPanel(true);refreshVisiblePrompt();if(st)st.textContent="Notifikasi berhasil diaktifkan."}
+    catch(e){setReminder(Notification.permission==="denied"?"denied":"declined");if(st)st.textContent=String(e&&e.message||e);if(btn)btn.disabled=false;refreshVisiblePrompt()}
+  };
+  window.bkfSyncPushSubscription=async function(){return await syncGranted()};
   window.bkfRenderDashboardPushPrompt=function(){
-    var host=document.getElementById("page");if(!host||!supported()||Notification.permission==="granted")return;
-    var old=document.getElementById("bkfDashboardPushPrompt");if(old)old.remove();
+    var host=document.getElementById("page");
+    ["bkfDashboardPushPrompt","bkfPushPanel"].forEach(function(id){var old=document.getElementById(id);if(old)old.remove()});
+    if(!host||!host.querySelector("#dashboardAllCounters")||!supported())return;
+    // Permission is authoritative for this banner; subscription failures must never look like blocked permission.
+    if(Notification.permission==="granted")return;
     var denied=Notification.permission==="denied";
     var panel=document.createElement("section");panel.id="bkfDashboardPushPrompt";panel.className="card";
-    panel.style.cssText="margin:0 0 12px;padding:14px 16px;border:1px solid #d6e5d8;border-radius:16px;background:linear-gradient(145deg,#fff,#eef6ef);box-shadow:inset 0 1px 0 #fff,0 5px 14px rgba(23,76,54,.08)";
-    panel.innerHTML='<div style="display:flex;gap:11px;align-items:flex-start"><div aria-hidden="true" style="font-size:24px">☪</div><div style="min-width:0;flex:1"><strong style="color:#185536">Notifikasi SIMFAQ</strong><div class="small" style="margin-top:4px;line-height:1.5;color:#4d6556">'+(denied?'Izin notifikasi pernah diblokir. Aktifkan melalui pengaturan izin situs pada browser/perangkat, lalu buka kembali SIMFAQ.':'Aktifkan notifikasi agar informasi kegiatan, ujian, penilaian, pembayaran, dan pemberitahuan penting dapat diterima pada perangkat ini.')+'</div>'+(!denied?'<button type="button" class="btn primary" id="bkfDashboardPushEnable" style="margin-top:9px">Izinkan Notifikasi</button>':'')+'<div style="font-size:9px;color:#718174;margin-top:7px">Daneva.Studio</div></div></div>';
+    panel.style.cssText="margin:0 0 12px;padding:14px 16px;border:1px solid "+(denied?"#e8d4a5":"#d6e5d8")+";border-radius:16px;background:linear-gradient(145deg,#fff,"+(denied?"#fff8e8":"#eef6ef")+");box-shadow:inset 0 1px 0 #fff,0 5px 14px rgba(23,76,54,.08)";
+    var desc=denied?"Izin notifikasi SIMFAQ sedang diblokir. Aplikasi tetap dapat digunakan secara normal, tetapi pemberitahuan tidak dapat dikirim ke perangkat ini.":"Aktifkan notifikasi agar informasi kegiatan, ujian, penilaian, pembayaran, dan pemberitahuan penting dapat diterima pada perangkat ini.";
+    panel.innerHTML='<div style="display:flex;gap:11px;align-items:flex-start"><div aria-hidden="true" style="font-size:24px">🔔</div><div style="min-width:0;flex:1"><strong style="color:#185536">Notifikasi SIMFAQ</strong><div class="small" style="margin-top:4px;line-height:1.5;color:#4d6556">'+escText(desc)+'</div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:9px">'+(!denied?'<button type="button" class="btn primary" id="bkfDashboardPushEnable">Izinkan Notifikasi</button>':'')+'<button type="button" class="btn" id="bkfDashboardPushHelp" aria-expanded="false">'+(denied?'Cara Mengaktifkan':'Bantuan Pengaturan')+'</button></div><div id="bkfDashboardPushHelpText" hidden style="margin-top:10px;padding:10px 12px;border-radius:10px;background:rgba(255,255,255,.8);color:#405348;font-size:12px;line-height:1.5"><b>Petunjuk mengaktifkan notifikasi</b>'+settingsInstructions()+'</div><div style="font-size:9px;color:#718174;margin-top:7px">Daneva.Studio</div></div></div>';
     host.insertBefore(panel,host.querySelector("#dashboardAllCounters"));
-    var button=panel.querySelector("#bkfDashboardPushEnable");
-    if(button)button.addEventListener("click",function(){window.bkfEnablePushNotifications?.()});
+    var button=panel.querySelector("#bkfDashboardPushEnable");if(button)button.addEventListener("click",function(){window.bkfEnablePushNotifications?.()});
+    var help=panel.querySelector("#bkfDashboardPushHelp"),helpText=panel.querySelector("#bkfDashboardPushHelpText");
+    if(help&&helpText)help.addEventListener("click",function(){var show=helpText.hidden;helpText.hidden=!show;help.setAttribute("aria-expanded",String(show));help.textContent=show?"Tutup Petunjuk":(denied?"Cara Mengaktifkan":"Bantuan Pengaturan")});
   };
-  function renderPushPanel(force){var box=document.getElementById("v40Notifs");if(!box)return;var old=document.getElementById("bkfPushPanel");if(old)old.remove();if(!supported())return;var granted=Notification.permission==="granted",denied=Notification.permission==="denied";if(granted){syncGranted();return}if(!force&&!shouldRemind())return;var panel=document.createElement("div");panel.id="bkfPushPanel";panel.className="notice no-print";panel.style.cssText="margin-bottom:14px;padding:16px 17px;border-left:4px solid var(--green,#176b3a);border-radius:12px;background:linear-gradient(135deg,rgba(23,107,58,.12),rgba(23,107,58,.04));box-shadow:0 4px 14px rgba(0,0,0,.06)";var title=denied?"Notifikasi diblokir browser":"Aktifkan Notifikasi";var desc=denied?"Izin notifikasi saat ini diblokir. Aktifkan kembali melalui pengaturan izin situs/browser agar pemberitahuan BK-FUSPAQ-NU dapat diterima.":"Jangan lewatkan informasi penting dari BK-FUSPAQ-NU. Dapatkan pemberitahuan tentang pembayaran, kegiatan, ujian, wisuda, tugas, dan informasi penting lainnya.";panel.innerHTML='<div style="display:flex;gap:12px;align-items:flex-start"><div style="font-size:27px;line-height:1">🔔</div><div style="flex:1"><strong style="font-size:16px">'+title+'</strong><div id="bkfPushStatus" class="small" style="margin-top:6px;line-height:1.55">'+desc+'</div>'+(!denied?'<button id="bkfPushEnableBtn" class="btn primary no-print" style="margin-top:11px;min-width:205px" onclick="bkfEnablePushNotifications()">🔔 Aktifkan Notifikasi</button><div class="small muted" style="margin-top:7px">Anda dapat mengubah izin notifikasi kapan saja melalui pengaturan browser.</div>':'<div class="small muted" style="margin-top:8px">Setelah izin diaktifkan, buka kembali modul notifikasi untuk menyinkronkan perangkat.</div>')+'</div></div>';box.parentNode.insertBefore(panel,box);setReminder(denied?"denied":"shown")}
-  function decorate(){var box=document.getElementById("v40Notifs");if(!box)return;var granted=("Notification" in window&&Notification.permission==="granted");if(granted){syncGranted();return}renderPushPanel(false)}
+  function renderPushPanel(force){
+    var box=document.getElementById("v40Notifs");if(!box)return;var old=document.getElementById("bkfPushPanel");if(old)old.remove();if(!supported())return;
+    var granted=Notification.permission==="granted",denied=Notification.permission==="denied";if(granted){return}if(!force&&!shouldRemind())return;
+    var panel=document.createElement("div");panel.id="bkfPushPanel";panel.className="notice no-print";panel.style.cssText="margin-bottom:14px;padding:16px 17px;border-left:4px solid var(--green,#176b3a);border-radius:12px;background:linear-gradient(135deg,rgba(23,107,58,.12),rgba(23,107,58,.04));box-shadow:0 4px 14px rgba(0,0,0,.06)";
+    var title=denied?"Notifikasi diblokir browser":"Aktifkan Notifikasi";
+    var desc=denied?"Izin notifikasi sedang diblokir. SIMFAQ tetap dapat digunakan. Buka petunjuk untuk mengaktifkannya melalui pengaturan browser/perangkat.":"Jangan lewatkan informasi penting dari BK-FUSPAQ-NU. Aktifkan notifikasi untuk menerima pemberitahuan pembayaran, kegiatan, ujian, wisuda, tugas, dan informasi lainnya.";
+    panel.innerHTML='<div style="display:flex;gap:12px;align-items:flex-start"><div style="font-size:27px;line-height:1">🔔</div><div style="flex:1"><strong style="font-size:16px">'+title+'</strong><div id="bkfPushStatus" class="small" style="margin-top:6px;line-height:1.55">'+desc+'</div>'+(!denied?'<button id="bkfPushEnableBtn" class="btn primary no-print" style="margin-top:11px;min-width:205px" onclick="bkfEnablePushNotifications()">🔔 Aktifkan Notifikasi</button>':'<button id="bkfPushHelpBtn" type="button" class="btn no-print" style="margin-top:11px">Cara Mengaktifkan</button><div id="bkfPushHelpText" hidden style="margin-top:9px;font-size:12px;line-height:1.5">'+settingsInstructions()+'</div>')+'<div class="small muted" style="margin-top:8px">Anda tetap dapat menggunakan seluruh fitur SIMFAQ meskipun notifikasi tidak diaktifkan.</div></div></div>';
+    box.parentNode.insertBefore(panel,box);setReminder(denied?"denied":"shown");
+    var help=panel.querySelector("#bkfPushHelpBtn"),helpText=panel.querySelector("#bkfPushHelpText");if(help&&helpText)help.addEventListener("click",function(){helpText.hidden=!helpText.hidden;help.textContent=helpText.hidden?"Cara Mengaktifkan":"Tutup Petunjuk"});
+  }
+  function decorate(){var box=document.getElementById("v40Notifs");if(!box)return;if(permission()==="granted"){var old=document.getElementById("bkfPushPanel");if(old)old.remove();syncGranted();return}renderPushPanel(false)}
   var oldShow=window.showNotifications;
-  window.showNotifications=async function(){var r=await oldShow.apply(this,arguments);setTimeout(decorate,0);return r};
-  function boot(){setTimeout(function(){if(window.sb&&currentUserId()){if(supported()&&Notification.permission==="granted")syncGranted();else decorate()}},1800)}
-  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot);else boot();
+  if(typeof oldShow==="function")window.showNotifications=async function(){var r=await oldShow.apply(this,arguments);setTimeout(decorate,0);return r};
+  function boot(){setTimeout(function(){if(window.sb&&currentUserId()){if(permission()==="granted")syncGranted();else decorate();refreshVisiblePrompt()}},1800)}
+  document.addEventListener("visibilitychange",function(){if(!document.hidden)refreshVisiblePrompt()});
+  window.addEventListener("focus",refreshVisiblePrompt);
+  window.addEventListener("pageshow",refreshVisiblePrompt);
+  // Observe permission changes where the browser exposes the Permissions API.
+  try{if(navigator.permissions&&navigator.permissions.query){navigator.permissions.query({name:"notifications"}).then(function(status){status.onchange=refreshVisiblePrompt}).catch(function(){})}}catch(_){}
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot,{once:true});else boot();
 })();
 </script>
 <style id="bkf-push-ui-style">#bkfPushPanel{animation:bkfPushIn .28s ease-out}@keyframes bkfPushIn{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:none}}@media(max-width:600px){#bkfPushEnableBtn{width:100%;min-width:0}}</style>
@@ -7040,7 +7085,10 @@ window.showExamGovernance=async function(){const host=document.getElementById('p
   if (appBase.origin !== window.location.origin) return;
   var scriptUrl = new URL("sw.js", appBase).href;
   window.bkfPwaInstallPrompt = null;
-  window.bkfPwaRegistration = navigator.serviceWorker.register(scriptUrl, { scope: appBase.pathname }).catch(function(err){
+  window.bkfPwaRegistration = navigator.serviceWorker.register(scriptUrl, { scope: appBase.pathname, updateViaCache: "none" }).then(function(reg){
+    try { reg.update().catch(function(){}); } catch (_) {}
+    return reg;
+  }).catch(function(err){
     window.bkfPwaRegistration = null; throw err;
   });
   window.bkfPwaRegistration.catch(function(err){console.warn("[SIMFAQ PWA] Service Worker belum terdaftar:", err)});
