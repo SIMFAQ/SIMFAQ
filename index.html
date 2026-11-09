@@ -24,7 +24,7 @@
 <!-- BK-FUSPAQ-NU V481: Tombol dan mode edit Aturan Ujian & Wisuda; revisi aturan tetap berversi, biaya tetap terkendali. Baseline V480. -->
 
 <html><head>
-<!-- BK-FUSPAQ-NU-V430: targeted registration save-state fix based on V429; no schema changes. --><!-- BK-FUSPAQ-NU V456: fokus keyboard berurutan pada form Penilaian dan Pendaftaran Ujian; baseline V455; hanya dua alur ini yang diubah. --><meta content="V543 - Penyempurnaan glossy 3D emerald; aksen emas dashboard dihilangkan" name="bkf-version"/><meta charset="utf-8"><meta content="width=device-width,initial-scale=1" name="viewport"/><meta name="theme-color" content="#176b3a"><meta name="application-name" content="SIMFAQ - BK FUSPAQ NU"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" href="./icons/icon-512.png"><link rel="apple-touch-icon" href="./icons/icon-512.png"><title>BK FUSPAQ NU V543</title><style>
+<!-- BK-FUSPAQ-NU-V430: targeted registration save-state fix based on V429; no schema changes. --><!-- BK-FUSPAQ-NU V456: fokus keyboard berurutan pada form Penilaian dan Pendaftaran Ujian; baseline V455; hanya dua alur ini yang diubah. --><meta content="V544 - Perbaikan identitas dan pesan WhatsApp otomatis; basis tampilan V543" name="bkf-version"/><meta charset="utf-8"><meta content="width=device-width,initial-scale=1" name="viewport"/><meta name="theme-color" content="#176b3a"><meta name="application-name" content="SIMFAQ - BK FUSPAQ NU"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" href="./icons/icon-512.png"><link rel="apple-touch-icon" href="./icons/icon-512.png"><title>BK FUSPAQ NU V544</title><style>
 :root{--green:#176b3a;--green2:#0f542d;--gold:#b78a24;--bg:#f6f8f6;--card:#fff;--line:#dce5df;--muted:#66756d;--text:#18231d;--ok:#176b3a;--danger:#a33a35;--warn:#8a6500;--radius:16px;--shadow:0 6px 22px rgba(25,55,38,.07);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text)}button,input,select,textarea{font:inherit}a{color:inherit}
 
 body{min-height:100vh}.shell{min-height:100vh;padding-top:76px;padding-bottom:20px}
@@ -638,7 +638,7 @@ function renderShell(){
   const avatar=profile.photo_url
     ? `<img src="${esc(profile.photo_url)}" alt="Foto profil ${esc(userName)}">`
     : `<span class="top-avatar-fallback">${icon('user')}</span>`;
-  app.innerHTML=`<div class="shell"><header class="top"><div class="top-identity"><div class="top-avatar" id="topAvatarContent">${avatar}</div><div class="top-user-meta"><div class="brand">BK FUSPAQ NU</div><div class="top-user-name">${esc(userName)}</div><div class="top-user-role">${esc(userRole)}</div></div></div><div class="toolbar"><button id="menuBtn" class="btn secondary">${icon('settings')} Menu</button></div></header><main class="content"><section id="page"></section></main></div><footer id="bkfGlobalFooter" class="bkf-global-footer" aria-label="Navigasi dan branding aplikasi"><nav id="bkfGlobalFooterNav" class="bkf-global-footer-nav" aria-label="Navigasi modul"></nav><div class="bkf-global-footer-brand" aria-label="Branding"><span>Deployment: <strong>Daneva.Studio</strong></span><span>Founder: <strong>Ahmad Fathunnur</strong></span><a href="https://wa.me/6283198740074?text=Assalamualaikum%20wr.wb%0ASaya%20%5Bnama%20pengguna%5D%20dari%20%5Bnama%20lembaga%5D%0AAlamat%20%5Balamat%20lembaga%5D.%0AAkan%20berkonsultasi%20berkaitan%20Aplikasi%20SIMFAQ.%0ATerimakasih.%0AWassalamu%E2%80%99alaikum.%20Wr%20Wb." class="bkf-footer-wa" id="bkfFooterWhatsApp" aria-label="Hubungi Daneva.Studio melalui WhatsApp">083198740074</a></div></footer>`;
+  app.innerHTML=`<div class="shell"><header class="top"><div class="top-identity"><div class="top-avatar" id="topAvatarContent">${avatar}</div><div class="top-user-meta"><div class="brand">BK FUSPAQ NU</div><div class="top-user-name">${esc(userName)}</div><div class="top-user-role">${esc(userRole)}</div></div></div><div class="toolbar"><button id="menuBtn" class="btn secondary">${icon('settings')} Menu</button></div></header><main class="content"><section id="page"></section></main></div><footer id="bkfGlobalFooter" class="bkf-global-footer" aria-label="Navigasi dan branding aplikasi"><nav id="bkfGlobalFooterNav" class="bkf-global-footer-nav" aria-label="Navigasi modul"></nav><div class="bkf-global-footer-brand" aria-label="Branding"><span>Deployment: <strong>Daneva.Studio</strong></span><span>Founder: <strong>Ahmad Fathunnur</strong></span><a href="https://wa.me/6283198740074" class="bkf-footer-wa" id="bkfFooterWhatsApp" aria-label="Hubungi Daneva.Studio melalui WhatsApp">083198740074</a></div></footer>`;
   document.getElementById('menuBtn').onclick=openDrawer;
   window.bkfUpdateGlobalFooter?.();
   // Sinkronisasi foto lembaga dilakukan setelah shell tampil agar header tidak tertahan.
@@ -7056,17 +7056,92 @@ window.showExamGovernance=async function(){const host=document.getElementById('p
    wrapped.__bkfFooterWrapped=true;window.navigate=wrapped;
  }
  document.addEventListener('click',ev=>{if(ev.target.closest('#menuBtn'))return;},true);
- document.addEventListener('click',function(ev){
+ async function bkfResolveWhatsAppIdentity(){
+   const userId=state?.profile?.id||state?.user?.id||null;
+   if(!userId)throw new Error('Sesi akun belum terbaca. Silakan masuk kembali.');
+   const profile=state?.profile||{};
+   const roleCodes=Array.isArray(state?.roles)?[...new Set(state.roles.map(x=>String(x||'').toUpperCase()).filter(Boolean))]:[];
+   const roleLabels={KETUA:'Ketua Pengurus',SEKRETARIS:'Sekretaris Pengurus',BENDAHARA:'Bendahara Pengurus',ANGGOTA:'Anggota Pengurus',OPERATOR:'Kepala/Operator Lembaga'};
+   const isOperator=roleCodes.includes('OPERATOR');
+   let institution=null,positionLabels=[];
+   if(isOperator){
+     const ur=await sb.from('user_roles').select('institution_id,role_id').eq('user_id',userId).eq('status','ACTIVE').not('institution_id','is',null).limit(10);
+     if(ur.error)throw ur.error;
+     const assignments=ur.data||[];
+     const own=assignments.find(x=>x.institution_id);
+     if(!own?.institution_id)throw new Error('Akun Operator belum terhubung dengan lembaga aktif di database.');
+     const iq=await sb.from('institutions').select('id,name,address,status').eq('id',own.institution_id).maybeSingle();
+     if(iq.error)throw iq.error;
+     if(!iq.data||String(iq.data.status||'ACTIVE').toUpperCase()!=='ACTIVE')throw new Error('Data lembaga yang terhubung dengan akun ini tidak ditemukan atau tidak aktif.');
+     institution=iq.data;
+     const roleIds=[...new Set(assignments.map(x=>x.role_id).filter(Boolean))];
+     if(roleIds.length){
+       const rq=await sb.from('roles').select('id,code,name').in('id',roleIds);
+       if(rq.error)throw rq.error;
+       for(const r of rq.data||[]){const code=String(r.code||'').toUpperCase();if(code==='OPERATOR'||!positionLabels.length)positionLabels.push(r.name||roleLabels[code]||'Kepala/Operator Lembaga');}
+     }
+     if(!positionLabels.length)positionLabels.push(roleLabels.OPERATOR);
+   }else{
+     let period=null;
+     if(typeof window.bkfLoadSelectedPeriod==='function')period=await window.bkfLoadSelectedPeriod();
+     if(period?.id){
+       const mm=await sb.from('management_members').select('user_id,role_id').eq('management_period_id',period.id).eq('user_id',userId).eq('status','ACTIVE');
+       if(mm.error)throw mm.error;
+       const roleIds=[...new Set((mm.data||[]).map(x=>x.role_id).filter(Boolean))];
+       if(roleIds.length){
+         const rq=await sb.from('roles').select('id,code,name').in('id',roleIds);
+         if(rq.error)throw rq.error;
+         for(const r of rq.data||[]){const code=String(r.code||'').toUpperCase();positionLabels.push(r.name||roleLabels[code]||code);}
+       }
+     }
+     if(!positionLabels.length)positionLabels=roleCodes.filter(code=>roleLabels[code]).map(code=>roleLabels[code]);
+     const oq=await sb.from('organizations').select('id,name,address').eq('status','ACTIVE').limit(1).maybeSingle();
+     if(oq.error)throw oq.error;
+     if(!oq.data?.name)throw new Error('Identitas organisasi aktif belum tersedia di database.');
+     institution=oq.data;
+   }
+   const uniquePositions=[...new Set(positionLabels.map(x=>String(x||'').trim()).filter(Boolean))];
+   if(!uniquePositions.length)throw new Error('Jabatan akun yang sedang login belum ditemukan.');
+   const userName=String(profile.full_name||state?.user?.email||'').trim();
+   if(!userName)throw new Error('Nama akun belum tersedia. Lengkapi profil akun terlebih dahulu.');
+   if(!institution?.name)throw new Error('Nama lembaga/organisasi akun belum ditemukan di database.');
+   return {userName,position:uniquePositions.join(' / '),institutionName:String(institution.name),institutionAddress:String(institution.address||'')};
+ }
+ document.addEventListener('click',async function(ev){
    const target=ev.target;
    if(!target || typeof target.closest!=='function')return;
    const link=target.closest('#bkfFooterWhatsApp');
    if(!link)return;
-   const profile=state?.profile||{};
-   const userName=String(profile.full_name||state?.user?.email||'[nama pengguna]');
-   const institutionName=String(profile.institution_name||profile.lembaga_name||'[nama lembaga]');
-   const institutionAddress=String(profile.institution_address||profile.lembaga_address||'[alamat lembaga]');
-   const message='Assalamualaikum wr.wb\\nSaya '+userName+' dari '+institutionName+'\\nAlamat '+institutionAddress+'.\\nAkan berkonsultasi berkaitan Aplikasi SIMFAQ.\\nTerimakasih.\\nWassalamu’alaikum. Wr Wb.';
-   link.href='https://wa.me/6283198740074?text='+encodeURIComponent(message);
+   ev.preventDefault();
+   // Buka jendela secara sinkron dari klik pengguna agar tidak diblokir browser.
+   const popup=window.open('about:blank','_blank');
+   try{
+     const identity=await bkfResolveWhatsAppIdentity();
+     const lines=[
+       'Assalamualaikum wr. wb.',
+       '',
+       'Perkenalkan, saya '+identity.userName+'.',
+       'Jabatan: '+identity.position,
+       'Lembaga: '+identity.institutionName,
+       'Alamat: '+(identity.institutionAddress||'Tidak tercantum'),
+       '',
+       'Saya ingin berkonsultasi berkaitan dengan Aplikasi SIMFAQ.',
+       '',
+       'Terima kasih.',
+       'Wassalamu’alaikum wr. wb.'
+     ];
+     const message=lines.join('\n');
+     const url='https://wa.me/6283198740074?text='+encodeURIComponent(message);
+     if(popup&&!popup.closed)popup.location.href=url;
+     else window.location.assign(url);
+   }catch(error){
+     try{if(popup&&!popup.closed)popup.close()}catch(_){}
+     console.error('[BKF WHATSAPP IDENTITY]',error);
+     const message=error?.message||'Identitas akun belum dapat dimuat dari database.';
+     if(typeof window.toast==='function')window.toast(message,'error');
+     else if(typeof window.bkAlert==='function')window.bkAlert(message);
+     else alert(message);
+   }
  },false);
  window.bkfUpdateGlobalFooter();
  // Anggota hanya melihat Pengujian di footer bila memiliki penugasan aktif.
