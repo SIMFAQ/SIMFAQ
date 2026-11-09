@@ -24,7 +24,7 @@
 <!-- BK-FUSPAQ-NU V481: Tombol dan mode edit Aturan Ujian & Wisuda; revisi aturan tetap berversi, biaya tetap terkendali. Baseline V480. -->
 
 <html><head>
-<!-- BK-FUSPAQ-NU-V430: targeted registration save-state fix based on V429; no schema changes. --><!-- BK-FUSPAQ-NU V456: fokus keyboard berurutan pada form Penilaian dan Pendaftaran Ujian; baseline V455; hanya dua alur ini yang diubah. --><meta content="V526 - Footer sticky role-aware + WhatsApp konsultasi SIMFAQ" name="bkf-version"/><meta charset="utf-8"><meta content="width=device-width,initial-scale=1" name="viewport"/><meta name="theme-color" content="#176b3a"><meta name="application-name" content="SIMFAQ - BK FUSPAQ NU"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" href="./icons/icon-512.png"><link rel="apple-touch-icon" href="./icons/icon-512.png"><title>BK FUSPAQ NU V542</title><style>
+<!-- BK-FUSPAQ-NU-V430: targeted registration save-state fix based on V429; no schema changes. --><!-- BK-FUSPAQ-NU V456: fokus keyboard berurutan pada form Penilaian dan Pendaftaran Ujian; baseline V455; hanya dua alur ini yang diubah. --><meta content="V542 - Standardisasi notifikasi Islami + perbaikan ringkasan push" name="bkf-version"/><meta charset="utf-8"><meta content="width=device-width,initial-scale=1" name="viewport"/><meta name="theme-color" content="#176b3a"><meta name="application-name" content="SIMFAQ - BK FUSPAQ NU"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" href="./icons/icon-512.png"><link rel="apple-touch-icon" href="./icons/icon-512.png"><title>BK FUSPAQ NU V542</title><style>
 :root{--green:#176b3a;--green2:#0f542d;--gold:#b78a24;--bg:#f6f8f6;--card:#fff;--line:#dce5df;--muted:#66756d;--text:#18231d;--ok:#176b3a;--danger:#a33a35;--warn:#8a6500;--radius:16px;--shadow:0 6px 22px rgba(25,55,38,.07);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text)}button,input,select,textarea{font:inherit}a{color:inherit}
 
 body{min-height:100vh}.shell{min-height:100vh;padding-top:76px;padding-bottom:20px}
@@ -6090,7 +6090,7 @@ window.showMemoryAlbum=async function(eventId=''){
       const n=payload?.new||{};
       try{if(!document.hidden)playInternalNotificationSound()}catch(_){}
       try{if(typeof window.loadMetrics==='function')window.loadMetrics()}catch(_){}
-      try{if(document.hidden&&"Notification" in window&&Notification.permission==="granted")new Notification(n.title||"BK FUSPAQ NU",{body:String(n.message||"").split("\n")[0],tag:n.id})}catch(_){ }
+      try{if(document.hidden&&"Notification" in window&&Notification.permission==="granted"){const pushLines=String(n.message||"").split("\n").map(line=>line.trim()).filter(line=>line&&!/^assalamu[’' -]*alaikum/i.test(line)&&!/^wassalamu[’' -]*alaikum/i.test(line));new Notification(n.title||"BK FUSPAQ NU",{body:pushLines.slice(0,2).join("\n")||"Ada pemberitahuan baru. Silakan buka SIMFAQ untuk membaca rinciannya.",tag:n.id})}}catch(_){ }
     });
     c.on("postgres_changes",{event:"UPDATE",schema:"public",table:"notifications",filter:"user_id=eq."+pid},function(){try{if(typeof window.loadMetrics==='function')window.loadMetrics()}catch(_){} });
     c.on("postgres_changes",{event:"DELETE",schema:"public",table:"notifications",filter:"user_id=eq."+pid},function(){try{if(typeof window.loadMetrics==='function')window.loadMetrics()}catch(_){} });
@@ -7166,6 +7166,24 @@ window.showExamGovernance=async function(){const host=document.getElementById('p
   };
 })();
 </script>
+<style id="bkf-v542-universal-3d-glossy-buttons">
+/* Efek timbul dan pantulan cahaya; warna latar dan dimensi asli dipertahankan. */
+button{
+  box-shadow:inset 0 1.5px 0 rgba(255,255,255,.88),inset 0 -2px 0 rgba(0,0,0,.15),0 3px 7px rgba(20,55,37,.18)!important;
+  -webkit-tap-highlight-color:transparent;
+  filter:saturate(1.06);
+}
+button:active:not(:disabled){
+  filter:brightness(.97) saturate(1.08);
+  box-shadow:inset 0 2px 5px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.48),0 1px 2px rgba(20,55,37,.12)!important;
+}
+button:focus-visible{outline:2px solid rgba(183,138,36,.82);outline-offset:2px}
+button:disabled{box-shadow:inset 0 1px 0 rgba(255,255,255,.35)!important;filter:saturate(.65)}
+@media(hover:hover){button:hover:not(:disabled){filter:brightness(1.04) saturate(1.08);box-shadow:inset 0 1.5px 0 rgba(255,255,255,.96),inset 0 -2px 0 rgba(0,0,0,.13),0 5px 11px rgba(20,55,37,.22)!important}}
+/* Prioritas khusus untuk menu drawer dan tombol navigasi yang memiliki shadow penting. */
+.drawer-panel .menu-item{box-shadow:inset 0 1.5px 0 rgba(255,255,255,.82),inset 0 -2px 0 rgba(0,0,0,.16),0 4px 9px rgba(20,55,37,.20)!important}
+.bottom button,.seg button,.bkf-print-actions button{box-shadow:inset 0 1px 0 rgba(255,255,255,.95),inset 0 -1.5px 0 rgba(0,0,0,.10),0 2px 5px rgba(20,55,37,.14)!important}
+</style>
 </html>
 
 <!-- V515: fitur Pemantauan Pengguna dihapus dari HTML; tidak ada perubahan database. -->
