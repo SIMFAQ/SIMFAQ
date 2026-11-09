@@ -24,7 +24,7 @@
 <!-- BK-FUSPAQ-NU V481: Tombol dan mode edit Aturan Ujian & Wisuda; revisi aturan tetap berversi, biaya tetap terkendali. Baseline V480. -->
 
 <html><head>
-<!-- BK-FUSPAQ-NU-V430: targeted registration save-state fix based on V429; no schema changes. --><!-- BK-FUSPAQ-NU V456: fokus keyboard berurutan pada form Penilaian dan Pendaftaran Ujian; baseline V455; hanya dua alur ini yang diubah. --><meta content="V542 - Standardisasi notifikasi Islami + perbaikan ringkasan push" name="bkf-version"/><meta charset="utf-8"><meta content="width=device-width,initial-scale=1" name="viewport"/><meta name="theme-color" content="#176b3a"><meta name="application-name" content="SIMFAQ - BK FUSPAQ NU"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" href="./icons/icon-512.png"><link rel="apple-touch-icon" href="./icons/icon-512.png"><title>BK FUSPAQ NU V542</title><style>
+<!-- BK-FUSPAQ-NU-V430: targeted registration save-state fix based on V429; no schema changes. --><!-- BK-FUSPAQ-NU V456: fokus keyboard berurutan pada form Penilaian dan Pendaftaran Ujian; baseline V455; hanya dua alur ini yang diubah. --><meta content="V543 - Penyempurnaan glossy 3D emerald; aksen emas dashboard dihilangkan" name="bkf-version"/><meta charset="utf-8"><meta content="width=device-width,initial-scale=1" name="viewport"/><meta name="theme-color" content="#176b3a"><meta name="application-name" content="SIMFAQ - BK FUSPAQ NU"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" href="./icons/icon-512.png"><link rel="apple-touch-icon" href="./icons/icon-512.png"><title>BK FUSPAQ NU V543</title><style>
 :root{--green:#176b3a;--green2:#0f542d;--gold:#b78a24;--bg:#f6f8f6;--card:#fff;--line:#dce5df;--muted:#66756d;--text:#18231d;--ok:#176b3a;--danger:#a33a35;--warn:#8a6500;--radius:16px;--shadow:0 6px 22px rgba(25,55,38,.07);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text)}button,input,select,textarea{font:inherit}a{color:inherit}
 
 body{min-height:100vh}.shell{min-height:100vh;padding-top:76px;padding-bottom:20px}
@@ -124,7 +124,7 @@ button[aria-label*="hapus" i] svg,button[title*="hapus" i] svg,button[aria-label
 /* V542: pulihkan efek 3D glossy counter dashboard; dimensi, warna dasar, grid, isi, dan perilaku tetap. */
 #dashboardAllCounters > .v75-dashboard-counter:nth-child(1){background:linear-gradient(145deg,#2457c7 0%,#1743a4 54%,#102f79 100%)!important}
 #dashboardAllCounters > .v75-dashboard-counter:nth-child(2){background:linear-gradient(145deg,#0a8b8b 0%,#087276 54%,#07545b 100%)!important}
-#dashboardAllCounters > .v75-dashboard-counter:nth-child(3){background:linear-gradient(145deg,#c17a12 0%,#a75b00 54%,#783f00 100%)!important}
+#dashboardAllCounters > .v75-dashboard-counter:nth-child(3){background:linear-gradient(145deg,#568d42 0%,#326b31 54%,#204923 100%)!important}
 #dashboardAllCounters > .v75-dashboard-counter:nth-child(4){background:linear-gradient(145deg,#15965a 0%,#087341 54%,#07502f 100%)!important}
 #dashboardAllCounters > .v75-dashboard-counter:nth-child(5){background:linear-gradient(145deg,#7739b7 0%,#5a238f 54%,#3d1764 100%)!important}
 #dashboardAllCounters .v75-dashboard-counter[data-dashboard-detail="exam_pra_tashih"]{background:linear-gradient(145deg,#19764d 0%,#105b3a 55%,#0b3f29 100%)!important}
@@ -151,15 +151,16 @@ button[aria-label*="hapus" i] svg,button[title*="hapus" i] svg,button[aria-label
 .bkf-update-app-link{
   appearance:none;-webkit-appearance:none;display:inline-flex;align-items:center;justify-content:center;
   box-sizing:border-box;margin:0;padding:5px 9px;border:0;border-radius:999px;
-  background:linear-gradient(145deg,#fff6c7 0%,#f6d65c 52%,#d9a91d 100%)!important;
-  color:#594000!important;font-family:inherit;font-size:12px;font-weight:750;line-height:normal;
+  background:linear-gradient(145deg,#55b77a 0%,#21834c 52%,#105b34 100%)!important;
+  color:#fff!important;font-family:inherit;font-size:12px;font-weight:750;line-height:normal;
   min-height:0;white-space:nowrap;cursor:pointer;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.88),0 3px 0 rgba(117,83,0,.16),0 5px 10px rgba(117,83,0,.13)!important;
+  border:1px solid rgba(255,255,255,.48)!important;
+  box-shadow:inset 0 1.5px 0 rgba(255,255,255,.92),inset 0 -2px 0 rgba(0,0,0,.16),0 3px 0 rgba(8,65,35,.18),0 6px 12px rgba(8,65,35,.18)!important;
 }
 .bkf-update-app-link:active{transform:translateY(1px);filter:brightness(.97)}
-.bkf-update-app-link:focus-visible{outline:3px solid #b98b2f;outline-offset:2px}
+.bkf-update-app-link:focus-visible{outline:3px solid #21834c;outline-offset:2px}
 @media(prefers-reduced-motion:reduce){#dashboardAllCounters .v75-dashboard-counter,.bkf-update-app-link{transition:none!important}}
-</style><style id="bkf-dashboard-header-controls-v542">.bkf-dashboard-profile-actions{display:flex;flex-wrap:wrap;justify-content:flex-start;align-items:center;gap:8px}.v35-welcome .bkf-dashboard-profile-actions > button.status.ok.bkf-update-app-link{appearance:none!important;-webkit-appearance:none!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;box-sizing:border-box!important;margin:0!important;padding:5px 9px!important;min-height:0!important;height:auto!important;border:1px solid rgba(153,111,0,.42)!important;border-radius:999px!important;font-family:inherit!important;font-size:12px!important;font-weight:750!important;line-height:normal!important;white-space:nowrap!important;cursor:pointer!important;background:linear-gradient(145deg,#fff6c7 0%,#f6d65c 52%,#d9a91d 100%)!important;color:#594000!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.92),0 3px 0 rgba(117,83,0,.18),0 5px 10px rgba(117,83,0,.14)!important}
+</style><style id="bkf-dashboard-header-controls-v543">.bkf-dashboard-profile-actions{display:flex;flex-wrap:wrap;justify-content:flex-start;align-items:center;gap:8px}.v35-welcome .bkf-dashboard-profile-actions > button.status.ok.bkf-update-app-link{appearance:none!important;-webkit-appearance:none!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;box-sizing:border-box!important;margin:0!important;padding:5px 9px!important;min-height:0!important;height:auto!important;border:1px solid rgba(255,255,255,.5)!important;border-radius:999px!important;font-family:inherit!important;font-size:12px!important;font-weight:750!important;line-height:normal!important;white-space:nowrap!important;cursor:pointer!important;background:linear-gradient(145deg,#55b77a 0%,#21834c 52%,#105b34 100%)!important;color:#fff!important;box-shadow:inset 0 1.5px 0 rgba(255,255,255,.92),inset 0 -2px 0 rgba(0,0,0,.16),0 3px 0 rgba(8,65,35,.18),0 6px 12px rgba(8,65,35,.18)!important}
 .v35-welcome .bkf-dashboard-profile-actions > button.status.ok.bkf-update-app-link span{font:inherit!important;color:inherit!important}.bkf-darus-center{display:flex;justify-content:center;align-items:center;width:100%;margin:8px 0 2px}</style>
 
 
@@ -7166,23 +7167,64 @@ window.showExamGovernance=async function(){const host=document.getElementById('p
   };
 })();
 </script>
-<style id="bkf-v542-universal-3d-glossy-buttons">
-/* Efek timbul dan pantulan cahaya; warna latar dan dimensi asli dipertahankan. */
-button{
-  box-shadow:inset 0 1.5px 0 rgba(255,255,255,.88),inset 0 -2px 0 rgba(0,0,0,.15),0 3px 7px rgba(20,55,37,.18)!important;
+<style id="bkf-v543-universal-3d-glossy-buttons">
+/* V543: satu sistem permukaan glossy 3D; warna dasar masing-masing tombol tetap dipertahankan. */
+button,.drawer-panel .menu-item,#bkfGlobalFooterNav .bkf-footer-link{
+  position:relative;isolation:isolate;
   -webkit-tap-highlight-color:transparent;
-  filter:saturate(1.06);
+  box-shadow:inset 0 1.5px 0 rgba(255,255,255,.94),
+    inset 0 -3px 0 rgba(0,0,0,.17),
+    0 3px 0 rgba(0,0,0,.09),
+    0 7px 15px rgba(13,52,31,.20)!important;
+  transition:transform .16s ease,filter .16s ease,box-shadow .16s ease;
 }
-button:active:not(:disabled){
+/* Refleksi cahaya atas dan garis sisi bawah membentuk permukaan cembung. */
+button::before,.drawer-panel .menu-item::before,#bkfGlobalFooterNav .bkf-footer-link::before{
+  content:"";position:absolute;z-index:-1;pointer-events:none;
+  left:5%;right:5%;top:2px;height:42%;border-radius:inherit;
+  background:linear-gradient(180deg,rgba(255,255,255,.34) 0%,rgba(255,255,255,.13) 48%,rgba(255,255,255,0) 100%);
+}
+button::after,.drawer-panel .menu-item::after,#bkfGlobalFooterNav .bkf-footer-link::after{
+  content:"";position:absolute;z-index:-1;pointer-events:none;
+  left:2px;right:2px;bottom:1px;height:3px;border-radius:0 0 10px 10px;
+  background:linear-gradient(90deg,rgba(0,0,0,.02),rgba(0,0,0,.16),rgba(0,0,0,.02));
+}
+/* Navigasi dan tab yang sebelumnya transparan diberi permukaan kaca ringan. */
+.bottom button,.seg button{
+  background:linear-gradient(180deg,#fff 0%,#f3f8f4 100%)!important;
+  border:1px solid #d8e7dc!important;border-radius:11px!important;
+  color:#315b42!important;
+}
+.bottom button.active,.seg button.active{
+  background:linear-gradient(145deg,#54b879 0%,#21834c 55%,#105b34 100%)!important;
+  border-color:rgba(255,255,255,.48)!important;color:#fff!important;
+  box-shadow:inset 0 1.5px 0 rgba(255,255,255,.88),inset 0 -3px 0 rgba(0,0,0,.18),0 3px 0 rgba(8,65,35,.16),0 6px 12px rgba(8,65,35,.16)!important;
+}
+#bkfGlobalFooterNav .bkf-footer-link{
+  background:linear-gradient(180deg,#fff 0%,#f0f6f1 100%)!important;
+  border-color:#d8e7dc!important;color:#245b39!important;
+}
+#bkfGlobalFooterNav .bkf-footer-link.active{
+  background:linear-gradient(145deg,#54b879 0%,#21834c 55%,#105b34 100%)!important;
+  border-color:rgba(255,255,255,.5)!important;color:#fff!important;
+  box-shadow:inset 0 1.5px 0 rgba(255,255,255,.9),inset 0 -3px 0 rgba(0,0,0,.16),0 3px 0 rgba(8,65,35,.16),0 6px 12px rgba(8,65,35,.16)!important;
+}
+button:active:not(:disabled),.drawer-panel .menu-item:active,#bkfGlobalFooterNav .bkf-footer-link:active{
+  transform:translateY(2px);
   filter:brightness(.97) saturate(1.08);
-  box-shadow:inset 0 2px 5px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.48),0 1px 2px rgba(20,55,37,.12)!important;
+  box-shadow:inset 0 3px 6px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.52),0 1px 2px rgba(13,52,31,.12)!important;
 }
-button:focus-visible{outline:2px solid rgba(183,138,36,.82);outline-offset:2px}
-button:disabled{box-shadow:inset 0 1px 0 rgba(255,255,255,.35)!important;filter:saturate(.65)}
-@media(hover:hover){button:hover:not(:disabled){filter:brightness(1.04) saturate(1.08);box-shadow:inset 0 1.5px 0 rgba(255,255,255,.96),inset 0 -2px 0 rgba(0,0,0,.13),0 5px 11px rgba(20,55,37,.22)!important}}
-/* Prioritas khusus untuk menu drawer dan tombol navigasi yang memiliki shadow penting. */
-.drawer-panel .menu-item{box-shadow:inset 0 1.5px 0 rgba(255,255,255,.82),inset 0 -2px 0 rgba(0,0,0,.16),0 4px 9px rgba(20,55,37,.20)!important}
-.bottom button,.seg button,.bkf-print-actions button{box-shadow:inset 0 1px 0 rgba(255,255,255,.95),inset 0 -1.5px 0 rgba(0,0,0,.10),0 2px 5px rgba(20,55,37,.14)!important}
+button:focus-visible,#bkfGlobalFooterNav .bkf-footer-link:focus-visible{
+  outline:2px solid rgba(33,131,76,.9);outline-offset:2px;
+}
+button:disabled{box-shadow:inset 0 1px 0 rgba(255,255,255,.4)!important;filter:saturate(.62);}
+@media(hover:hover){
+  button:hover:not(:disabled),.drawer-panel .menu-item:hover,#bkfGlobalFooterNav .bkf-footer-link:hover{
+    filter:brightness(1.045) saturate(1.08);transform:translateY(-1px);
+    box-shadow:inset 0 1.5px 0 rgba(255,255,255,.98),inset 0 -3px 0 rgba(0,0,0,.16),0 4px 0 rgba(0,0,0,.09),0 10px 19px rgba(13,52,31,.23)!important;
+  }
+}
+@media(prefers-reduced-motion:reduce){button,.drawer-panel .menu-item,#bkfGlobalFooterNav .bkf-footer-link{transition:none!important}}
 </style>
 </html>
 
