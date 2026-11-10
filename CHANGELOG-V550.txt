@@ -1,0 +1,23 @@
+SIMFAQ V550 — PERAPIAN PAGINATION DAN OPTIMASI PEMUATAN DAFTAR
+
+Berbasis paket V549.
+
+Perubahan:
+1. Menghapus panel visual “Diagnostik Notifikasi Push” dari menu Notifikasi. Pencatatan diagnostik lokal push tetap dipertahankan di belakang layar.
+2. Merapikan pagination pada daftar peserta ujian, riwayat peserta, nomor ujian, remedial, notifikasi, riwayat login, kegiatan, dan pemilih peserta kartu ujian: hanya satu pasang tombol Sebelumnya/Berikutnya di bawah daftar.
+3. Daftar mengambil maksimal 51 baris untuk mendeteksi apakah halaman berikutnya tersedia, tetapi hanya menampilkan 50 baris. Tidak lagi meminta exact count untuk daftar-daftar tersebut.
+4. Tombol Berikutnya aktif hanya jika baris ke-51 ditemukan. Tombol Sebelumnya aktif jika bukan halaman pertama.
+5. Jumlah notifikasi belum dibaca hanya memeriksa keberadaan data, bukan menghitung seluruh baris untuk tampilan daftar.
+6. Cache Service Worker dinaikkan dari V8 ke V9 agar pembaruan V550 dikenali.
+
+Tidak ada perubahan database, skema, RLS, Edge Function, subscription, atau data operasional.
+
+Pemeriksaan:
+- Semua 70 blok inline JavaScript pada index.html lolos node --check.
+- sw.js lolos node --check.
+- Struktur ZIP lolos pemeriksaan integritas.
+- Belum dilakukan pengujian runtime dengan Supabase atau perangkat Android; uji itu tetap diperlukan setelah deploy.
+
+Catatan:
+- Pilihan “Semua Peserta” pada proses pembuatan kartu ujian tetap mengambil seluruh hasil filter saat pengguna benar-benar membuat kartu. Batas 50 hanya untuk daftar/pemilih yang ditampilkan per halaman.
+- Dashboard dan laporan yang memang membutuhkan total agregat masih dapat menggunakan count exact; perubahan ini difokuskan pada daftar pagination.

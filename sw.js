@@ -1,7 +1,7 @@
-/* SIMFAQ PWA Service Worker - V7 push deep-link routing. */
+/* SIMFAQ PWA Service Worker - V9 pagination and push diagnostics UI cleanup. */
 'use strict';
 const CACHE_PREFIX = 'simfaq-pwa-';
-const CACHE_VERSION = 'v8';
+const CACHE_VERSION = 'v9';
 const CACHE_NAME = CACHE_PREFIX + CACHE_VERSION;
 const APP_BASE = new URL('./', self.registration.scope);
 const APP_PATH = new URL(APP_BASE).pathname;
