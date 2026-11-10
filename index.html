@@ -1,3 +1,5 @@
+<!-- BK-FUSPAQ-NU V546: pagination server-side notifikasi 50 data per halaman dan card dashboard Notifikasi langsung menuju menu Notifikasi; baseline V545; tanpa perubahan database/RLS. -->
+<!-- BK-FUSPAQ-NU V547: pagination server-side 50 data untuk notifikasi, daftar peserta ujian, nomor ujian, remedial, riwayat peserta, kegiatan, pemilih peserta kartu ujian, dan riwayat login; pencarian server-side pada daftar terkait; card dashboard Notifikasi langsung menuju menu. Baseline V546; tanpa perubahan database/RLS. -->
 <!-- BK-FUSPAQ-NU V533: pemindaian foto yatim berdasarkan ID pemakai nyata dan referensi lintas modul; baseline V532. -->
 <!-- BK-FUSPAQ-NU V527: perbaikan cleanup foto saat edit/hapus peserta ujian dan wisuda; file Storage hanya dihapus setelah referensi diperiksa. -->
 <!-- BK-FUSPAQ-NU V526: Perbaikan aman kontak WhatsApp; baseline V524, alur autentikasi dan sesi dipertahankan tanpa query tambahan. -->
@@ -97,7 +99,7 @@ body{background:var(--bg)}.content{max-width:1080px;padding:12px 14px}.top{paddi
 button[aria-label*="hapus" i],button[title*="hapus" i],button[aria-label*="delete" i],button[title*="delete" i],button[aria-label*="sampah" i],button[title*="sampah" i]{color:#dc2626!important},button[onclick*="hapus" i],button[onclick*="delete" i],button:has(svg.lucide-trash),button:has(svg.lucide-trash-2),button:has(svg[data-lucide*="trash" i]),button:has(i[class*="trash" i]){color:#dc2626!important}
 button[aria-label*="hapus" i] svg,button[title*="hapus" i] svg,button[aria-label*="delete" i] svg,button[title*="delete" i] svg,button[aria-label*="sampah" i] svg,button[title*="sampah" i] svg,button[onclick*="hapus" i] svg,button[onclick*="delete" i] svg,button:has(svg.lucide-trash) svg,button:has(svg.lucide-trash-2) svg,button:has(svg[data-lucide*="trash" i]) svg{color:#dc2626!important;stroke:#dc2626!important}
 </style>
-</style><meta content="BK FUSPAQ NU FINAL CONSOLIDATED · V450 NOTIFICATION CONTEXT + DISPLAY FORMATS" name="application-version"/><meta content="Daneva.studio @2026" name="deployment-brand"/><meta content="Ahmad Fathunnur" name="founder"/><style id="v180-notification-friendly">
+</style><meta content="BK FUSPAQ NU FINAL CONSOLIDATED · V546 NOTIFICATION PAGINATION + DIRECT DASHBOARD ROUTE" name="application-version"/><meta content="Daneva.studio @2026" name="deployment-brand"/><meta content="Ahmad Fathunnur" name="founder"/><style id="v180-notification-friendly">
 .bkf-notification-list{display:grid;gap:9px;width:100%;max-width:100%;min-width:0;overflow:hidden}
 .bkf-notification-item{position:relative;width:100%;max-width:100%;min-width:0;box-sizing:border-box;border:1px solid #d9c995;border-radius:14px;background-color:#fbf4df;background-image:radial-gradient(circle at 0 0,rgba(23,76,54,.07) 0 2px,transparent 2.5px),radial-gradient(circle at 100% 100%,rgba(23,76,54,.055) 0 2px,transparent 2.5px),linear-gradient(45deg,transparent 46%,rgba(23,76,54,.045) 47%,rgba(23,76,54,.045) 53%,transparent 54%),linear-gradient(-45deg,transparent 46%,rgba(23,76,54,.045) 47%,rgba(23,76,54,.045) 53%,transparent 54%);background-size:28px 28px,28px 28px,28px 28px,28px 28px;padding:12px 50px 12px 13px;text-align:left;transition:.15s ease;box-shadow:0 2px 8px rgba(72,54,22,.08);overflow:hidden;display:block}
 .bkf-notification-item:hover{transform:translateY(-1px);box-shadow:0 5px 14px rgba(72,54,22,.14)}
@@ -1148,63 +1150,63 @@ async function v10ExamTab(tab){if(tab==='seleksi'&&!v10CanOpenSelection()){const
     toast('Data peserta ujian berhasil dihapus.'+note,note?'error':'success');
     await loadExamParticipants();
   };
-  a.innerHTML=`<div class="card"><div class="row"><div><h3>Daftar Peserta Ujian</h3><div class="muted">Daftar peserta Pra Tashih dan Tashih. Edit akan membuka form dengan data peserta yang dipilih; simpan mengganti data lama.</div></div>${Array.isArray(state.roles)&&state.roles.includes('OPERATOR')?`<div class="compact-actions"><button class="btn primary" onclick="printExamCards()">Cetak Kartu Ujian</button></div>`:`<div class="compact-actions"><button class="btn secondary" onclick="printExamData('PRA_TASHIH')">Data Pra Tashih</button><button class="btn secondary" onclick="printExamData('TASHIH')">Data Tashih</button></div>`}</div><div class="grid grid2"><div class="field"><label>Jenis ujian</label><select id="v10ExamType"><option value="PRA_TASHIH">Pra Tashih</option><option value="TASHIH">Tashih</option></select></div><div class="field"><label>Pencarian</label><input id="v10ExamSearch" placeholder="Nama / NIS / No. ujian / lembaga"></div></div><div id="v10ExamParticipants" class="table-wrap" style="margin-top:12px"><div class="empty">Memuat daftar peserta...</div></div></div>`;
+  a.innerHTML=`<div class="card"><div class="row"><div><h3>Daftar Peserta Ujian</h3><div class="muted">Daftar peserta Pra Tashih dan Tashih. Edit akan membuka form dengan data peserta yang dipilih; simpan mengganti data lama.</div></div>${Array.isArray(state.roles)&&state.roles.includes('OPERATOR')?`<div class="compact-actions"><button class="btn primary" onclick="printExamCards()">Cetak Kartu Ujian</button></div>`:`<div class="compact-actions"><button class="btn secondary" onclick="printExamData('PRA_TASHIH')">Data Pra Tashih</button><button class="btn secondary" onclick="printExamData('TASHIH')">Data Tashih</button></div>`}</div><div class="grid grid2"><div class="field"><label>Jenis ujian</label><select id="v10ExamType"><option value="PRA_TASHIH">Pra Tashih</option><option value="TASHIH">Tashih</option></select></div><div class="field"><label>Pencarian</label><input id="v10ExamSearch" placeholder="Nama / NIS / No. ujian"></div></div><div id="v10ExamParticipants" class="table-wrap" style="margin-top:12px"><div class="empty">Memuat daftar peserta...</div></div></div>`;
+  window.__bkfExamParticipantPageV547=window.__bkfExamParticipantPageV547||{page:0};
+  window.bkfSetExamParticipantPageV547=function(delta){const st=window.__bkfExamParticipantPageV547;st.page=Math.max(0,st.page+Number(delta||0));return window.loadExamParticipants()};
   window.loadExamParticipants=async function(){
     const type=document.getElementById('v10ExamType')?.value||'PRA_TASHIH';
-    const q=String(document.getElementById('v10ExamSearch')?.value||'').trim().toLowerCase();
+    const q=String(document.getElementById('v10ExamSearch')?.value||'').trim().replace(/[,%()"']/g,' ').replace(/\s+/g,' ').slice(0,80);
     const target=document.getElementById('v10ExamParticipants');
     if(!target)return;
+    const st=window.__bkfExamParticipantPageV547;
     target.innerHTML='<div class="muted" style="padding:12px">Memuat daftar peserta...</div>';
     try{
       const period=await window.bkfLoadSelectedPeriod();
       if(!period?.id)throw new Error('Periode kepengurusan belum dipilih.');
-      // LOGIKA LAMA DIHAPUS: jangan lagi mulai dari exam_registrations lalu
-      // flatten exam_participants. Sumber data langsung dari exam_participants,
-      // sama seperti modul Nomor Ujian yang sudah terbukti menampilkan peserta.
       const isOperator=Array.isArray(state.roles)&&state.roles.includes('OPERATOR');
       const ownInst=isOperator?await window.bkfOperatorInstitutionId():null;
       if(isOperator&&!ownInst)throw new Error('Lembaga akun Operator belum terhubung.');
-      let query=sb.from('exam_participants')
-        .select('id,name,nis,exam_number,status,created_at,exam_registration_id,source_participant_id,exam_registrations!inner(id,registration_number,exam_type,management_period_id,institution_id,wave,status,institutions:institution_id(name))')
-        .eq('exam_registrations.management_period_id',period.id)
-        .eq('exam_registrations.exam_type',type);
+      let query=sb.from('exam_participants').select('id,name,nis,exam_number,status,created_at,exam_registration_id,source_participant_id,exam_registrations!inner(id,registration_number,exam_type,management_period_id,institution_id,wave,status,institutions:institution_id(name))',{count:'exact'})
+        .eq('exam_registrations.management_period_id',period.id).eq('exam_registrations.exam_type',type);
       if(isOperator)query=query.eq('exam_registrations.institution_id',ownInst);
-      // Ambil seluruh baris dengan pagination; jangan diam-diam berhenti pada 1.000 peserta.
-      const data=[];
-      for(let from=0;;from+=1000){
-        const result=await query.order('created_at',{ascending:false}).range(from,from+999);
-        if(result.error)throw result.error;
-        const chunk=result.data||[];data.push(...chunk);if(chunk.length<1000)break;
-      }
-      let rows=data.map(p=>({
-        ...p,
-        institution:p.exam_registrations?.institutions,
-        registration_number:p.exam_registrations?.registration_number,
-        exam_type:p.exam_registrations?.exam_type,
-        wave:p.exam_registrations?.wave
-      }));
+      if(q)query=query.or(`name.ilike.%${q}%,nis.ilike.%${q}%,exam_number.ilike.%${q}%`);
+      let result=await query.order('name',{ascending:true}).order('id',{ascending:true}).range(st.page*50,st.page*50+49);
+      if(result.error)throw result.error;
+      const total=Number(result.count||0),pageCount=Math.max(1,Math.ceil(total/50));
+      if(st.page>=pageCount&&st.page>0){st.page=pageCount-1;return window.loadExamParticipants()}
+      let rows=(result.data||[]).map(p=>({...p,institution:p.exam_registrations?.institutions,registration_number:p.exam_registrations?.registration_number,exam_type:p.exam_registrations?.exam_type,wave:p.exam_registrations?.wave}));
       if(type==='TASHIH'&&rows.length){
         const regs=[...new Map(rows.map(p=>p.exam_registrations).filter(Boolean).map(r=>[r.id,r])).values()];
-        const fetchAll=async(build,label)=>{const all=[];for(let from=0;;from+=1000){const result=await build().range(from,from+999);if(result.error)throw result.error;const chunk=result.data||[];all.push(...chunk);if(chunk.length<1000)break;}return all;};
+        const fetchAll=async(build)=>{const all=[];for(let from=0;;from+=1000){const r=await build().range(from,from+999);if(r.error)throw r.error;const chunk=r.data||[];all.push(...chunk);if(chunk.length<1000)break;}return all;};
         const waveMap=await window.bkfResolveExamWavesV443(rows,regs,fetchAll);
         rows=rows.map(p=>({...p,wave:waveMap.get(p.id)?.wave??null,waveAudit:waveMap.get(p.id)||{unmapped:true,conflict:false}}));
-        const audit=[...waveMap.values()];
-        window._bkfExamParticipantWaveAudit={unmapped:audit.filter(x=>x.unmapped).length,conflicts:audit.filter(x=>x.conflict).length};
       }
-      if(q)rows=rows.filter(p=>[p.name,p.nis,p.exam_number,p.institution?.name].some(v=>String(v||'').toLowerCase().includes(q)));
-      rows.sort((a,b)=>String(a.institution?.name||'').localeCompare(String(b.institution?.name||''),'id')||String(a.name||'').localeCompare(String(b.name||''),'id'));
-      target.innerHTML=rows.length?`<table><thead><tr><th style="width:45px">No.</th><th>Nama Peserta</th><th>NIS</th><th>Lembaga</th><th>Gelombang</th><th>No. Ujian</th><th>Status</th><th style="width:170px">Menu</th></tr></thead><tbody>${rows.map((p,i)=>`<tr><td>${i+1}</td><td><strong>${esc(p.name||'-')}</strong></td><td>${esc(p.nis||'-')}</td><td>${esc(p.institution?.name||'-')}</td><td>${p.wave==null?'<span class="status">Belum terpetakan</span>':'<span class="status ok">Gelombang '+esc(p.wave)+'</span>'}${p.waveAudit?.conflict?'<div class="small error">Periksa konflik gelombang sumber</div>':''}</td><td>${esc(p.exam_number||'-')}</td><td><span class="status ${String(p.status||'').toUpperCase()==='BATAL'?'bad':'ok'}">${String(p.status||'').toUpperCase()==='BATAL'?'DIBATALKAN':'AKTIF'}</span></td><td><div class="compact-actions"><button class="btn secondary" onclick="editExamParticipant('${p.id}')">Edit</button><button class="btn danger" onclick="deleteExamParticipant('${p.id}',${JSON.stringify(p.name||'peserta ini').replace(/</g,'\\u003c')})">Hapus</button></div></td></tr>`).join('')}</tbody></table>`:'<div class="empty">Tidak ditemukan peserta pada jenis ujian ini.</div>';
+      const from=total?st.page*50+1:0,to=Math.min((st.page+1)*50,total);
+      const pager=`<div class="row no-print" style="justify-content:space-between;align-items:center;gap:8px;margin:10px 0"><button class="btn secondary" type="button" ${st.page===0?'disabled':''} onclick="window.bkfSetExamParticipantPageV547(-1)">‹ Sebelumnya</button><span class="small muted">${from}–${to} dari ${total} · Halaman ${st.page+1}/${pageCount} · 50 per halaman</span><button class="btn secondary" type="button" ${st.page+1>=pageCount?'disabled':''} onclick="window.bkfSetExamParticipantPageV547(1)">Berikutnya ›</button></div>`;
+      target.innerHTML=pager+(rows.length?`<table><thead><tr><th style="width:45px">No.</th><th>Nama Peserta</th><th>NIS</th><th>Lembaga</th><th>Gelombang</th><th>No. Ujian</th><th>Status</th><th style="width:170px">Menu</th></tr></thead><tbody>${rows.map((p,i)=>`<tr><td>${from+i}</td><td><strong>${esc(p.name||'-')}</strong></td><td>${esc(p.nis||'-')}</td><td>${esc(p.institution?.name||'-')}</td><td>${p.wave==null?'<span class="status">Belum terpetakan</span>':'<span class="status ok">Gelombang '+esc(p.wave)+'</span>'}${p.waveAudit?.conflict?'<div class="small error">Periksa konflik gelombang sumber</div>':''}</td><td>${esc(p.exam_number||'-')}</td><td><span class="status ${String(p.status||'').toUpperCase()==='BATAL'?'bad':'ok'}">${String(p.status||'').toUpperCase()==='BATAL'?'DIBATALKAN':'AKTIF'}</span></td><td><div class="compact-actions"><button class="btn secondary" onclick="editExamParticipant('${p.id}')">Edit</button><button class="btn danger" onclick="deleteExamParticipant('${p.id}',${JSON.stringify(p.name||'peserta ini').replace(/</g,'\\u003c')})">Hapus</button></div></td></tr>`).join('')}</tbody></table>`:'<div class="empty">Tidak ditemukan peserta pada jenis ujian ini.</div>')+pager;
     }catch(ex){target.innerHTML=`<p class="error">${esc(err(ex))}</p>`}
   };
-  document.getElementById('v10ExamSearch').oninput=loadExamParticipants;
-  document.getElementById('v10ExamType').onchange=loadExamParticipants;
+  document.getElementById('v10ExamSearch').oninput=()=>{window.__bkfExamParticipantPageV547.page=0;loadExamParticipants()};
+  document.getElementById('v10ExamType').onchange=()=>{window.__bkfExamParticipantPageV547.page=0;loadExamParticipants()};
   await loadExamParticipants();
   return;
  }
  if(tab==='seleksi'){const canDecide=v10IsSelectionManager();a.innerHTML=`<div class="card"><h3>Seleksi 10 Besar Tashih</h3><p class="muted">Peserta dibandingkan lintas seluruh lembaga dalam satu kegiatan. Urutan: nilai rata-rata tertinggi → Tajwid → Makhorijul Huruf → Ghorib. Semua peserta yang seri pada batas 10 besar tetap masuk tinjauan Ketua. Keputusan final dan notifikasi lembaga dilakukan setelah disahkan.</p><div class="field"><label>Kegiatan Tashih</label><select id="selActivity"><option value="">Memuat kegiatan Tashih…</option></select></div><div class="compact-actions">${v10IsSelectionManager()?'<button class="btn primary" onclick="v10RunSelection()">Hitung / Perbarui 10 Besar</button>':''}${canDecide?'<button class="btn success" onclick="v10PublishSelection()">Sahkan Hasil & Kirim Notifikasi</button>':''}</div><div id="selectionExports" class="compact-actions" style="margin-top:10px"></div><div id="selectionStatus" class="small muted" style="margin-top:8px">Pilih kegiatan untuk melihat hasil.</div><div id="selectionList" class="list data-list-scroll" style="margin-top:10px"></div></div>`;selActivity.onchange=v10LoadSelection;v10LoadSelectionActivities();return}
  if(tab==='remedial'){if(!hasPermission('exam.remedial.manage')){a.innerHTML='<div class="card"><div class="empty">Anda tidak memiliki hak untuk mengelola daftar remedial.</div></div>';return}a.innerHTML=`<div class="card"><div class="row"><div><h3>Remedial Pra Tashih</h3><p class="small muted">Daftar hanya dibuat dari nilai yang sudah difinalisasi dan masih di bawah batas minimal.</p></div><button class="btn secondary" type="button" onclick="window.showExams?.()">Kembali</button></div><div class="field"><label>Jenis ujian</label><select id="remActivity"><option value="PRA_TASHIH" selected>Pra Tashih</option></select></div><button id="remCreateBtn" class="btn primary" type="button" onclick="v10CreateRemedial()">Buat daftar remedial dari nilai final di bawah minimal</button><div id="remedialMsg" class="small muted" style="margin-top:8px"></div><div id="remedialList" class="list data-list-scroll" style="margin-top:10px"></div></div>`;remActivity.onchange=v10LoadRemedial;v10LoadRemedial();return}
- if(tab==='riwayat'){a.innerHTML=`<div class="card"><h3>Riwayat Peserta</h3><p class="muted">Satu profil peserta dilihat lintas ujian dan wisuda.</p><div class="field"><label>Cari nama / NIS</label><input id="historySearch" placeholder="Nama atau NIS"></div><div id="historyList" class="list data-list-scroll"></div></div>`;const load=async()=>{const q=(historySearch.value||'').trim();let ep=sb.from('exam_participants').select('id,name,nis,exam_number,status,exam_registrations:exam_registration_id(exam_type,activity_id,institutions:institution_id(name))').order('name').limit(100);if(q)ep=ep.or(`name.ilike.%${q}%,nis.ilike.%${q}%`);const {data,error}=await ep;historyList.innerHTML=error?`<p class="error">${esc(v10Err(error))}</p>`:(data||[]).map(p=>`<button class="list-item" style="text-align:left" onclick="v11ParticipantHistory('${p.id}')"><div class="row"><strong>${esc(p.name)}</strong><span>${esc(p.status||'')}</span></div><div class="small">${esc(p.nis||'-')} · ${esc(p.exam_number||'-')} · ${esc(p.exam_registrations?.institutions?.name||'-')}</div></button>`).join('')||'<div class="empty">Belum ada peserta.</div>'};historySearch.oninput=load;load();return}
- if(tab==='nomor'){const {data:regs}=await sb.from('exam_registrations').select('exam_type,institution_id,institutions:institution_id(name),exam_participants(id,name,nis,exam_number)').order('registration_number');const rows=(regs||[]).flatMap(r=>(r.exam_participants||[]).map(p=>({...p,exam_type:r.exam_type,institution:r.institutions})));a.innerHTML=`<div class="card"><h3>Nomor Ujian</h3><p class="muted">Perubahan dicatat dalam riwayat. Hak ubah: Ketua/Panitia (Sekretaris).</p><div class="list data-list-scroll">${rows.map(p=>`<div class="list-item"><div class="row"><strong>${esc(p.name)}</strong><span>${esc(p.exam_type)}</span></div><div class="small">${esc(p.institution?.name||'-')} · NIS ${esc(p.nis||'-')}</div><div class="compact-actions"><input id="en_${p.id}" value="${esc(p.exam_number||'')}" style="max-width:130px">${has('exam.manage')?`<button class="btn secondary" onclick="v10SaveExamNumber('${p.id}')">Simpan nomor</button>`:''}</div></div>`).join('')||'<div class="empty">Belum ada peserta.</div>'}</div></div>`;return}
+ if(tab==='riwayat'){
+  a.innerHTML=`<div class="card"><h3>Riwayat Peserta</h3><p class="muted">Satu profil peserta dilihat lintas ujian dan wisuda.</p><div class="field"><label>Cari nama / NIS</label><input id="historySearch" placeholder="Nama atau NIS"></div><div id="historyList" class="list data-list-scroll"></div></div>`;
+  window.__bkfParticipantHistoryPageV547=window.__bkfParticipantHistoryPageV547||{page:0,term:''};
+  window.bkfLoadParticipantHistoryListV547=async function(){const st=window.__bkfParticipantHistoryPageV547,box=document.getElementById('historyList');if(!box)return;st.term=String(document.getElementById('historySearch')?.value||'').trim().replace(/[,%()"']/g,' ').replace(/\s+/g,' ').slice(0,80);box.innerHTML='<div class="muted">Memuat peserta...</div>';let ep=sb.from('exam_participants').select('id,name,nis,exam_number,status,exam_registrations:exam_registration_id(exam_type,activity_id,institutions:institution_id(name))',{count:'exact'}).order('name').order('id');if(st.term)ep=ep.or(`name.ilike.%${st.term}%,nis.ilike.%${st.term}%`);const r=await ep.range(st.page*50,st.page*50+49);if(r.error){box.innerHTML=`<p class="error">${esc(v10Err(r.error))}</p>`;return}const rows=r.data||[],total=Number(r.count||0),pages=Math.max(1,Math.ceil(total/50));if(st.page>=pages&&st.page>0){st.page=pages-1;return window.bkfLoadParticipantHistoryListV547()}const from=total?st.page*50+1:0,to=Math.min((st.page+1)*50,total),pager=`<div class="row no-print" style="justify-content:space-between;align-items:center;gap:8px;margin:8px 0"><button class="btn secondary" ${st.page===0?'disabled':''} onclick="window.bkfChangeParticipantHistoryPageV547(-1)">‹ Sebelumnya</button><span class="small muted">${from}–${to} dari ${total} · Halaman ${st.page+1}/${pages}</span><button class="btn secondary" ${st.page+1>=pages?'disabled':''} onclick="window.bkfChangeParticipantHistoryPageV547(1)">Berikutnya ›</button></div>`;box.innerHTML=pager+(rows.map(p=>`<button class="list-item" style="text-align:left" onclick="v11ParticipantHistory('${p.id}')"><div class="row"><strong>${esc(p.name)}</strong><span>${esc(p.status||'')}</span></div><div class="small">${esc(p.nis||'-')} · ${esc(p.exam_number||'-')} · ${esc(p.exam_registrations?.institutions?.name||'-')}</div></button>`).join('')||'<div class="empty">Belum ada peserta.</div>')+pager;};
+  window.bkfChangeParticipantHistoryPageV547=function(delta){const st=window.__bkfParticipantHistoryPageV547;st.page=Math.max(0,st.page+Number(delta||0));return window.bkfLoadParticipantHistoryListV547()};
+  document.getElementById('historySearch').oninput=()=>{window.__bkfParticipantHistoryPageV547.page=0;window.bkfLoadParticipantHistoryListV547()};window.bkfLoadParticipantHistoryListV547();return;
+ }
+ if(tab==='nomor'){
+  a.innerHTML=`<div class="card"><h3>Nomor Ujian</h3><p class="muted">Perubahan dicatat dalam riwayat. Hak ubah: Ketua/Panitia (Sekretaris).</p><div class="field"><label>Cari nama, NIS, atau nomor ujian</label><input id="examNumberSearchV547" type="search" placeholder="Cari peserta..."></div><div id="examNumberListV547" class="list data-list-scroll"></div></div>`;
+  window.__bkfExamNumberPageV547=window.__bkfExamNumberPageV547||{page:0};
+  window.bkfLoadExamNumbersV547=async function(){const st=window.__bkfExamNumberPageV547,box=document.getElementById('examNumberListV547');if(!box)return;const term=String(document.getElementById('examNumberSearchV547')?.value||'').trim().replace(/[,%()"']/g,' ').replace(/\s+/g,' ').slice(0,80);box.innerHTML='<div class="muted">Memuat nomor ujian...</div>';let q=sb.from('exam_participants').select('id,name,nis,exam_number,exam_registrations!inner(exam_type,institution_id,institutions:institution_id(name))',{count:'exact'});if(term)q=q.or(`name.ilike.%${term}%,nis.ilike.%${term}%,exam_number.ilike.%${term}%`);const r=await q.order('exam_number',{ascending:true}).order('id').range(st.page*50,st.page*50+49);if(r.error){box.innerHTML=`<div class="error">${esc(v10Err(r.error))}</div>`;return}const rows=r.data||[],total=Number(r.count||0),pages=Math.max(1,Math.ceil(total/50));if(st.page>=pages&&st.page>0){st.page=pages-1;return window.bkfLoadExamNumbersV547()}const from=total?st.page*50+1:0,to=Math.min((st.page+1)*50,total),pager=`<div class="row no-print" style="justify-content:space-between;align-items:center;gap:8px;margin:8px 0"><button class="btn secondary" ${st.page===0?'disabled':''} onclick="window.bkfChangeExamNumberPageV547(-1)">‹ Sebelumnya</button><span class="small muted">${from}–${to} dari ${total} · Halaman ${st.page+1}/${pages} · 50 per halaman</span><button class="btn secondary" ${st.page+1>=pages?'disabled':''} onclick="window.bkfChangeExamNumberPageV547(1)">Berikutnya ›</button></div>`;box.innerHTML=pager+(rows.map(p=>`<div class="list-item"><div class="row"><strong>${esc(p.name)}</strong><span>${esc(p.exam_registrations?.exam_type)}</span></div><div class="small">${esc(p.exam_registrations?.institutions?.name||'-')} · NIS ${esc(p.nis||'-')}</div><div class="compact-actions"><input id="en_${p.id}" value="${esc(p.exam_number||'')}" style="max-width:130px">${has('exam.manage')?`<button class="btn secondary" onclick="v10SaveExamNumber('${p.id}')">Simpan nomor</button>`:''}</div></div>`).join('')||'<div class="empty">Belum ada peserta.</div>')+pager;};
+  window.bkfChangeExamNumberPageV547=function(delta){const st=window.__bkfExamNumberPageV547;st.page=Math.max(0,st.page+Number(delta||0));return window.bkfLoadExamNumbersV547()};
+  document.getElementById('examNumberSearchV547').oninput=()=>{window.__bkfExamNumberPageV547.page=0;window.bkfLoadExamNumbersV547()};window.bkfLoadExamNumbersV547();return;
+ }
 }
 async function v10ExamActivityForType(examType){
  const period=await window.bkfLoadSelectedPeriod(true);
@@ -1231,7 +1233,22 @@ async function v10PublishSelection(){if(!v10CanDecide())return window.bkAlert('H
 function v10PrintSelection(){const html=v10SelectionHtml();if(typeof window.bkfPrintDocumentV183!=='function')return window.bkAlert('Fungsi cetak belum tersedia.');window.bkfPrintDocumentV183(html,'Hasil_Seleksi_10_Besar_Tashih',{orientation:'landscape'}).catch(e=>window.bkAlert(v10Err(e)))}
 async function v10DownloadSelectionPdf(){try{if(typeof window.bkfDownloadPdfV183!=='function')throw new Error('Fungsi PDF belum tersedia.');await window.bkfDownloadPdfV183(v10SelectionHtml(),'Hasil_Seleksi_10_Besar_Tashih',{pdfSize:[297,210],pdfOrientation:'landscape'});}catch(e){window.bkAlert(v10Err(e))}}
 async function v10DownloadSelectionExcel(){try{const rows=v10SelectionRows(),readOnly=!!window._v10SelectionReadOnly;if(!rows.length)throw new Error('Belum ada hasil seleksi untuk diunduh.');if(!window.ExcelJS){await new Promise((resolve,reject)=>{const sc=document.createElement('script');sc.src='https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js';sc.onload=resolve;sc.onerror=()=>reject(new Error('ExcelJS gagal dimuat.'));document.head.appendChild(sc)});}const wb=new window.ExcelJS.Workbook();wb.creator='BK-FUSPAQ-NU';wb.created=new Date();const ws=wb.addWorksheet('Seleksi 10 Besar');ws.views=[{state:'frozen',ySplit:1}];const headers=readOnly?['No.','Peringkat','Nama Peserta','Asal Lembaga']:['No.','Peringkat','Nama Peserta','NIS','Nomor Ujian','Asal Lembaga','Total Nilai','Nilai Rata-rata','Nilai Tajwid','Nilai Makhorijul Huruf','Nilai Ghorib','Status Seleksi','Catatan Ketua'];ws.addRow(headers);const head=ws.getRow(1);head.font={bold:true,color:{argb:'FFFFFFFF'}};head.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FF176B45'}};head.alignment={horizontal:'center',vertical:'middle',wrapText:true};head.height=32;head.eachCell(c=>{c.border={top:{style:'thin'},left:{style:'thin'},bottom:{style:'thin'},right:{style:'thin'}}});(readOnly?[7,14,32,28]:[7,14,28,16,18,26,14,14,12,20,12,22,48]).forEach((w,i)=>ws.getColumn(i+1).width=w);rows.forEach((x,i)=>{let values;if(readOnly)values=[i+1,x.final_rank??'',x.participant?.name||'',x.institution_name||''];else{const r=x.rank_system||{},st=x.selection_status==='TIE_REVIEW'?'TINJAUAN KETUA':x.selection_status==='CHAIR_DECIDED'?'KEPUTUSAN KETUA':x.selection_status==='SELECTED'?'TERPILIH':x.selection_status;values=[i+1,x.final_rank??'',x.participant?.name||'',x.participant?.nis||'',x.participant?.exam_number||'',x.institution_name||'',r.nilai_kumulatif??r.total_score??'',r.rata_rata??'',r.tajwid??'',r.makhorij??'',r.ghorib??'',st,x.decision_note||'']}const row=ws.addRow(values);row.alignment={vertical:'top',wrapText:true};row.eachCell(c=>{c.border={top:{style:'thin'},left:{style:'thin'},bottom:{style:'thin'},right:{style:'thin'}}})});ws.autoFilter={from:'A1',to:`${readOnly?'D':'M'}${rows.length+1}`};const buffer=await wb.xlsx.writeBuffer(),blob=new Blob([buffer],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='BKFUSPAQNU_Seleksi_10_Besar_Tashih.xlsx';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000)}catch(e){window.bkAlert(v10Err(e))}}
-async function v10LoadRemedial(){const type=document.getElementById('remActivity')?.value;if(!type)return;const list=document.getElementById('remedialList');if(!list)return;list.innerHTML='<div class="muted">Memuat daftar remedial...</div>';let id;try{id=await v10ExamActivityForType(type)}catch(e){list.innerHTML=`<div class="empty">${esc(v10Err(e))}</div>`;return}const regsQ=await sb.from('exam_registrations').select('id,activity_id,exam_type,exam_participants(id,name,nis,exam_number),exam_sessions(id,participant_id)').eq('activity_id',id);if(regsQ.error){list.innerHTML=`<div class="empty">${esc(v10Err(regsQ.error))}</div>`;return}const regs=regsQ.data||[];const pmap=new Map(regs.flatMap(r=>(r.exam_participants||[]).map(p=>[p.id,{...p,exam_type:r.exam_type}])));const sessions=regs.flatMap(r=>(r.exam_sessions||[]).map(s=>({...s,participant:pmap.get(s.participant_id),exam_type:r.exam_type})));const ids=sessions.map(x=>x.id);let rs=[];if(ids.length){const q=await sb.from('exam_remedials').select('id,exam_session_id,exam_material_id,examiner_id,attempt_number,score,status,reason,exam_materials:exam_material_id(name)').in('exam_session_id',ids).order('status');if(q.error){list.innerHTML=`<div class="empty">${esc(v10Err(q.error))}</div>`;return}rs=q.data||[]}const isChair=(Array.isArray(state?.roles)?state.roles:[]).includes('KETUA');const profileId=state?.profile?.id||state?.user?.id;list.innerHTML=rs.map(x=>{const person=sessions.find(y=>y.id===x.exam_session_id)||{};const mayScore=isChair||(profileId&&x.examiner_id===profileId);return `<div class="list-item"><div class="row"><strong>${esc(person.participant?.name||'-')}</strong><span class="status">${esc(x.status)}</span></div><div class="small">${esc(x.exam_materials?.name||'-')} · Percobaan ${x.attempt_number} · ${x.score==null?'Belum dinilai':x.score}</div>${x.reason?`<div class="small muted">${esc(x.reason)}</div>`:''}${['DRAFT','SUBMITTED'].includes(x.status)&&mayScore?`<div class="compact-actions"><input id="rem_${x.id}" type="number" min="0" max="100" value="${x.score??''}" placeholder="Nilai remedial"><button class="btn secondary" onclick="v11SaveRemedial('${x.id}')">Simpan nilai</button></div>`:''}</div>`}).join('')||'<div class="empty">Belum ada remedial yang memenuhi syarat. Pastikan hasil Pra Tashih sudah difinalisasi.</div>'}
+window.__bkfRemedialPageV547=window.__bkfRemedialPageV547||{page:0};
+window.bkfSetRemedialPageV547=function(delta){const st=window.__bkfRemedialPageV547;st.page=Math.max(0,st.page+Number(delta||0));return v10LoadRemedial()};
+async function v10LoadRemedial(){
+ const type=document.getElementById('remActivity')?.value;if(!type)return;const list=document.getElementById('remedialList');if(!list)return;const st=window.__bkfRemedialPageV547;list.innerHTML='<div class="muted">Memuat daftar remedial...</div>';
+ let activityId;try{activityId=await v10ExamActivityForType(type)}catch(e){list.innerHTML=`<div class="empty">${esc(v10Err(e))}</div>`;return}
+ try{
+  let q=sb.from('exam_remedials').select('id,exam_session_id,exam_material_id,examiner_id,attempt_number,score,status,reason,exam_materials:exam_material_id(name),exam_sessions!inner(id,participant_id,exam_registration_id,exam_registrations!inner(activity_id,exam_type))',{count:'exact'}).eq('exam_sessions.exam_registrations.activity_id',activityId).order('created_at',{ascending:false}).order('id',{ascending:false}).range(st.page*50,st.page*50+49);
+  const result=await q;if(result.error)throw result.error;const total=Number(result.count||0),pageCount=Math.max(1,Math.ceil(total/50));if(st.page>=pageCount&&st.page>0){st.page=pageCount-1;return v10LoadRemedial()}
+  const rows=result.data||[],participantIds=[...new Set(rows.map(x=>x.exam_sessions?.participant_id).filter(Boolean))];
+  const participantsQ=participantIds.length?await sb.from('exam_participants').select('id,name,nis,exam_number').in('id',participantIds):{data:[],error:null};if(participantsQ.error)throw participantsQ.error;const people=new Map((participantsQ.data||[]).map(x=>[x.id,x]));
+  const isChair=(Array.isArray(state?.roles)?state.roles:[]).includes('KETUA');const profileId=state?.profile?.id||state?.user?.id;
+  const from=total?st.page*50+1:0,to=Math.min((st.page+1)*50,total);
+  const pager=`<div class="row no-print" style="justify-content:space-between;align-items:center;gap:8px;margin:10px 0"><button class="btn secondary" type="button" ${st.page===0?'disabled':''} onclick="window.bkfSetRemedialPageV547(-1)">‹ Sebelumnya</button><span class="small muted">${from}–${to} dari ${total} · Halaman ${st.page+1}/${pageCount} · 50 per halaman</span><button class="btn secondary" type="button" ${st.page+1>=pageCount?'disabled':''} onclick="window.bkfSetRemedialPageV547(1)">Berikutnya ›</button></div>`;
+  list.innerHTML=pager+(rows.map(x=>{const person=people.get(x.exam_sessions?.participant_id)||{};const mayScore=isChair||(profileId&&x.examiner_id===profileId);return `<div class="list-item"><div class="row"><strong>${esc(person.name||'-')}</strong><span class="status">${esc(x.status)}</span></div><div class="small">${esc(x.exam_materials?.name||'-')} · Percobaan ${x.attempt_number} · ${x.score==null?'Belum dinilai':x.score}</div>${person.nis?`<div class="small muted">NIS ${esc(person.nis)} · ${esc(person.exam_number||'-')}</div>`:''}${x.reason?`<div class="small muted">${esc(x.reason)}</div>`:''}${['DRAFT','SUBMITTED'].includes(x.status)&&mayScore?`<div class="compact-actions"><input id="rem_${x.id}" type="number" min="0" max="100" value="${x.score??''}" placeholder="Nilai remedial"><button class="btn secondary" onclick="v11SaveRemedial('${x.id}')">Simpan nilai</button></div>`:''}</div>`}).join('')||'<div class="empty">Belum ada remedial yang memenuhi syarat. Pastikan hasil Pra Tashih sudah difinalisasi.</div>')+pager;
+ }catch(e){list.innerHTML=`<div class="error">${esc(v10Err(e))}</div>`}
+}
 async function v10CreateRemedial(){if(!hasPermission('exam.remedial.manage'))return window.bkAlert('Anda tidak berwenang membuat daftar remedial.');const type=document.getElementById('remActivity')?.value;if(type!=='PRA_TASHIH')return window.bkAlert('Pilih jenis ujian Pra Tashih.');const btn=document.getElementById('remCreateBtn'),msg=document.getElementById('remedialMsg');if(btn){btn.disabled=true;btn.textContent='Memeriksa nilai final...'}if(msg)msg.textContent='Memeriksa nilai yang sudah difinalisasi dan masih di bawah batas minimal...';try{const activityId=await v10ExamActivityForType(type);const result=await sb.rpc('create_remedial_for_below_min',{p_activity_id:activityId});if(result.error)throw result.error;if(msg)msg.textContent=`Pemeriksaan selesai. ${Number(result.data||0)} daftar remedial baru dibuat.`;await v10LoadRemedial()}catch(e){if(msg)msg.textContent=v10Err(e);else window.bkAlert(v10Err(e))}finally{if(btn){btn.disabled=false;btn.textContent='Buat daftar remedial dari nilai final di bawah minimal'}}}
 async function v11SaveRemedial(id){const field=document.getElementById('rem_'+id);const score=Number(field?.value);if(!field||field.value.trim()===''||!Number.isFinite(score)||score<0||score>100)return window.bkAlert('Nilai remedial harus 0–100.');const {error}=await sb.rpc('save_remedial_score',{p_remedial_id:id,p_score:score});if(error)return window.bkAlert(v10Err(error));window.bkAlert('Nilai remedial tersimpan. Hasil dibuka kembali untuk pemeriksaan dan finalisasi ulang.');v10LoadRemedial()}
 async function v10SaveExamNumber(id){const v=document.getElementById('en_'+id)?.value.trim();if(!v)return window.bkAlert('Nomor ujian tidak boleh kosong.');const reason=await window.bkfSystemPrompt('Alasan perubahan nomor ujian:','Penyesuaian urutan cetak');if(reason===null)return;const {error}=await sb.rpc('update_exam_number',{p_participant_id:id,p_new_number:v,p_reason:reason||'Penyesuaian urutan cetak'});if(error)return window.bkAlert(v10Err(error));window.bkAlert('Nomor ujian tersimpan dan riwayat perubahan dicatat.')}
@@ -1322,7 +1339,7 @@ window.printExamCards=async function(){
  modal.innerHTML=`<div class="modal-sheet"><div class="row"><div><h3>Cetak Kartu Ujian</h3><div class="small muted">Pilih lembaga atau nomor peserta yang akan dicetak.</div></div><button class="btn neutral" type="button" id="bkfExamCardClose">Tutup</button></div>
  <div class="field"><label>Jenis Ujian</label><select id="bkfCardType"><option value="PRA_TASHIH">Pra Tashih</option><option value="TASHIH">Tashih</option></select></div>
  <div class="field"><label>Lembaga</label><select id="bkfCardInstitution"><option value="ALL">Semua Lembaga</option></select></div>
- <div class="field"><label>Nomor Peserta</label><select id="bkfCardParticipant"><option value="ALL">Semua Peserta</option></select></div>
+ <div class="field"><label>Nomor Peserta</label><select id="bkfCardParticipant"><option value="ALL">Semua Peserta (sesuai filter)</option></select><div id="bkfCardParticipantPager" class="row" style="justify-content:space-between;align-items:center;gap:8px;margin-top:8px"></div></div>
  <div class="compact-actions"><button class="btn secondary" type="button" id="bkfCardPreview">👁 Preview</button><button class="btn info" type="button" id="bkfCardPrint">🖨 Cetak</button></div>
  <div id="bkfCardPrintMsg" class="small muted" style="margin-top:8px"></div></div>`;
  document.body.appendChild(modal);
@@ -1330,39 +1347,31 @@ window.printExamCards=async function(){
  const typeEl=document.getElementById('bkfCardType'),instEl=document.getElementById('bkfCardInstitution'),partEl=document.getElementById('bkfCardParticipant'),msg=document.getElementById('bkfCardPrintMsg');
  let cache=[];
  let institutionCache=[];
+ let cardParticipantPage=0,cardParticipantTotal=0;
  async function loadInstitutions(){
    msg.textContent='Memuat daftar lembaga...';
-   const examType=typeEl.value;
-   const isOperator=Array.isArray(state.roles)&&state.roles.includes('OPERATOR');
-   const ownInst=await window.bkfOperatorInstitutionId();
-   if(isOperator&&!ownInst)throw new Error('Lembaga akun Operator belum terhubung.');
+   const examType=typeEl.value,isOperator=Array.isArray(state.roles)&&state.roles.includes('OPERATOR');
+   const ownInst=await window.bkfOperatorInstitutionId();if(isOperator&&!ownInst)throw new Error('Lembaga akun Operator belum terhubung.');
    let q=sb.from('exam_registrations').select('id,exam_type,institution_id,institutions:institution_id(id,name)').eq('exam_type',examType);
    if(isOperator)q=q.eq('institution_id',ownInst);
-   q=await q.order('registration_number');
-   if(q.error)throw q.error;
-   institutionCache=[...new Map((q.data||[]).filter(r=>r.institutions?.id).map(r=>[r.institutions.id,r.institutions])).values()]
-     .sort((a,b)=>String(a.name||'').localeCompare(String(b.name||'')));
-   if(isOperator){
-     const own=institutionCache.find(x=>x.id===ownInst)||institutionCache[0];
-     if(!own)throw new Error('Data lembaga Operator tidak ditemukan.');
-     instEl.innerHTML=`<option value="${E2(own.id)}">${E2(own.name||'-')}</option>`;
-     instEl.value=own.id;instEl.disabled=true;
-   }else{
-     instEl.disabled=false;
-     instEl.innerHTML='<option value="ALL">Semua Lembaga</option>'+institutionCache.map(x=>`<option value="${E2(x.id)}">${E2(x.name||'-')}</option>`).join('');
-   }
+   const all=[];for(let from=0;;from+=1000){const r=await q.order('registration_number').range(from,from+999);if(r.error)throw r.error;const chunk=r.data||[];all.push(...chunk);if(chunk.length<1000)break;}
+   institutionCache=[...new Map(all.filter(r=>r.institutions?.id).map(r=>[r.institutions.id,r.institutions])).values()].sort((a,b)=>String(a.name||'').localeCompare(String(b.name||'')));
+   if(isOperator){const own=institutionCache.find(x=>x.id===ownInst)||institutionCache[0];if(!own)throw new Error('Data lembaga Operator tidak ditemukan.');instEl.innerHTML=`<option value="${E2(own.id)}">${E2(own.name||'-')}</option>`;instEl.value=own.id;instEl.disabled=true;}
+   else{instEl.disabled=false;instEl.innerHTML='<option value="ALL">Semua Lembaga</option>'+institutionCache.map(x=>`<option value="${E2(x.id)}">${E2(x.name||'-')}</option>`).join('');}
  }
  async function loadParticipants(){
-   msg.textContent='Memuat peserta...';
-   const examType=typeEl.value,iid=instEl.value;
-   let q=sb.from('exam_registrations').select('id,exam_type,institution_id,registration_number,wave,institutions:institution_id(id,name),exam_participants(id,name,nis,gender,exam_number,status,media_id)').eq('exam_type',examType);
-   if(iid!=='ALL')q=q.eq('institution_id',iid);
-   const r=await q.order('registration_number');
-   if(r.error)throw r.error;
-   cache=(r.data||[]).flatMap(reg=>(reg.exam_participants||[]).filter(p=>p.status!=='BATAL').map(p=>({...p,institution:reg.institutions,registration_number:reg.registration_number||'',wave:reg.wave})));
-   cache.sort((a,b)=>String(a.exam_number||a.registration_number||'').localeCompare(String(b.exam_number||b.registration_number||''),undefined,{numeric:true}));
-   partEl.innerHTML='<option value="ALL">Semua Peserta</option>'+cache.map(x=>`<option value="${E2(x.id)}">${E2(x.exam_number||x.registration_number||'-')} — ${E2(x.name||'-')}</option>`).join('');
-   msg.textContent=cache.length?`${cache.length} peserta tersedia.`:'Belum ada peserta untuk pilihan tersebut.';
+   msg.textContent='Memuat peserta...';const examType=typeEl.value,iid=instEl.value;
+   let q=sb.from('exam_participants').select('id,name,nis,gender,exam_number,status,media_id,exam_registration_id,exam_registrations!inner(id,exam_type,institution_id,registration_number,wave,institutions:institution_id(id,name))',{count:'exact'}).eq('exam_registrations.exam_type',examType).or('status.is.null,status.neq.BATAL');
+   if(iid!=='ALL')q=q.eq('exam_registrations.institution_id',iid);
+   const r=await q.order('exam_number',{ascending:true}).order('id',{ascending:true}).range(cardParticipantPage*50,cardParticipantPage*50+49);if(r.error)throw r.error;
+   cardParticipantTotal=Number(r.count||0);const pages=Math.max(1,Math.ceil(cardParticipantTotal/50));if(cardParticipantPage>=pages&&cardParticipantPage>0){cardParticipantPage=pages-1;return loadParticipants()}
+   cache=(r.data||[]).map(p=>{const reg=p.exam_registrations||{};return {...p,institution:reg.institutions,registration_number:reg.registration_number||'',wave:reg.wave}});
+   partEl.innerHTML='<option value="ALL">Semua Peserta (seluruh hasil filter)</option>'+cache.map(x=>`<option value="${E2(x.id)}">${E2(x.exam_number||x.registration_number||'-')} — ${E2(x.name||'-')}</option>`).join('');
+   const pager=document.getElementById('bkfCardParticipantPager'),from=cardParticipantTotal?cardParticipantPage*50+1:0,to=Math.min((cardParticipantPage+1)*50,cardParticipantTotal);
+   if(pager)pager.innerHTML=`<button class="btn secondary" type="button" ${cardParticipantPage===0?'disabled':''} id="bkfCardPrev">‹</button><span class="small muted">${from}–${to} dari ${cardParticipantTotal} · ${cardParticipantPage+1}/${pages}</span><button class="btn secondary" type="button" ${cardParticipantPage+1>=pages?'disabled':''} id="bkfCardNext">›</button>`;
+   document.getElementById('bkfCardPrev')?.addEventListener('click',()=>{cardParticipantPage=Math.max(0,cardParticipantPage-1);loadParticipants().catch(e=>msg.textContent=e?.message||String(e))});
+   document.getElementById('bkfCardNext')?.addEventListener('click',()=>{cardParticipantPage=Math.min(pages-1,cardParticipantPage+1);loadParticipants().catch(e=>msg.textContent=e?.message||String(e))});
+   msg.textContent=cardParticipantTotal?`${cardParticipantTotal} peserta tersedia. Pilihan “Semua Peserta” mencakup seluruh hasil filter, bukan hanya halaman yang sedang terlihat.`:'Belum ada peserta untuk pilihan tersebut.';
  }
  async function loadData(){
    if(typeof window.bkfBusyShow==='function')window.bkfBusyShow('Memuat daftar lembaga...');
@@ -1372,13 +1381,19 @@ window.printExamCards=async function(){
      await loadParticipants();
    }finally{if(typeof window.bkfBusyHide==='function')window.bkfBusyHide()}
  }
- instEl.onchange=()=>loadParticipants().catch(e=>{msg.textContent='Gagal memuat peserta: '+(e?.message||e)});
- typeEl.onchange=()=>loadData().catch(e=>{msg.textContent='Gagal memuat: '+(e?.message||e)});
+ instEl.onchange=()=>{cardParticipantPage=0;loadParticipants().catch(e=>{msg.textContent='Gagal memuat peserta: '+(e?.message||e)})};
+ typeEl.onchange=()=>{cardParticipantPage=0;loadData().catch(e=>{msg.textContent='Gagal memuat: '+(e?.message||e)})};
  await loadData().catch(e=>{msg.textContent='Gagal memuat: '+(e?.message||e)});
  async function generate(mode){
    const examType=typeEl.value;const iid=instEl.value;const pid=partEl.value;
-   let rows=cache.slice();if(iid!=='ALL')rows=rows.filter(x=>x.institution?.id===iid);if(pid!=='ALL')rows=rows.filter(x=>x.id===pid);
+   let rows=[];
+   let dataQ=sb.from('exam_participants').select('id,name,nis,gender,exam_number,status,media_id,exam_registration_id,exam_registrations!inner(id,exam_type,institution_id,registration_number,wave,institutions:institution_id(id,name))').eq('exam_registrations.exam_type',examType).or('status.is.null,status.neq.BATAL');
+   if(iid!=='ALL')dataQ=dataQ.eq('exam_registrations.institution_id',iid);
+   if(pid!=='ALL')dataQ=dataQ.eq('id',pid);
+   if(pid!=='ALL'){const one=await dataQ.maybeSingle();if(one.error)throw one.error;const p=one.data;if(p){const reg=p.exam_registrations||{};rows=[{...p,institution:reg.institutions,registration_number:reg.registration_number||'',wave:reg.wave}]}}
+   else{for(let from=0;;from+=1000){const r=await dataQ.order('exam_number',{ascending:true}).order('id',{ascending:true}).range(from,from+999);if(r.error)throw r.error;const chunk=r.data||[];rows.push(...chunk.map(p=>{const reg=p.exam_registrations||{};return {...p,institution:reg.institutions,registration_number:reg.registration_number||'',wave:reg.wave}}));if(chunk.length<1000)break;}}
    if(!rows.length){toast('Tidak ada peserta sesuai pilihan cetak.','error');return}
+   msg.textContent=`Menyiapkan ${rows.length} kartu dari seluruh hasil filter...`;
    const title=examType==='TASHIH'?'KARTU PESERTA UJIAN TASHIH':'KARTU PESERTA UJIAN PRA TASHIH';
    const cardUrl=(id)=>{const base='https://simfaq.github.io/SIMFAQ/';try{return base+'?card='+encodeURIComponent(String(id||''))}catch(_){return base}};
    const materialQ=await sb.from('exam_materials').select('id,code,name,sequence').eq('status','ACTIVE').order('sequence');if(materialQ.error)throw materialQ.error;const materials=materialQ.data||[];
@@ -3282,9 +3297,21 @@ html,body{margin:0;padding:0;background:#fff!important;color:#111;font-family:Ar
   window.showNotifications=async function(){
     const pid=state.profile?.id;
     if(!pid)return listPage('Notifikasi','Pemberitahuan akun.','<div class="empty">Profil akun belum tersedia.</div>');
+    const navState=window.__bkfNotificationPageState||(window.__bkfNotificationPageState={page:0,filter:'all',search:''});
+    navState.page=Math.max(0,Number(navState.page)||0);
     listPage('Notifikasi','Pemberitahuan yang ditujukan khusus kepada akun ini.','<div id="v40Notifs" class="bkf-notification-list"><div class="empty">Memuat notifikasi...</div></div>');
+    const fields='id,title,message,type,read_at,created_at,related_table,related_id,event_scope,event_type,activity_id,institution_id,item_name';
+    const buildNotificationQuery=(withRows)=>{
+      let query=sb.from('notifications').select(withRows?fields:'id',{count:'exact',head:!withRows}).eq('user_id',pid);
+      if(navState.filter==='unread')query=query.is('read_at',null);
+      else if(navState.filter==='read')query=query.not('read_at','is',null);
+      const term=String(navState.search||'').trim().replace(/[,%()\"']/g,' ').replace(/\s+/g,' ').slice(0,80);
+      if(term)query=query.or(`title.ilike.%${term}%,message.ilike.%${term}%`);
+      if(withRows)query=query.order('created_at',{ascending:false}).order('id',{ascending:false}).range(navState.page*50,navState.page*50+49);
+      return query;
+    };
     const [q,cq]=await Promise.all([
-      sb.from('notifications').select('id,title,message,type,read_at,created_at,related_table,related_id,event_scope,event_type,activity_id,institution_id,item_name').eq('user_id',pid).order('created_at',{ascending:false}).limit(200),
+      buildNotificationQuery(true),
       sb.from('notifications').select('id',{count:'exact',head:true}).eq('user_id',pid).is('read_at',null)
     ]);
     const box=document.getElementById('v40Notifs');
@@ -3421,8 +3448,14 @@ html,body{margin:0;padding:0;background:#fff!important;color:#111;font-family:Ar
     const extraInstIds=[...new Set(rows.map(n=>n.institution_id).filter(id=>id&&!instMap.has(id)))];
     if(extraInstIds.length){const exq=await sb.from('institutions').select('id,name').in('id',extraInstIds);if(!exq.error)(exq.data||[]).forEach(x=>instMap.set(x.id,x.name));rows.forEach(n=>{if(!n.institution_name&&n.institution_id)n.institution_name=instMap.get(n.institution_id)||''})}
     const unreadCount=cq.count??0;
-    const head=`<div class="row no-print" style="margin-bottom:10px;gap:8px;align-items:center"><div class="small muted">${unreadCount?`${unreadCount} notifikasi belum dibaca`:'Semua notifikasi sudah dibaca'}</div>${unreadCount?'<button class="btn secondary" type="button" onclick="markAllNotificationsReadV40()">Tandai semua sudah dibaca</button>':''}</div>`;
-    box.innerHTML=rows.length?head+rows.map(n=>{
+    const totalCount=q.count??0;
+    const pageCount=Math.max(1,Math.ceil(totalCount/50));
+    if(navState.page>=pageCount&&navState.page>0){navState.page=pageCount-1;return window.showNotifications()}
+    const filterButton=(value,label)=>`<button class="btn ${navState.filter===value?'primary':'secondary'}" type="button" onclick="window.bkfSetNotificationFilterV546('${value}')">${label}</button>`;
+    const start=totalCount?navState.page*50+1:0,end=Math.min((navState.page+1)*50,totalCount);
+    const head=`<div class="no-print" style="margin-bottom:12px"><div class="row" style="gap:8px;align-items:center;flex-wrap:wrap"><div class="small muted" style="flex:1">${unreadCount?`${unreadCount} notifikasi belum dibaca`:'Semua notifikasi sudah dibaca'}</div>${unreadCount?'<button class="btn secondary" type="button" onclick="markAllNotificationsReadV40()">Tandai semua sudah dibaca</button>':''}</div><div class="row" style="gap:6px;flex-wrap:wrap;margin-top:9px">${filterButton('all','Semua')}${filterButton('unread','Belum dibaca')}${filterButton('read','Sudah dibaca')}</div><form onsubmit="event.preventDefault();window.bkfSearchNotificationsV546(this)" style="display:flex;gap:7px;margin-top:9px"><input name="search" type="search" value="${E(navState.search)}" placeholder="Cari judul atau isi notifikasi…" style="flex:1;min-width:0;border:1px solid var(--line);border-radius:10px;padding:9px 11px"><button class="btn secondary" type="submit">Cari</button></form><div class="small muted" style="margin-top:8px">Menampilkan ${start}–${end} dari ${totalCount} notifikasi · 50 per halaman</div></div>`;
+    const pager=`<div class="row no-print" style="justify-content:space-between;align-items:center;gap:8px;margin-top:12px"><button class="btn secondary" type="button" ${navState.page===0?'disabled':''} onclick="window.bkfChangeNotificationPageV546(-1)">‹ Sebelumnya</button><span class="small muted">Halaman ${navState.page+1} dari ${pageCount}</span><button class="btn secondary" type="button" ${navState.page+1>=pageCount?'disabled':''} onclick="window.bkfChangeNotificationPageV546(1)">Berikutnya ›</button></div>`;
+    box.innerHTML=head+(rows.length?rows.map(n=>{
       const isCash=n.related_table==='cash_transactions'&&n.title==='Transaksi Kas Baru';
       const contextName=n.item_name||n.context_name||'';
       const ntxt=[n.related_table,n.event_scope,n.event_type,n.type,n.title,n.message].join(' ').toLowerCase();
@@ -3434,8 +3467,11 @@ html,body{margin:0;padding:0;background:#fff!important;color:#111;font-family:Ar
       const notificationBody=(n.event_type==='EXAM_MATERIAL_COMPLETE')?n.message:(n.context_description||n.message||'-');
       const detail=isCash?`<div class="bkf-notification-detail">${n.institution_name?`<strong>Lembaga:</strong> ${E(n.institution_name)}<br>`:''}${n.cash_type?`<strong>Jenis:</strong> ${E(n.cash_type)}<br>`:''}${n.cash_category?`<strong>Kategori:</strong> ${E(n.cash_category)}<br>`:''}${contextName?`<strong>Item:</strong> ${E(contextName)}<br>`:''}${n.cash_amount!=null?`<strong>Nominal:</strong> ${E(fmt(n.cash_amount))}<br>`:''}<strong>Keterangan:</strong> ${E(n.cash_description||n.context_description||n.message||'-')}</div>`:`<div class="bkf-notification-detail">${n.institution_name?`<strong>Lembaga:</strong> ${E(n.institution_name)}<br>`:''}${contextName?`<strong>Item/Kegiatan:</strong> ${E(contextName)}<br>`:''}${displayContextType?`<strong>Jenis/Status:</strong> ${E(displayContextType)}<br>`:''}${E(noticeDomain?window.bkfHumanizeDomainTextV420(notificationBody,noticeDomain):window.bkfFormatNotificationTextV360(notificationBody))}</div>`;
       return `<article class="bkf-notification-item ${n.read_at?'is-read':'is-unread'}"><div class="bkf-notification-main" role="button" tabindex="0" onclick="readNotificationV40('${E(n.id)}')" onkeydown="if(event.key==='Enter'||event.key===' ')readNotificationV40('${E(n.id)}')"><div class="bkf-notification-title"><span class="bkf-notification-dot ${n.read_at?'read':''}"></span><strong>${E(displayTitle)}</strong><span class="bkf-notification-status">${n.read_at?'Sudah dibaca':'Belum dibaca'}</span></div>${!isCash&&meta?`<div class="small muted">${E(meta)}</div>`:''}${detail}<div class="bkf-notification-time">${date(n.created_at)} · ${E(noticeDomain?window.bkfHumanizeDomainTextV420(n.type||'',noticeDomain):(n.type||''))}</div><div class="bkf-notification-brand">Notifikasi ini dikirim otomatis oleh Daneva.studio</div></div><button class="bkf-notification-delete" type="button" title="Hapus notifikasi" aria-label="Hapus notifikasi" onclick="event.stopPropagation();deleteNotificationV40('${E(n.id)}')">🗑</button></article>`;
-    }).join(''):'<div class="empty">Belum ada notifikasi untuk akun Anda.</div>';
+    }).join(''):'<div class="empty">Tidak ada notifikasi pada halaman atau filter ini.</div>')+pager;
   };
+  window.bkfSetNotificationFilterV546=function(filter){const st=window.__bkfNotificationPageState||(window.__bkfNotificationPageState={page:0,filter:'all',search:''});st.filter=['all','unread','read'].includes(filter)?filter:'all';st.page=0;return window.showNotifications()};
+  window.bkfSearchNotificationsV546=function(form){const st=window.__bkfNotificationPageState||(window.__bkfNotificationPageState={page:0,filter:'all',search:''});st.search=String(new FormData(form).get('search')||'').trim();st.page=0;return window.showNotifications()};
+  window.bkfChangeNotificationPageV546=function(delta){const st=window.__bkfNotificationPageState||(window.__bkfNotificationPageState={page:0,filter:'all',search:''});st.page=Math.max(0,(Number(st.page)||0)+Number(delta||0));return window.showNotifications()};
   window.deleteNotificationV40=async function(id){
     const pid=state.profile?.id;if(!pid||!id)return;
     const ok=await window.bkfSystemConfirm('Hapus notifikasi ini?');
@@ -3550,10 +3586,13 @@ html,body{margin:0;padding:0;background:#fff!important;color:#111;font-family:Ar
   async function showLoginHistory(){
     if(!Array.isArray(state.roles)||!state.roles.includes('KETUA')){toast('Riwayat Login hanya dapat dibuka oleh Ketua.','error');return;}
     listPage('Riwayat Login','Catatan login berhasil yang mulai direkam setelah fitur ini diterapkan.','<div class="card"><div class="row"><div><h3 style="margin:0">Login berhasil</h3><div class="small muted">Waktu ditampilkan dalam WIB. Catatan ini merekam login melalui formulir aplikasi, bukan status sesi aktif.</div></div><button class="btn secondary" id="v471LoginRefresh" type="button">Muat ulang</button></div><div class="field" style="margin-top:12px"><label for="v471LoginSearch">Cari nama atau peran</label><input id="v471LoginSearch" type="search" placeholder="Ketik nama atau peran…"></div><div id="v471LoginList" class="list" style="margin-top:10px">Memuat riwayat login…</div></div>');
-    const box=document.getElementById('v471LoginList'),search=document.getElementById('v471LoginSearch');let rows=[];
-    const render=()=>{const term=String(search?.value||'').trim().toLowerCase();const filtered=rows.filter(x=>((x.name||'')+' '+(x.roles||'')).toLowerCase().includes(term));box.innerHTML=filtered.map(x=>'<div class="list-item"><div class="row"><strong>'+E(x.name||'Nama akun tidak tersedia')+'</strong><span class="status ok">LOGIN BERHASIL</span></div><div class="small muted" style="margin-top:5px">'+E(x.roles||'Peran tidak tercatat')+'</div><div class="small" style="margin-top:4px">'+E(new Date(x.created_at).toLocaleString('id-ID',{timeZone:'Asia/Jakarta',dateStyle:'medium',timeStyle:'medium'}))+' WIB</div></div>').join('')||'<div class="empty">'+(rows.length?'Tidak ada hasil yang cocok.':'Belum ada riwayat login sejak fitur ini diterapkan.')+'</div>';};
-    const load=async()=>{box.textContent='Memuat riwayat login…';const r=await sb.from('audit_logs').select('id,user_id,action,table_name,reason,created_at').eq('action','LOGIN_SUCCESS').eq('table_name','authentication').order('created_at',{ascending:false}).limit(500);if(r.error){box.innerHTML='<div class="error">Riwayat login belum dapat dimuat: '+E(r.error.message)+'</div>';return;}const data=r.data||[],ids=[...new Set(data.map(x=>x.user_id).filter(Boolean))];let names={};if(ids.length){const q=await sb.from('profiles').select('id,full_name').in('id',ids);if(q.error){box.innerHTML='<div class="error">Nama akun belum dapat dicocokkan: '+E(q.error.message)+'</div>';return;}(q.data||[]).forEach(x=>names[x.id]=x.full_name)}rows=data.map(x=>({name:names[x.user_id]||'Nama akun tidak tersedia',roles:(String(x.reason||'').match(/peran saat login:\s*(.*)$/i)||[])[1]||'Peran tidak tercatat',created_at:x.created_at}));render();};
-    document.getElementById('v471LoginRefresh').onclick=load;search.oninput=render;await load();
+    const box=document.getElementById('v471LoginList'),search=document.getElementById('v471LoginSearch');if(!box)return;
+    const st=window.__bkfLoginHistoryPageV547||(window.__bkfLoginHistoryPageV547={page:0,term:''});
+    const load=async()=>{box.textContent='Memuat riwayat login…';st.term=String(search?.value||'').trim().replace(/[,%()"']/g,' ').replace(/\s+/g,' ').slice(0,80);let q=sb.from('audit_logs').select('id,user_id,action,table_name,reason,created_at',{count:'exact'}).eq('action','LOGIN_SUCCESS').eq('table_name','authentication').order('created_at',{ascending:false}).order('id',{ascending:false});
+      if(st.term){const profiles=await sb.from('profiles').select('id').ilike('full_name',`%${st.term}%`).limit(500);if(profiles.error){box.innerHTML='<div class="error">Pencarian nama akun gagal: '+E(profiles.error.message)+'</div>';return}const ids=(profiles.data||[]).map(x=>x.id).filter(Boolean);if(ids.length){const escaped=ids.join(',');q=q.or(`reason.ilike.%${st.term}%,user_id.in.(${escaped})`)}else q=q.ilike('reason',`%${st.term}%`);}
+      const r=await q.range(st.page*50,st.page*50+49);if(r.error){box.innerHTML='<div class="error">Riwayat login belum dapat dimuat: '+E(r.error.message)+'</div>';return;}const data=r.data||[],total=Number(r.count||0),pages=Math.max(1,Math.ceil(total/50));if(st.page>=pages&&st.page>0){st.page=pages-1;return load()}const ids=[...new Set(data.map(x=>x.user_id).filter(Boolean))];let names={};if(ids.length){const n=await sb.from('profiles').select('id,full_name').in('id',ids);if(n.error){box.innerHTML='<div class="error">Nama akun belum dapat dicocokkan: '+E(n.error.message)+'</div>';return}(n.data||[]).forEach(x=>names[x.id]=x.full_name)}const rows=data.map(x=>({name:names[x.user_id]||'Nama akun tidak tersedia',roles:(String(x.reason||'').match(/peran saat login:\s*(.*)$/i)||[])[1]||'Peran tidak tercatat',created_at:x.created_at}));const from=total?st.page*50+1:0,to=Math.min((st.page+1)*50,total);const pager='<div class="row no-print" style="justify-content:space-between;align-items:center;gap:8px;margin:10px 0"><button class="btn secondary" id="v547LoginPrev" '+(st.page===0?'disabled':'')+'>‹ Sebelumnya</button><span class="small muted">'+from+'–'+to+' dari '+total+' · Halaman '+(st.page+1)+'/'+pages+' · 50 per halaman</span><button class="btn secondary" id="v547LoginNext" '+(st.page+1>=pages?'disabled':'')+'>Berikutnya ›</button></div>';box.innerHTML=pager+rows.map(x=>'<div class="list-item"><div class="row"><strong>'+E(x.name||'Nama akun tidak tersedia')+'</strong><span class="status ok">LOGIN BERHASIL</span></div><div class="small muted" style="margin-top:5px">'+E(x.roles||'Peran tidak tercatat')+'</div><div class="small" style="margin-top:4px">'+E(new Date(x.created_at).toLocaleString('id-ID',{timeZone:'Asia/Jakarta',dateStyle:'medium',timeStyle:'medium'}))+' WIB</div></div>').join('')+'<div class="small muted">'+(rows.length?'':'Belum ada riwayat login pada halaman ini.')+'</div>'+pager;document.getElementById('v547LoginPrev')?.addEventListener('click',()=>{st.page=Math.max(0,st.page-1);load()});document.getElementById('v547LoginNext')?.addEventListener('click',()=>{st.page=Math.min(pages-1,st.page+1);load()});
+    };
+    document.getElementById('v471LoginRefresh').onclick=()=>{st.page=0;load()};search.onchange=()=>{st.page=0;load()};search.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();st.page=0;load()}};await load();
   }
   window.showLoginHistory=showLoginHistory;
 
@@ -4130,30 +4169,40 @@ async function fetchDashboardExamParticipants(type){
  }
  return participants.map(p=>{const r=regMap.get(p.exam_registration_id)||{};return {...p,exam_type:r.exam_type,registration_number:r.registration_number||'',institution_name:instMap.get(r.institution_id)||'-',wave:r.wave||null}}).sort((a,b)=>String(a.name||'').localeCompare(String(b.name||''),'id'));
 }
+async function fetchDashboardExamParticipantCount(type){
+ const isOperator=Array.isArray(state.roles)&&state.roles.includes('OPERATOR');let institutionIds=[];
+ if(isOperator){const own=await window.bkfOperatorInstitutionId();if(!own)throw new Error('Lembaga akun Operator belum terhubung.');institutionIds=[own];}
+ else{const pid=state.profile?.id;if(!pid)throw new Error('Profil akun belum tersedia.');const roles=await sb.from('user_roles').select('organization_id').eq('user_id',pid).eq('status','ACTIVE').not('organization_id','is',null).limit(20);if(roles.error)throw roles.error;const orgIds=[...new Set((roles.data||[]).map(x=>x.organization_id).filter(Boolean))];if(!orgIds.length)throw new Error('Organisasi akun pengurus belum terhubung.');const inst=await sb.from('institutions').select('id').in('organization_id',orgIds);if(inst.error)throw inst.error;institutionIds=[...new Set((inst.data||[]).map(x=>x.id))];}
+ if(!institutionIds.length)return 0;
+ const q=await sb.from('exam_participants').select('id,exam_registrations!inner(id)',{count:'exact',head:true}).eq('exam_registrations.exam_type',type).neq('exam_registrations.status','DIBATALKAN').in('exam_registrations.institution_id',institutionIds).or('status.is.null,status.neq.BATAL');
+ if(q.error)throw q.error;return Number(q.count||0);
+}
+async function fetchDashboardGraduationCount(){
+ const isOperator=Array.isArray(state.roles)&&state.roles.includes('OPERATOR');let q=sb.from('graduation_participants').select('id,graduation_registrations!inner(institution_id)',{count:'exact',head:true});
+ if(isOperator){const own=await window.bkfOperatorInstitutionId();if(!own)throw new Error('Lembaga akun Operator belum terhubung.');q=q.eq('graduation_registrations.institution_id',own);}
+ const r=await q;if(r.error)throw r.error;return Number(r.count||0);
+}
 async function loadDashboardExamCards(){
- const host=document.getElementById('dashboardExamParticipantCards');if(!host)return;
- host.innerHTML='';
+ const host=document.getElementById('dashboardExamParticipantCards');if(!host)return;host.innerHTML='';
  try{
-  const [pra,tashih,graduationResult]=await Promise.all([
-   fetchDashboardExamParticipants('PRA_TASHIH'),
-   fetchDashboardExamParticipants('TASHIH'),
-   fetchDashboardDetail('graduation_participants')
+  // Beranda hanya meminta agregat COUNT. Rincian peserta baru diambil saat card dibuka.
+  const [praCount,tashihCount,graduationCount]=await Promise.all([
+   fetchDashboardExamParticipantCount('PRA_TASHIH'),
+   fetchDashboardExamParticipantCount('TASHIH'),
+   fetchDashboardGraduationCount()
   ]);
-  if(graduationResult?.error)throw graduationResult.error;
-  const graduation=graduationResult?.data||[];
-  detailRows.exam_pra_tashih=pra;detailRows.exam_tashih=tashih;detailRows.graduation_participants=graduation;
   const cards=[];
-  if(pra.length)cards.push({key:'exam_pra_tashih',title:'PRA TASHIH',count:pra.length,help:'Seluruh peserta terdaftar',color:'linear-gradient(135deg,#175b3a,#25865a)'});
-  if(tashih.length)cards.push({key:'exam_tashih',title:'TASHIH',count:tashih.length,help:'Seluruh peserta terdaftar',color:'linear-gradient(135deg,#253e7b,#4169b5)'});
-  if(graduation.length)cards.push({key:'graduation_participants',title:'PESERTA WISUDA',count:graduation.length,help:'Seluruh peserta wisuda',color:'linear-gradient(135deg,#a21caf,#d946ef)'});
+  if(praCount>0)cards.push({key:'exam_pra_tashih',title:'PRA TASHIH',count:praCount,help:'Seluruh peserta terdaftar',color:'linear-gradient(135deg,#175b3a,#25865a)'});
+  if(tashihCount>0)cards.push({key:'exam_tashih',title:'TASHIH',count:tashihCount,help:'Seluruh peserta terdaftar',color:'linear-gradient(135deg,#253e7b,#4169b5)'});
+  if(graduationCount>0)cards.push({key:'graduation_participants',title:'PESERTA WISUDA',count:graduationCount,help:'Seluruh peserta wisuda',color:'linear-gradient(135deg,#a21caf,#d946ef)'});
   host.innerHTML=cards.map(c=>`<button type="button" class="card v75-dashboard-counter" data-dashboard-detail="${c.key}" aria-label="Lihat detail ${c.title}" style="background:${c.color};color:#fff;border:0"><div class="v173-counter-title">${c.title}</div><div class="metric v173-counter-number">${c.count.toLocaleString('id-ID')}</div><div class="v173-counter-help">${c.help}</div><div class="v173-counter-detail">Ketuk untuk detail</div></button>`).join('');
   host.querySelectorAll('[data-dashboard-detail]').forEach(card=>card.addEventListener('click',()=>openDashboardDetail(card.dataset.dashboardDetail)));
  }catch(e){console.error('[Dashboard exam participant cards]',e);host.innerHTML='';}
 }
 async function fetchDashboardDetail(key){
  if(key==='graduation_participants'&&Array.isArray(detailRows.graduation_participants))return {data:detailRows.graduation_participants,error:null};
- if(key==='exam_pra_tashih')return {data:detailRows.exam_pra_tashih||[],error:null};
- if(key==='exam_tashih')return {data:detailRows.exam_tashih||[],error:null};
+ if(key==='exam_pra_tashih')return {data:Array.isArray(detailRows.exam_pra_tashih)?detailRows.exam_pra_tashih:await fetchDashboardExamParticipants('PRA_TASHIH'),error:null};
+ if(key==='exam_tashih')return {data:Array.isArray(detailRows.exam_tashih)?detailRows.exam_tashih:await fetchDashboardExamParticipants('TASHIH'),error:null};
  const isOperator=Array.isArray(state.roles)&&state.roles.includes('OPERATOR');
  const ownInst=isOperator?await window.bkfOperatorInstitutionId():null;
  if(isOperator&&!ownInst)return {data:[],error:{message:'Lembaga akun Operator belum terhubung.'}};
@@ -4223,6 +4272,11 @@ async function fetchDashboardDetail(key){
  return {data:[],error:null};
 }
 window.openDashboardDetail=async function(key){
+ if(key==='notifications'){
+  window.closeDashboardDetail();
+  await window.navigate('notifications');
+  return;
+ }
  const title=detailTitles[key]||'Detail';
  window.closeDashboardDetail();
  document.body.insertAdjacentHTML('beforeend',`<div class="v173-dashboard-detail" id="v173DashboardDetail"><section class="v173-dashboard-detail-sheet" role="dialog" aria-modal="true" aria-label="${E(title)}"><div class="v173-dashboard-detail-head"><div class="v173-dashboard-detail-top"><div><div class="v173-dashboard-detail-title">${E(title)}</div><div id="v173DashboardDetailCount" class="small muted">Memuat data…</div></div><button class="btn secondary" type="button" onclick="closeDashboardDetail()">Tutup</button></div><div class="v173-dashboard-detail-tools"><input id="v173DashboardDetailSearch" type="search" placeholder="Cari data…" autocomplete="off"><button class="btn secondary" type="button" onclick="document.getElementById('v173DashboardDetailSearch').value='';applyDashboardDetailFilter()">Reset</button></div></div><div id="v173DashboardDetailBody" class="v173-dashboard-detail-body"><div class="muted">Memuat…</div></div></section></div>`);
@@ -4239,7 +4293,7 @@ window.showHome=async function(){
  const status=state.profile?.status||'ACTIVE';
  const anggotaPengurus=Array.isArray(state?.roles)&&state.roles.includes('ANGGOTA');
  const visibleCounters=homeCounters.filter(x=>!(anggotaPengurus&&(x[1]==='bills'||x[1]==='payments')));
- const counters=visibleCounters.map(x=>`<button type="button" class="card v75-dashboard-counter" data-dashboard-detail="${E(x[1])}" aria-label="Lihat detail ${E(x[0])}"><div class="v173-counter-title">${E(x[0])}</div><div class="metric v173-counter-number" id="metric-${E(x[1])}"${x[1]==='bills'?' style="font-size:clamp(13px,3.6vw,20px);overflow-wrap:anywhere"':''}>…</div><div class="v173-counter-help">${x[1]==='bills'?'Total sisa nominal tagihan':'Ringkasan data saat ini'}</div><div class="v173-counter-detail">Ketuk untuk detail</div></button>`).join('');
+ const counters=visibleCounters.map(x=>`<button type="button" class="card v75-dashboard-counter" data-dashboard-detail="${E(x[1])}" aria-label="${x[1]==='notifications'?'Buka menu Notifikasi':'Lihat detail '+E(x[0])}"><div class="v173-counter-title">${E(x[0])}</div><div class="metric v173-counter-number" id="metric-${E(x[1])}"${x[1]==='bills'?' style="font-size:clamp(13px,3.6vw,20px);overflow-wrap:anywhere"':''}>…</div><div class="v173-counter-help">${x[1]==='bills'?'Total sisa nominal tagihan':'Ringkasan data saat ini'}</div><div class="v173-counter-detail">${x[1]==='notifications'?'Buka menu Notifikasi':'Ketuk untuk detail'}</div></button>`).join('');
  const roleQuick=quickByRole[dashboardPrimaryRole()]||quickByRole.ANGGOTA||[];
  const quickHtml='<div class="module-card-grid">'+roleQuick.map(x=>'<button class="btn secondary menu-item quick-module module-card-btn" type="button" onclick="navigate(\''+x[1]+'\')"><strong>'+E(x[0])+'</strong></button>').join('')+'</div>';
  host.innerHTML='<div class="card hero v35-welcome"><div style="font-size:14px;color:#6b7c70;font-weight:700">Assalamu\'alaikum Wr. Wb.</div><h2 class="v41-user-name" style="margin:6px 0 2px">'+E(name)+'</h2><div class="row bkf-dashboard-profile-actions" style="justify-content:flex-start;align-items:center;gap:8px;margin:6px 0 0"><span class="status ok">'+E(role)+'</span><span class="status '+(status==='ACTIVE'?'ok':'bad')+'">'+E(status==='ACTIVE'?'Aktif':status)+'</span><button type="button" class="status ok bkf-update-app-link" id="bkfUpdateAppBtn" onclick="window.bkfPwaInstallOrUpdate?.()" aria-label="Instal atau perbarui aplikasi SIMFAQ">Update Aplikasi</button></div><div class="bkf-darus-center"><button type="button" class="darus-quran-link" onclick="openDarusQuranViewer()" aria-label="Buka Darus Al-Qur\'an di dalam aplikasi"><span class="darus-quran-icon" aria-hidden="true">☪</span><span>Darus Al-Qur\'an</span><span class="darus-quran-arrow" aria-hidden="true">↗</span></button></div><p class="v35-message" style="margin:8px 0 4px">Selamat datang di Sistem Informasi BK FUSPAQ NU.</p><p class="small muted" style="margin:0">'+E(dashboardGreeting())+'</p></div><div class="v75-dashboard-counters" id="dashboardAllCounters">'+counters+'<div id="dashboardExamParticipantCards" style="display:contents"></div></div>';
@@ -4253,7 +4307,7 @@ window.showHome=async function(){
      if(logoUrl){const layer=document.createElement('div');layer.className='v493-welcome-logo';layer.setAttribute('aria-hidden','true');const img=document.createElement('img');img.src=logoUrl;img.alt='';img.loading='eager';img.decoding='async';img.onerror=()=>layer.remove();layer.appendChild(img);welcomeCard.prepend(layer)}
    }
  }catch(e){console.warn('[Dashboard profile logo]',e)}
- host.querySelectorAll('[data-dashboard-detail]').forEach(card=>card.addEventListener('click',()=>openDashboardDetail(card.dataset.dashboardDetail)));
+ host.querySelectorAll('[data-dashboard-detail]').forEach(card=>card.addEventListener('click',()=>card.dataset.dashboardDetail==='notifications'?window.navigate('notifications'):openDashboardDetail(card.dataset.dashboardDetail)));
  await loadDashboardExamCards();
  try{if(typeof loadMetrics==='function')await loadMetrics()}catch(e){console.warn('[Dashboard metrics]',e)}
  try{window.bkfRenderDashboardPushPrompt?.()}catch(e){console.warn('[Dashboard push prompt]',e)}
@@ -5069,7 +5123,7 @@ window.showUsers=window.renderInstitutionUsers;
 
   // 3) Data peserta ujian dan nomor ujian memakai template A4 yang sama.
   window.printExamData=async function(type){try{const period=await window.bkfLoadSelectedPeriod();if(!period?.id)throw new Error('Periode kepengurusan belum dipilih.');const isOperator=Array.isArray(state?.roles)&&state.roles.includes('OPERATOR');const ownInst=isOperator?await window.bkfOperatorInstitutionId():null;if(isOperator&&!ownInst)throw new Error('Lembaga akun Operator belum terhubung.');const regs=[];for(let from=0;;from+=1000){let q=sb.from('exam_registrations').select('id,institution_id,wave,exam_type,management_period_id,status,institutions:institution_id(name)').eq('exam_type',type).eq('management_period_id',period.id).order('id',{ascending:true});if(isOperator)q=q.eq('institution_id',ownInst);const r=await q.range(from,from+999);if(r.error)throw r.error;const chunk=r.data||[];regs.push(...chunk);if(chunk.length<1000)break;}const regIds=regs.map(r=>r.id).filter(Boolean);if(!regIds.length){toast('Belum ada peserta pada jenis ujian dan periode terpilih.','error');return;}const participants=[];for(let i=0;i<regIds.length;i+=500){for(let from=0;;from+=1000){const r=await sb.from('exam_participants').select('id,exam_registration_id,source_participant_id,name,nis,exam_number,status').in('exam_registration_id',regIds.slice(i,i+500)).order('id',{ascending:true}).range(from,from+999);if(r.error)throw r.error;const chunk=r.data||[];participants.push(...chunk);if(chunk.length<1000)break;}}const regMap=new Map(regs.map(r=>[r.id,r]));let waveMap=new Map();if(String(type).toUpperCase()==='TASHIH'){const fetchAll=async(build)=>{const all=[];for(let from=0;;from+=1000){const r=await build().range(from,from+999);if(r.error)throw r.error;const chunk=r.data||[];all.push(...chunk);if(chunk.length<1000)break;}return all;};waveMap=await window.bkfResolveExamWavesV443(participants,regs,fetchAll);}const rows=participants.map(p=>{const r=regMap.get(p.exam_registration_id)||{};const wave=String(type).toUpperCase()==='TASHIH'?(waveMap.get(p.id)?.wave??null):(Number(r.wave)||null);return [p.exam_number||'-',p.name||'-',p.nis||'-',r.institutions?.name||'-',wave==null?'Belum terpetakan':'Gelombang '+wave,String(p.status||'').toUpperCase()==='BATAL'?'DIBATALKAN':'AKTIF'];});tablePrint('Data Peserta '+String(type||'').replace('_',' '),['Nomor Ujian','Nama','NIS','Lembaga','Gelombang','Status'],rows,'NONE');}catch(e){console.error('[BKF CETAK DATA PESERTA]',e);toast(err(e)||'Data peserta ujian belum berhasil dimuat.','error')}};
-  window.printExamNumbers=async function(){const q=await sb.from('exam_participants').select('id,name,nis,exam_number,exam_registrations!inner(exam_type,institution_id,institutions:institution_id(name))').order('exam_number',{ascending:true}).limit(1000);if(q.error)return toast('Data nomor ujian belum berhasil dimuat.','error');const rows=(q.data||[]).map((x,i)=>[i+1,x.exam_number||'-',x.name||'-',x.nis||'-',x.exam_registrations?.institutions?.name||'-',x.exam_registrations?.exam_type==='PRA_TASHIH'?'Pra Tashih':'Tashih']);tablePrint('Daftar Nomor Ujian',['No.','Nomor Ujian','Nama Peserta','NIS','Lembaga','Jenis Ujian'],rows,'NONE')};
+  window.printExamNumbers=async function(){try{const all=[];for(let from=0;;from+=1000){const q=await sb.from('exam_participants').select('id,name,nis,exam_number,exam_registrations!inner(exam_type,institution_id,institutions:institution_id(name))').order('exam_number',{ascending:true}).order('id',{ascending:true}).range(from,from+999);if(q.error)throw q.error;const chunk=q.data||[];all.push(...chunk);if(chunk.length<1000)break;}const rows=all.map((x,i)=>[i+1,x.exam_number||'-',x.name||'-',x.nis||'-',x.exam_registrations?.institutions?.name||'-',x.exam_registrations?.exam_type==='PRA_TASHIH'?'Pra Tashih':'Tashih']);tablePrint('Daftar Nomor Ujian',['No.','Nomor Ujian','Nama Peserta','NIS','Lembaga','Jenis Ujian'],rows,'NONE')}catch(e){console.error('[CETAK NOMOR UJIAN]',e);toast('Data nomor ujian belum berhasil dimuat: '+(e?.message||e),'error')}};
 
   // 4) Surat keluar: kop resmi + penandatangan aktif, tanpa nama/barcode hardcoded.
   /* previous v14PrintLetter implementation removed; canonical implementation retained later. */
@@ -5586,6 +5640,7 @@ window.loadIdentity=async function(){
 };
 
 window.boot=async function(){
+ window.__BKF_BOOT_READY__=false;
  document.body.classList.add('bkf-ready');app.style.visibility='visible';window.bkfSplash?.status('Menghubungkan layanan...');
  if(cfg.supabasePublishableKey==='REPLACE_WITH_PROJECT_PUBLISHABLE_KEY'){await window.bkfSplash?.hide();return renderLogin('Publishable key belum dikonfigurasi.')}
  let client=window.sb||sb;for(let i=0;!client&&i<60;i++){try{window.__bkInitSupabase?.()}catch(_){}client=window.sb||null;if(!client)await new Promise(r=>setTimeout(r,200))}
@@ -5610,6 +5665,7 @@ window.boot=async function(){
  let homeLoaded=false;
  try{await Promise.race([Promise.resolve(window.navigate('home')).then(()=>{homeLoaded=true}),new Promise(resolve=>setTimeout(resolve,15000))]);}catch(e){console.error('[BK HOME STARTUP]',e)}
  if(!homeLoaded){const host=document.getElementById('page');if(host)host.innerHTML=`<div class="card"><h2>Beranda belum selesai dimuat</h2><p>Koneksi atau permintaan data mungkin sedang lambat. Aplikasi tetap terbuka; coba muat ulang Beranda.</p><button class="btn primary" type="button" onclick="window.navigate('home')">Coba lagi</button><p class="small muted">Jika pesan ini terus muncul, periksa koneksi internet dan layanan database.</p></div>`;console.warn('[BK HOME STARTUP] Beranda tidak selesai dalam 15 detik.')}
+ window.__BKF_BOOT_READY__=true;try{await window.bkfConsumePendingPushNavigation?.()}catch(pushNavError){console.warn('[SIMFAQ PUSH STARTUP]',pushNavError)}
  try{window.bkfAppBridge?.send('APP_READY')}catch(_){}await window.bkfSplash?.hide();
 };
 try{sb?.auth?.onAuthStateChange?.((event,session)=>{if(event==='SIGNED_OUT')renderLogin();else if(session)state.user=session.user})}catch(_){}
@@ -5720,16 +5776,18 @@ window.openCommitteeForm=async function(id){
 };
 window.showActivities=async function(){
  const host=document.getElementById('page')||document.querySelector('main');if(!host)return;const isActivityManager=canManageActivity();
- host.innerHTML=`<div class="card"><div class="row"><div><h2>Kegiatan</h2><div class="small muted">Agenda kegiatan BK FUSPAQ NU. Detail, penanggung jawab, dan susunan panitia terhubung dengan data kegiatan yang sama.</div></div>${isActivityManager?'<button id="bkActAdd" class="btn primary" type="button">+ Tambah Kegiatan</button>':''}</div><div id="bkActList" class="list" style="margin-top:10px"><div class="empty">Memuat data...</div></div></div>`;
+ host.innerHTML=`<div class="card"><div class="row"><div><h2>Kegiatan</h2><div class="small muted">Agenda kegiatan BK FUSPAQ NU. Detail, penanggung jawab, dan susunan panitia terhubung dengan data kegiatan yang sama.</div></div>${isActivityManager?'<button id="bkActAdd" class="btn primary" type="button">+ Tambah Kegiatan</button>':''}</div><div class="field no-print" style="margin-top:10px"><label for="bkActSearchV547">Cari kegiatan</label><input id="bkActSearchV547" type="search" placeholder="Nama, tema, atau nomor kegiatan"></div><div id="bkActList" class="list" style="margin-top:10px"><div class="empty">Memuat data...</div></div></div>`;
  if(isActivityManager)document.getElementById('bkActAdd').onclick=()=>window.openActivityForm().catch(e=>say(errText(e),'error'));
- try{const db=c(),oid=await org();let q=db.from('activities').select('id,organization_id,management_period_id,activity_type_id,activity_number,name,theme,start_at,end_at,venue,host_institution_id,person_in_charge,status,is_published,description,finalized_by,finalized_at,created_at,updated_at').eq('organization_id',oid).order('start_at',{ascending:false}).limit(300);const selected=await window.bkfLoadSelectedPeriod(true);if(selected?.id&&selected.organization_id===oid)q=q.eq('management_period_id',selected.id);const result=await q;if(result.error)throw result.error;
+ const actSearch=document.getElementById('bkActSearchV547');if(actSearch)actSearch.oninput=()=>{clearTimeout(window.__bkfActivitySearchTimerV547);const value=actSearch.value;window.__bkfActivitySearchTimerV547=setTimeout(()=>{window.__bkfActivityPageV547.page=0;window.showActivities().then(()=>{const input=document.getElementById('bkActSearchV547');if(input){input.focus();input.setSelectionRange(value.length,value.length)}})},350)};window.bkfChangeActivityPageV547=function(delta){const st=window.__bkfActivityPageV547||(window.__bkfActivityPageV547={page:0});st.page=Math.max(0,st.page+Number(delta||0));return window.showActivities()};
+ try{const db=c(),oid=await org();const st=window.__bkfActivityPageV547||(window.__bkfActivityPageV547={page:0});const term=String(document.getElementById('bkActSearchV547')?.value||'').trim().replace(/[,%()"']/g,' ').replace(/\s+/g,' ').slice(0,80);let q=db.from('activities').select('id,organization_id,management_period_id,activity_type_id,activity_number,name,theme,start_at,end_at,venue,host_institution_id,person_in_charge,status,is_published,description,finalized_by,finalized_at,created_at,updated_at',{count:'exact'}).eq('organization_id',oid).order('start_at',{ascending:false}).order('id',{ascending:false});const selected=await window.bkfLoadSelectedPeriod(true);if(selected?.id&&selected.organization_id===oid)q=q.eq('management_period_id',selected.id);if(term)q=q.or(`name.ilike.%${term}%,theme.ilike.%${term}%,activity_number.ilike.%${term}%`);const result=await q.range(st.page*50,st.page*50+49);if(result.error)throw result.error;const total=Number(result.count||0),pageCount=Math.max(1,Math.ceil(total/50));if(st.page>=pageCount&&st.page>0){st.page=pageCount-1;return window.showActivities()}
   const rows=(result.data||[]).map(a=>({...a,display_status:window.bkfActivityStatusLabel(a)})),el=document.getElementById('bkActList');
   const typeIds=[...new Set(rows.map(x=>x.activity_type_id).filter(Boolean))],instIds=[...new Set(rows.map(x=>x.host_institution_id).filter(Boolean))],profileIds=[...new Set(rows.flatMap(x=>[x.person_in_charge,x.finalized_by]).filter(Boolean))],activityIds=rows.map(x=>x.id);
   const [typeQ,instQ,profileQ,committeeQ]=await Promise.all([typeIds.length?db.from('activity_types').select('id,name').in('id',typeIds):Promise.resolve({data:[],error:null}),instIds.length?db.from('institutions').select('id,name').in('id',instIds):Promise.resolve({data:[],error:null}),profileIds.length?db.from('profiles').select('id,full_name').in('id',profileIds):Promise.resolve({data:[],error:null}),activityIds.length?db.from('activity_committees').select('id,activity_id').in('activity_id',activityIds):Promise.resolve({data:[],error:null})]);
   if(typeQ.error)throw typeQ.error;if(instQ.error)throw instQ.error;if(profileQ.error)throw profileQ.error;if(committeeQ.error)throw committeeQ.error;
   const typeMap=new Map((typeQ.data||[]).map(x=>[x.id,x.name])),instMap=new Map((instQ.data||[]).map(x=>[x.id,x.name])),profileMap=new Map((profileQ.data||[]).map(x=>[x.id,x.full_name])),committeeMap=new Map((committeeQ.data||[]).map(x=>[x.activity_id,x.id]));
   rows.forEach(a=>{a.activity_type_name=typeMap.get(a.activity_type_id)||'-';a.host_institution_name=instMap.get(a.host_institution_id)||'-';a.person_in_charge_name=profileMap.get(a.person_in_charge)||'-';a.committee_id=committeeMap.get(a.id)||null;});window._activityData=rows;
-  el.innerHTML=rows.length?rows.map(a=>`<div class="list-item"><div class="row"><div style="min-width:0"><strong>${esc(a.name||'-')}</strong><div class="small muted">${esc(a.activity_number||'Tanpa nomor')} · ${esc(a.activity_type_name)}</div></div><span class="status">${esc(a.display_status)}</span></div><div class="small"><strong>Tema kegiatan:</strong> ${esc(a.theme||'-')}</div><div class="small muted"><strong>Tempat:</strong> ${esc(a.venue||'-')} · <strong>Waktu:</strong> ${esc(fmtDate(a.start_at))}${a.end_at?' — '+esc(fmtDate(a.end_at)):''}</div><div class="small muted"><strong>Lembaga:</strong> ${esc(a.host_institution_name)} · <strong>Penanggung jawab:</strong> ${esc(a.person_in_charge_name)}</div><div class="small muted"><strong>Publikasi:</strong> ${a.is_published?'Diterbitkan':'Tidak diterbitkan'} · <strong>Finalisasi:</strong> ${a.finalized_at?'Sudah':'Belum'} · <strong>Panitia:</strong> ${a.committee_id?'Sudah ditetapkan':'Belum ditetapkan'}</div>${a.description?`<div class="small" style="margin-top:6px;white-space:pre-line"><strong>Keterangan:</strong> ${esc(a.description)}</div>`:''}<div class="compact-actions" style="margin-top:8px"><button class="btn secondary" type="button" data-detail="${esc(a.id)}">Detail lengkap</button>${isActivityManager?`<button class="btn secondary" type="button" data-c="${esc(a.id)}">Panitia</button><button class="btn secondary" type="button" data-s="${esc(a.id)}">Ubah Status</button><button class="btn secondary" type="button" data-e="${esc(a.id)}">Edit</button><button class="btn danger" type="button" data-d="${esc(a.id)}">Hapus</button>`:''}</div></div>`).join(''):'<div class="empty">Belum ada kegiatan pada periode yang dipilih.</div>';
+  const from=total?st.page*50+1:0,to=Math.min((st.page+1)*50,total),pager=`<div class="row no-print" style="justify-content:space-between;align-items:center;gap:8px;margin:10px 0"><button class="btn secondary" type="button" ${st.page===0?'disabled':''} onclick="window.bkfChangeActivityPageV547(-1)">‹ Sebelumnya</button><span class="small muted">${from}–${to} dari ${total} · Halaman ${st.page+1}/${pageCount} · 50 per halaman</span><button class="btn secondary" type="button" ${st.page+1>=pageCount?'disabled':''} onclick="window.bkfChangeActivityPageV547(1)">Berikutnya ›</button></div>`;
+  el.innerHTML=pager+(rows.length?rows.map(a=>`<div class="list-item"><div class="row"><div style="min-width:0"><strong>${esc(a.name||'-')}</strong><div class="small muted">${esc(a.activity_number||'Tanpa nomor')} · ${esc(a.activity_type_name)}</div></div><span class="status">${esc(a.display_status)}</span></div><div class="small"><strong>Tema kegiatan:</strong> ${esc(a.theme||'-')}</div><div class="small muted"><strong>Tempat:</strong> ${esc(a.venue||'-')} · <strong>Waktu:</strong> ${esc(fmtDate(a.start_at))}${a.end_at?' — '+esc(fmtDate(a.end_at)):''}</div><div class="small muted"><strong>Lembaga:</strong> ${esc(a.host_institution_name)} · <strong>Penanggung jawab:</strong> ${esc(a.person_in_charge_name)}</div><div class="small muted"><strong>Publikasi:</strong> ${a.is_published?'Diterbitkan':'Tidak diterbitkan'} · <strong>Finalisasi:</strong> ${a.finalized_at?'Sudah':'Belum'} · <strong>Panitia:</strong> ${a.committee_id?'Sudah ditetapkan':'Belum ditetapkan'}</div>${a.description?`<div class="small" style="margin-top:6px;white-space:pre-line"><strong>Keterangan:</strong> ${esc(a.description)}</div>`:''}<div class="compact-actions" style="margin-top:8px"><button class="btn secondary" type="button" data-detail="${esc(a.id)}">Detail lengkap</button>${isActivityManager?`<button class="btn secondary" type="button" data-c="${esc(a.id)}">Panitia</button><button class="btn secondary" type="button" data-s="${esc(a.id)}">Ubah Status</button><button class="btn secondary" type="button" data-e="${esc(a.id)}">Edit</button><button class="btn danger" type="button" data-d="${esc(a.id)}">Hapus</button>`:''}</div></div>`).join(''):'<div class="empty">Belum ada kegiatan pada periode yang dipilih.</div>')+pager;
   el.querySelectorAll('[data-detail]').forEach(b=>b.onclick=()=>window.showActivityDetailV365(b.dataset.detail).catch(e=>say(errText(e),'error')));
   if(isActivityManager){el.querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>window.openCommitteeForm(b.dataset.c).catch(e=>say(errText(e),'error')));el.querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>window.openActivityStatusForm(b.dataset.s).catch(e=>say(errText(e),'error')));el.querySelectorAll('[data-e]').forEach(b=>b.onclick=()=>window.openActivityForm(b.dataset.e).catch(e=>say(errText(e),'error')));el.querySelectorAll('[data-d]').forEach(b=>b.onclick=()=>window.v97DeleteActivity(b.dataset.d).catch(e=>say(errText(e),'error')))}
  }catch(e){const el=document.getElementById('bkActList');if(el)el.innerHTML=`<div class="error">Data kegiatan gagal dimuat: ${esc(errText(e))}</div>`}
@@ -6829,6 +6887,46 @@ window.showExamGovernance=async function(){const host=document.getElementById('p
 })();
 </script>
 
+<script id="bkf-push-deep-link-v548">
+(function(){
+  'use strict';
+  const KEY='bkf_pending_push_navigation_v548';
+  const ROUTES=new Set(['home','activities','exams','pengujian','pengujian-pra','pengujian-tashih','graduation','payments','finance','secretariat','distribution','reports','notifications','management','institutions','album','organization','auditbackup','settings','governance']);
+  function safeRoute(value){const route=String(value||'').trim().toLowerCase();return ROUTES.has(route)?route:'notifications'}
+  function normalize(data){data=data&&typeof data==='object'?data:{};return {route:safeRoute(data.route),notificationId:String(data.notificationId||data.notification_id||''),relatedTable:String(data.relatedTable||data.related_table||''),relatedId:String(data.relatedId||data.related_id||''),activityId:String(data.activityId||data.activity_id||''),eventType:String(data.eventType||data.event_type||'')}}
+  function savePending(data){try{sessionStorage.setItem(KEY,JSON.stringify(normalize(data)))}catch(_){}}
+  function readUrl(){
+    try{
+      const u=new URL(window.location.href),p=u.searchParams,route=p.get('bkf_push_route');
+      if(!route)return null;
+      const data=normalize({route,notificationId:p.get('bkf_push_notification_id'),relatedTable:p.get('bkf_push_related_table'),relatedId:p.get('bkf_push_related_id'),activityId:p.get('bkf_push_activity_id'),eventType:p.get('bkf_push_event_type')});
+      ['bkf_push_route','bkf_push_notification_id','bkf_push_related_table','bkf_push_related_id','bkf_push_activity_id','bkf_push_event_type'].forEach(k=>p.delete(k));
+      const clean=u.pathname+(u.search?u.search:'')+u.hash;
+      try{history.replaceState(history.state,'',clean)}catch(_){}
+      return data;
+    }catch(_){return null}
+  }
+  window.bkfHandlePushNavigation=async function(input){
+    const data=normalize(input);
+    try{window.__BKF_PUSH_CONTEXT__=data;sessionStorage.setItem('bkf_last_push_context_v548',JSON.stringify(data))}catch(_){}
+    if(!window.__BKF_BOOT_READY__||!state?.profile?.id||typeof window.navigate!=='function'){savePending(data);return false}
+    try{await window.navigate(data.route);return true}catch(error){console.warn('[SIMFAQ PUSH NAVIGATION]',error);return false}
+  };
+  window.bkfConsumePendingPushNavigation=async function(){
+    let data=null;
+    try{const raw=sessionStorage.getItem(KEY);if(raw){data=JSON.parse(raw);sessionStorage.removeItem(KEY)}}catch(_){}
+    if(!data)data=readUrl();
+    if(data)await window.bkfHandlePushNavigation(data);
+  };
+  if('serviceWorker' in navigator){
+    navigator.serviceWorker.addEventListener('message',event=>{
+      const msg=event.data||{};
+      if(msg.type==='BKF_PUSH_OPEN')window.bkfHandlePushNavigation(msg).catch(error=>console.warn('[SIMFAQ PUSH MESSAGE]',error));
+    });
+  }
+  try{window.sb?.auth?.onAuthStateChange?.(event=>{if(event==='SIGNED_OUT')window.__BKF_BOOT_READY__=false})}catch(_){}
+})();
+</script>
 </body><script id="bkf-audit-v128-e2e-action-guards">
 (function(){
   'use strict';
