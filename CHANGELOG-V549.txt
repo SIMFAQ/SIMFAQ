@@ -1,0 +1,13 @@
+SIMFAQ V549 — DIAGNOSTIK NOTIFIKASI PUSH
+
+Berbasis paket V548.
+
+1. sw.js: CACHE_VERSION V7 -> V8.
+2. Handler push yang sudah ada diperluas (tidak menambah handler push kedua): mencatat push_received, show_notification_success, atau show_notification_error.
+3. Menambahkan pushsubscriptionchange yang meminta halaman SIMFAQ aktif melakukan sinkronisasi subscription.
+4. index.html: fungsi sinkronisasi subscription mencatat hasil berhasil/gagal ke IndexedDB lokal.
+5. Menu Notifikasi menyediakan panel Diagnostik Notifikasi Push dan tombol Periksa.
+6. Catatan lokal tidak menyimpan isi pesan, endpoint subscription, atau data pribadi.
+
+Tidak ada perubahan Supabase, database, RLS, Edge Function, atau data operasional.
+Belum dilakukan uji push nyata pada perangkat Android; uji itu diperlukan setelah paket dipasang.
