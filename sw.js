@@ -1,7 +1,7 @@
 /* SIMFAQ PWA Service Worker - V7 push deep-link routing. */
 'use strict';
 const CACHE_PREFIX = 'simfaq-pwa-';
-const CACHE_VERSION = 'v7';
+const CACHE_VERSION = 'v8';
 const CACHE_NAME = CACHE_PREFIX + CACHE_VERSION;
 const APP_BASE = new URL('./', self.registration.scope);
 const APP_PATH = new URL(APP_BASE).pathname;
@@ -86,33 +86,78 @@ self.addEventListener('fetch', event => {
   }
 });
 
+// V549: local-only diagnostics. No push endpoint, message body, or personal data is stored.
+const PUSH_DIAG_DB = 'bkf-push-diagnostics-v549';
+function writePushDiagnostic(type, detail) {
+  return new Promise(resolve => {
+    try {
+      const request = indexedDB.open(PUSH_DIAG_DB, 1);
+      request.onupgradeneeded = () => {
+        const db = request.result;
+        if (!db.objectStoreNames.contains('events')) db.createObjectStore('events', {keyPath: 'id', autoIncrement: true});
+      };
+      request.onsuccess = () => {
+        const db = request.result;
+        try {
+          const tx = db.transaction('events', 'readwrite');
+          tx.objectStore('events').add({time: new Date().toISOString(), type, detail: String(detail || '').slice(0, 240)});
+          tx.oncomplete = () => { db.close(); resolve(true); };
+          tx.onerror = () => { db.close(); resolve(false); };
+        } catch (_) { try { db.close(); } catch (_) {} resolve(false); }
+      };
+      request.onerror = () => resolve(false);
+    } catch (_) { resolve(false); }
+  });
+}
+
 self.addEventListener('push', event => {
-  let payload = {};
-  try { payload = event.data ? event.data.json() : {}; }
-  catch (_) { payload = {body: event.data ? event.data.text() : ''}; }
-  let rawRoute = payload.route || payload.data && payload.data.route;
-  if (!rawRoute && payload.url) { try { rawRoute = new URL(payload.url, APP_BASE).searchParams.get('bkf_push_route'); } catch (_) {} }
-  const route = safeRoute(rawRoute);
-  const data = {
-    route,
-    notificationId: payload.notificationId || payload.notification_id || payload.data && payload.data.notificationId || '',
-    relatedTable: payload.relatedTable || payload.related_table || payload.data && payload.data.relatedTable || '',
-    relatedId: payload.relatedId || payload.related_id || payload.data && payload.data.relatedId || '',
-    activityId: payload.activityId || payload.activity_id || payload.data && payload.data.activityId || '',
-    eventType: payload.eventType || payload.event_type || payload.data && payload.data.eventType || ''
-  };
-  const target = safeTarget(payload.url, data);
-  const title = payload.title || 'SIMFAQ - BK FUSPAQ NU';
-  const options = {
-    body: payload.body || payload.message || 'Ada informasi terbaru dari SIMFAQ.',
-    icon: new URL('icons/icon-192.png', APP_BASE).href,
-    badge: new URL('icons/icon-192.png', APP_BASE).href,
-    tag: payload.tag || data.notificationId || 'bkf-notification',
-    data: Object.assign({url: target.href}, data),
-    lang: 'id-ID',
-    dir: 'auto'
-  };
-  event.waitUntil(self.registration.showNotification(title, options));
+  event.waitUntil((async () => {
+    await writePushDiagnostic('push_received', 'Peristiwa push diterima Service Worker');
+    let payload = {};
+    try { payload = event.data ? event.data.json() : {}; }
+    catch (_) { payload = {body: event.data ? event.data.text() : ''}; }
+    let rawRoute = payload.route || payload.data && payload.data.route;
+    if (!rawRoute && payload.url) { try { rawRoute = new URL(payload.url, APP_BASE).searchParams.get('bkf_push_route'); } catch (_) {} }
+    const route = safeRoute(rawRoute);
+    const data = {
+      route,
+      notificationId: payload.notificationId || payload.notification_id || payload.data && payload.data.notificationId || '',
+      relatedTable: payload.relatedTable || payload.related_table || payload.data && payload.data.relatedTable || '',
+      relatedId: payload.relatedId || payload.related_id || payload.data && payload.data.relatedId || '',
+      activityId: payload.activityId || payload.activity_id || payload.data && payload.data.activityId || '',
+      eventType: payload.eventType || payload.event_type || payload.data && payload.data.eventType || ''
+    };
+    const target = safeTarget(payload.url, data);
+    const title = payload.title || 'SIMFAQ - BK FUSPAQ NU';
+    const options = {
+      body: payload.body || payload.message || 'Ada informasi terbaru dari SIMFAQ.',
+      icon: new URL('icons/icon-192.png', APP_BASE).href,
+      badge: new URL('icons/icon-192.png', APP_BASE).href,
+      tag: payload.tag || data.notificationId || 'bkf-notification',
+      data: Object.assign({url: target.href}, data),
+      lang: 'id-ID',
+      dir: 'auto'
+    };
+    try {
+      await self.registration.showNotification(title, options);
+      await writePushDiagnostic('show_notification_success', 'showNotification berhasil diselesaikan');
+    } catch (error) {
+      await writePushDiagnostic('show_notification_error', error && (error.name + ': ' + error.message) || 'Kesalahan tidak diketahui');
+      throw error;
+    }
+  })());
+});
+
+// Ask an open SIMFAQ page to re-sync after the browser reports a subscription change.
+self.addEventListener('pushsubscriptionchange', event => {
+  event.waitUntil((async () => {
+    await writePushDiagnostic('subscription_changed', 'Browser melaporkan perubahan subscription');
+    const windows = await self.clients.matchAll({type: 'window', includeUncontrolled: true});
+    for (const client of windows) {
+      try { client.postMessage({type: 'BKF_PUSH_SUBSCRIPTION_CHANGED'}); } catch (_) {}
+    }
+    await writePushDiagnostic('subscription_sync_requested', windows.length ? 'Permintaan sinkronisasi dikirim ke halaman SIMFAQ' : 'Tidak ada halaman SIMFAQ yang sedang terbuka');
+  })());
 });
 
 self.addEventListener('notificationclick', event => {
