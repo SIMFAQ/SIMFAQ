@@ -7168,17 +7168,32 @@ window.showExamGovernance=async function(){const host=document.getElementById('p
     window.bkfPwaRegistration = null; throw err;
   });
   window.bkfPwaRegistration.catch(function(err){console.warn("[SIMFAQ PWA] Service Worker belum terdaftar:", err)});
-  window.addEventListener('beforeinstallprompt',function(event){
-    event.preventDefault();window.bkfPwaInstallPrompt=event;
-  });
-  window.addEventListener('appinstalled',function(){
-    window.bkfPwaInstallPrompt=null;
-    try{localStorage.setItem('bkf_pwa_installed_once','1')}catch(_){}
-    if(typeof window.v12Toast==='function')window.v12Toast('SIMFAQ berhasil dipasang. Buka aplikasi untuk mengaktifkan notifikasi.','success');
-  });
-  function standalone(){
-    try{return !!(window.matchMedia&&window.matchMedia('(display-mode: standalone)').matches)||window.navigator.standalone===true}catch(_){return false}
+  var installOfferTimer=null;
+  var INSTALL_OFFER_COOLDOWN=7*24*60*60*1000;
+  function standalone(){try{return !!(window.matchMedia&&window.matchMedia('(display-mode: standalone)').matches)||window.navigator.standalone===true}catch(_){return false}}
+  function isIOSDevice(){var ua=navigator.userAgent||'';return /iPhone|iPad|iPod/i.test(ua)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1)}
+  function canShowInstallOffer(){if(standalone())return false;try{if(localStorage.getItem('bkf_pwa_installed_once')==='1')return false;var last=Number(localStorage.getItem('bkf_pwa_install_offer_dismissed_at')||0);if(last&&Date.now()-last<INSTALL_OFFER_COOLDOWN)return false}catch(_){}return !document.getElementById('bkfPwaInstallOffer')}
+  function closeInstallOffer(dismissed){var modal=document.getElementById('bkfPwaInstallOffer');if(modal)modal.remove();if(dismissed){try{localStorage.setItem('bkf_pwa_install_offer_dismissed_at',String(Date.now()))}catch(_){}}}
+  function showInstallOffer(platform){
+    if(!canShowInstallOffer())return;
+    var ios=platform==='ios',overlay=document.createElement('div');overlay.id='bkfPwaInstallOffer';
+    overlay.style.cssText='position:fixed;inset:0;z-index:2147482500;display:flex;align-items:center;justify-content:center;padding:18px;background:rgba(10,35,22,.62);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px)';
+    var panel=document.createElement('section');panel.setAttribute('role','dialog');panel.setAttribute('aria-modal','true');panel.setAttribute('aria-labelledby','bkfPwaInstallOfferTitle');
+    panel.style.cssText='width:min(420px,100%);box-sizing:border-box;background:linear-gradient(150deg,#fff 0%,#eff8f1 100%);border:1px solid #cfe3d4;border-radius:22px;padding:22px 20px 18px;box-shadow:inset 0 2px 0 #fff,0 20px 55px rgba(0,0,0,.25);color:#193d29;text-align:center';
+    var title=ios?'Tambahkan SIMFAQ ke Layar Utama':'Pasang Aplikasi SIMFAQ?',desc=ios?'Agar SIMFAQ mudah dibuka seperti aplikasi, tambahkan pintasannya ke Layar Utama iPhone.':'Pasang SIMFAQ di perangkat agar lebih mudah dibuka langsung dari layar utama.';
+    var instructions=ios?'<ol style="text-align:left;margin:12px 0 0;padding-left:22px;line-height:1.7;font-size:13px"><li>Tekan tombol <b>Bagikan</b> di Safari.</li><li>Gulir menu, lalu pilih <b>Tambahkan ke Layar Utama</b>.</li><li>Tekan <b>Tambah</b> untuk menyelesaikan pemasangan.</li></ol>':'';
+    panel.innerHTML='<div aria-hidden="true" style="font-size:34px;line-height:1;margin:2px 0 12px">☪</div><h3 id="bkfPwaInstallOfferTitle" style="margin:0 0 9px;font-size:19px;color:#176b3a">'+title+'</h3><p style="font-size:13px;line-height:1.55;margin:0">'+desc+'</p>'+instructions+'<div style="font-size:10px;color:#718276;margin-top:15px">Daneva.Studio</div>';
+    var primary=document.createElement('button');primary.type='button';primary.textContent=ios?'Mengerti':'Instal SIMFAQ';primary.style.cssText='display:block;width:100%;min-height:44px;margin-top:15px;border:0;border-radius:12px;background:linear-gradient(135deg,#176b3a,#2d8d58);color:#fff;font-weight:800;font-size:14px';
+    var later=document.createElement('button');later.type='button';later.textContent='Nanti saja';later.style.cssText='display:block;width:100%;min-height:40px;margin-top:8px;border:1px solid #d5e4d8;border-radius:11px;background:#fff;color:#42634c;font-weight:700;font-size:13px';
+    if(ios)primary.onclick=function(){closeInstallOffer(true)};
+    else primary.onclick=function(){var promptEvent=window.bkfPwaInstallPrompt;if(!promptEvent){closeInstallOffer(true);return}closeInstallOffer(false);installApp()};
+    later.onclick=function(){closeInstallOffer(true)};var installed=document.createElement('button');installed.type='button';installed.textContent='SIMFAQ sudah terpasang';installed.style.cssText='display:block;width:100%;min-height:38px;margin-top:7px;border:0;background:transparent;color:#52705a;font-weight:700;font-size:12px';installed.onclick=function(){try{localStorage.setItem('bkf_pwa_installed_once','1')}catch(_){}closeInstallOffer(false)};panel.appendChild(primary);panel.appendChild(later);panel.appendChild(installed);overlay.appendChild(panel);
+    overlay.addEventListener('click',function(e){if(e.target===overlay)closeInstallOffer(true)});document.body.appendChild(overlay);
   }
+  function scheduleInstallOffer(platform){if(installOfferTimer)clearTimeout(installOfferTimer);installOfferTimer=setTimeout(function(){if(!standalone())showInstallOffer(platform)},1400)}
+  window.addEventListener('beforeinstallprompt',function(event){event.preventDefault();window.bkfPwaInstallPrompt=event;if(!standalone())scheduleInstallOffer('android')});
+  window.addEventListener('appinstalled',function(){window.bkfPwaInstallPrompt=null;closeInstallOffer(false);try{localStorage.setItem('bkf_pwa_installed_once','1')}catch(_){}if(typeof window.v12Toast==='function')window.v12Toast('SIMFAQ berhasil dipasang. Buka aplikasi untuk mengaktifkan notifikasi.','success')});
+  if(isIOSDevice()){var startIOSInstallOffer=function(){if(!standalone())scheduleInstallOffer('ios')};if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',startIOSInstallOffer,{once:true});else startIOSInstallOffer()}
   function message(title,body,steps){
     var old=document.getElementById('bkfPwaHelpModal');if(old)old.remove();
     var overlay=document.createElement('div');overlay.id='bkfPwaHelpModal';overlay.style.cssText='position:fixed;inset:0;z-index:2147482000;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(13,42,27,.58)';
