@@ -1,4 +1,4 @@
-<!-- BK-FUSPAQ-NU V550: pagination 50 data dengan tombol tunggal di bawah, tanpa exact count untuk daftar, panel diagnostik push disembunyikan; baseline V549; tanpa perubahan database/RLS. -->
+<!-- BK-FUSPAQ-NU V552: durable push outbox, retry per perangkat, dan acknowledgment showNotification bertanda tangan; basis V551. -->
 <!-- V550: pagination cursor-offset 50+1 untuk mendeteksi halaman berikutnya; kontrol tunggal di bawah daftar. -->
 <!-- BK-FUSPAQ-NU V533: pemindaian foto yatim berdasarkan ID pemakai nyata dan referensi lintas modul; baseline V532. -->
 <!-- BK-FUSPAQ-NU V527: perbaikan cleanup foto saat edit/hapus peserta ujian dan wisuda; file Storage hanya dihapus setelah referensi diperiksa. -->
@@ -325,7 +325,7 @@ window.requireActiveSession=requireActiveSession;window.hasPermission=hasPermiss
   window.bkfSplash={show,status,setLogo,setDistrict,hydrate,hide};
 })();
 const fmt=n=>new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(Number(n||0));
-const date=v=>v?new Date(v).toLocaleDateString('id-ID',{dateStyle:'medium'}):'-';
+const date=v=>v?new Date(v).toLocaleDateString('id-ID',{dateStyle:'medium',timeZone:'Asia/Jakarta'}):'-';
 const can=p=>{const r=state.roles||[];if(r.includes('KETUA'))return true;const m={'activity.view':['KETUA','SEKRETARIS','BENDAHARA','ANGGOTA','OPERATOR'],'exam.view':['KETUA','SEKRETARIS','ANGGOTA','OPERATOR'],'graduation.view':['KETUA','SEKRETARIS','ANGGOTA','OPERATOR'],'finance.view':['KETUA','BENDAHARA','OPERATOR'],'secretariat.view':['KETUA','SEKRETARIS','ANGGOTA'],'distribution.view':['KETUA','SEKRETARIS','BENDAHARA','ANGGOTA','OPERATOR'],'report.view':['KETUA','SEKRETARIS','BENDAHARA','ANGGOTA','OPERATOR'],'management.view':['KETUA','SEKRETARIS','BENDAHARA','ANGGOTA'],'institution.view':['KETUA','SEKRETARIS','BENDAHARA','ANGGOTA','OPERATOR'],'org.view':['KETUA','SEKRETARIS','BENDAHARA','ANGGOTA','OPERATOR'],'settings.manage':['KETUA'],'dashboard.view':['KETUA','SEKRETARIS','BENDAHARA','ANGGOTA','OPERATOR']};return (m[p]||[]).some(x=>r.includes(x));};
 const roleLabel=r=>({KETUA:'Ketua Pengurus',SEKRETARIS:'Sekretaris Pengurus',BENDAHARA:'Bendahara Pengurus',ANGGOTA:'Anggota Pengurus',OPERATOR:'Kepala/Operator Lembaga'})[r]||r;
 const menu=[['home','Beranda'],['activities','Kegiatan'],['exams','Ujian'],['pengujian','Pengujian'],['graduation','Wisuda'],['payments','Pembayaran'],['finance','Keuangan'],['secretariat','Sekretariat'],['distribution','Distribusi'],['reports','Laporan'],['notifications','Notifikasi'],['management','Pengurus'],['institutions','Lembaga'],['organization','Profil Kepengurusan'],['settings','Pengaturan'],['governance','Aturan Ujian & Wisuda']];

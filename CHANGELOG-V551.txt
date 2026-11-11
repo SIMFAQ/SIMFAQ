@@ -1,0 +1,31 @@
+SIMFAQ V551 — PENYELARASAN NOTIFIKASI PEMBAYARAN DAN WAKTU WIB
+
+Berbasis paket V550.
+
+Perubahan:
+1. Pesan pembayaran diselaraskan dari satu sumber di database. Notifikasi aplikasi dan push menggunakan nilai notifications.message yang sama.
+2. Setelah pembayaran berstatus CONFIRMED/LOCKED, pesan menyatakan pembayaran telah diterima dan berhasil diproses, serta menampilkan nomor pembayaran, nomor tagihan, nominal pembayaran yang baru diterima, total tagihan, total pembayaran terkumpul, status tagihan, dan sisa tagihan aktual.
+3. Jika sisa tagihan 0, status ditampilkan sebagai LUNAS dan sisa tagihan Rp0. Jika masih ada kekurangan, status ditampilkan sebagai DIBAYAR SEBAGIAN dan sisa tagihan menunjukkan nilai kekurangan aktual.
+4. Pembayaran dengan status selain CONFIRMED/LOCKED tidak diberi kalimat yang menyatakan pembayaran berhasil diterima.
+5. Format tanggal pada daftar Notifikasi secara eksplisit menggunakan zona waktu Asia/Jakarta (WIB). Penyimpanan timestamp tetap UTC.
+6. Cache Service Worker dinaikkan dari V9 ke V10 agar index.html terbaru dikenali perangkat.
+
+Perubahan database:
+- Fungsi public.notify_institution_event diperbarui secara terarah. Logika penerima notifikasi, event, deduplikasi, cakupan lembaga/pengurus, dan ID notifikasi tidak diubah.
+- Tidak ada perubahan tabel, data operasional, RLS, maupun skema subscription.
+- Edge Function bkf-push tetap meneruskan notifications.message yang sama; tidak perlu membuat pesan kedua atau ID baru.
+
+Contoh isi notifikasi:
+Pembayaran telah diterima dan berhasil diproses.
+No. Pembayaran: ...
+No. Tagihan: ...
+Pembayaran diterima: Rp ...
+Total tagihan: Rp ...
+Total pembayaran terkumpul: Rp ...
+Status tagihan: LUNAS / DIBAYAR SEBAGIAN
+Sisa tagihan: Rp ...
+
+Pemeriksaan:
+- Fungsi database berhasil diganti dan diperiksa ulang.
+- Perlu uji transaksi nyata lunas dan pembayaran sebagian di aplikasi/perangkat untuk memastikan notifikasi masuk ke perangkat dan tampil sesuai kondisi data.
+- Tidak dilakukan transaksi uji atau perubahan pada data pembayaran yang sudah ada.

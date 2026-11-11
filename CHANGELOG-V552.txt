@@ -1,0 +1,21 @@
+SIMFAQ V552 — Penguatan Push End-to-End
+
+Berbasis paket V551. Perubahan pada Service Worker:
+- Cache Service Worker dinaikkan ke V11 agar browser mengambil revisi baru.
+- Setelah showNotification() berhasil, Service Worker mengirim konfirmasi bertanda tangan ke Edge Function melalui CORS-safe text/plain request.
+- Diagnostik lokal mencatat keberhasilan/kegagalan konfirmasi server.
+- Konfirmasi berarti browser menyelesaikan pemanggilan showNotification; bukan bukti bahwa pengguna secara fisik melihat banner notifikasi.
+
+Perubahan backend yang telah diterapkan pada Supabase:
+- Notifikasi baru masuk ke durable outbox dalam transaksi yang sama dengan insert notifications.
+- Worker berjalan otomatis setiap menit melalui pg_cron + pg_net.
+- Klaim pekerjaan memakai FOR UPDATE SKIP LOCKED dan lease agar worker paralel tidak memproses baris yang sama.
+- Catatan pengiriman per perangkat, status accepted/displayed/retry/expired/failed, HTTP status, waktu, dan error disimpan.
+- Retry bertahap hingga batas percobaan; endpoint subscription 404/410 dibersihkan.
+- ID notifikasi UUID yang sama dipakai untuk outbox, payload, tag, deep link, dan acknowledgment.
+- Endpoint acknowledgment memakai HMAC bertanggal yang terikat pada notification_id dan subscription_id; tidak menaruh service-role key atau secret di browser.
+
+Catatan pengujian:
+- Fungsi klaim outbox diuji tanpa membuat/mengubah notifikasi bisnis dan menghasilkan nol pekerjaan ketika antrean kosong.
+- Cron job aktif dan pemanggilan Edge Function versi 4 tercatat HTTP 200.
+- Belum dilakukan transaksi pembayaran/push nyata sebagai uji perangkat. Uji akhir tetap perlu dilakukan dari perangkat pengguna.
