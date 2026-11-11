@@ -1,7 +1,7 @@
-/* SIMFAQ PWA Service Worker - V9 pagination and push diagnostics UI cleanup. */
+/* SIMFAQ PWA Service Worker - V11 signed server acknowledgment for displayed push notifications. */
 'use strict';
 const CACHE_PREFIX = 'simfaq-pwa-';
-const CACHE_VERSION = 'v9';
+const CACHE_VERSION = 'v11';
 const CACHE_NAME = CACHE_PREFIX + CACHE_VERSION;
 const APP_BASE = new URL('./', self.registration.scope);
 const APP_PATH = new URL(APP_BASE).pathname;
@@ -141,6 +141,28 @@ self.addEventListener('push', event => {
     try {
       await self.registration.showNotification(title, options);
       await writePushDiagnostic('show_notification_success', 'showNotification berhasil diselesaikan');
+      // A signed, per-device acknowledgment confirms the browser completed showNotification.
+      // This is not proof that the user physically saw the notification on screen.
+      const ack = payload.ack || payload.data && payload.data.ack;
+      if (ack && ack.url && ack.token && ack.subscriptionId && data.notificationId) {
+        try {
+          const ackResponse = await fetch(ack.url, {
+            method: 'POST',
+            headers: {'Content-Type': 'text/plain;charset=UTF-8'},
+            cache: 'no-store',
+            body: JSON.stringify({
+              action: 'ack_display',
+              notificationId: data.notificationId,
+              subscriptionId: ack.subscriptionId,
+              token: ack.token
+            })
+          });
+          if (!ackResponse.ok) throw new Error('HTTP ' + ackResponse.status);
+          await writePushDiagnostic('server_display_ack_success', 'Server menerima konfirmasi showNotification untuk ID ' + data.notificationId);
+        } catch (ackError) {
+          await writePushDiagnostic('server_display_ack_error', ackError && (ackError.name + ': ' + ackError.message) || 'Konfirmasi server gagal');
+        }
+      }
     } catch (error) {
       await writePushDiagnostic('show_notification_error', error && (error.name + ': ' + error.message) || 'Kesalahan tidak diketahui');
       throw error;
