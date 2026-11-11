@@ -1,4 +1,5 @@
-<!-- BK-FUSPAQ-NU V552: durable push outbox, retry per perangkat, dan acknowledgment showNotification bertanda tangan; basis V551. -->
+<!-- BK-FUSPAQ-NU V555: penyelesaian cakupan 3D Glossy untuk tombol Kembali dan toolbar preview dokumen; basis V554. -->
+<!-- BK-FUSPAQ-NU V554: penyelarasan sistem desain visual; basis V553. -->
 <!-- V550: pagination cursor-offset 50+1 untuk mendeteksi halaman berikutnya; kontrol tunggal di bawah daftar. -->
 <!-- BK-FUSPAQ-NU V533: pemindaian foto yatim berdasarkan ID pemakai nyata dan referensi lintas modul; baseline V532. -->
 <!-- BK-FUSPAQ-NU V527: perbaikan cleanup foto saat edit/hapus peserta ujian dan wisuda; file Storage hanya dihapus setelah referensi diperiksa. -->
@@ -26,8 +27,8 @@
 <!-- BK-FUSPAQ-NU V481: Tombol dan mode edit Aturan Ujian & Wisuda; revisi aturan tetap berversi, biaya tetap terkendali. Baseline V480. -->
 
 <html><head>
-<!-- BK-FUSPAQ-NU-V430: targeted registration save-state fix based on V429; no schema changes. --><!-- BK-FUSPAQ-NU V456: fokus keyboard berurutan pada form Penilaian dan Pendaftaran Ujian; baseline V455; hanya dua alur ini yang diubah. --><meta content="V544 - Perbaikan identitas dan pesan WhatsApp otomatis; basis tampilan V543" name="bkf-version"/><meta charset="utf-8"><meta content="width=device-width,initial-scale=1" name="viewport"/><meta name="theme-color" content="#176b3a"><meta name="application-name" content="SIMFAQ - BK FUSPAQ NU"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" href="./icons/icon-512.png"><link rel="apple-touch-icon" href="./icons/icon-512.png"><title>BK FUSPAQ NU V544</title><style>
-:root{--green:#176b3a;--green2:#0f542d;--gold:#b78a24;--bg:#f6f8f6;--card:#fff;--line:#dce5df;--muted:#66756d;--text:#18231d;--ok:#176b3a;--danger:#a33a35;--warn:#8a6500;--radius:16px;--shadow:0 6px 22px rgba(25,55,38,.07);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text)}button,input,select,textarea{font:inherit}a{color:inherit}
+<!-- BK-FUSPAQ-NU-V430: targeted registration save-state fix based on V429; no schema changes. --><!-- BK-FUSPAQ-NU V456: fokus keyboard berurutan pada form Penilaian dan Pendaftaran Ujian; baseline V455; hanya dua alur ini yang diubah. --><meta content="V554 - Sistem desain visual Modern Professional + 3D Glossy; basis V553" name="bkf-version"/><meta charset="utf-8"><meta content="width=device-width,initial-scale=1" name="viewport"/><meta name="theme-color" content="#176b3a"><meta name="application-name" content="SIMFAQ - BK FUSPAQ NU"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" href="./icons/icon-512.png"><link rel="apple-touch-icon" href="./icons/icon-512.png"><title>BK FUSPAQ NU V554</title><style>
+:root{--green:#176b3a;--green2:#14532d;--gold:#b78a24;--bg:#f5f8f6;--card:#ffffff;--line:#dce7df;--muted:#64756b;--text:#18231d;--ok:#21834c;--danger:#c2413b;--warn:#a87912;--radius:16px;--shadow:0 6px 22px rgba(25,55,38,.07);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;--bkf-primary:#176b3a;--bkf-primary-dark:#14532d;--bkf-primary-soft:#eaf2ec;--bkf-accent:#b78a24;--bkf-surface:#ffffff;--bkf-page:#f5f8f6;--bkf-border:#dce7df;--bkf-text:#18231d;--bkf-muted:#64756b;--bkf-info:#2563eb;--bkf-success:#21834c;--bkf-warning:#d69e20;--bkf-danger:#c2413b;--bkf-shadow-soft:0 4px 14px rgba(20,83,45,.07);}*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text)}button,input,select,textarea{font:inherit}a{color:inherit}
 
 body{min-height:100vh}.shell{min-height:100vh;padding-top:76px;padding-bottom:20px}
 .bkf-universal-backbar{display:flex;align-items:center;justify-content:flex-start;margin:0 0 10px;position:relative;z-index:2}
@@ -45,7 +46,7 @@ body{min-height:100vh}.shell{min-height:100vh;padding-top:76px;padding-bottom:20
 
 .app-brand-footer{max-width:980px;margin:0 auto;padding:12px 16px 22px;display:flex;justify-content:center;align-items:center;gap:6px 18px;flex-wrap:wrap;text-align:center;font-size:11px;color:var(--muted,#718078);border-top:1px solid var(--line,#e3e9e5)}.app-brand-footer strong{color:var(--green,#176b3a);font-weight:700}@media(max-width:520px){.app-brand-footer{font-size:10px;gap:4px 12px}}
 </style><style id="v181-auto-bill-ui">.v181-auto-bill-note{display:inline-flex;align-items:center;gap:5px;padding:7px 10px;border-radius:999px;background:#eef8f1;color:#17643b;font-size:12px;font-weight:700;border:1px solid #cfe9d7}</style><style id="modern-ui-v3">
-:root{--green:#166b3b;--green2:#0f542e;--gold:#b98b2f;--bg:#f4f7f5;--card:#fff;--line:#dfe7e2;--muted:#6b776f;--text:#17221c;--ok:#1c7a46;--danger:#b43c3c;--warn:#8b6500;--radius:18px;--shadow:0 8px 24px rgba(20,55,37,.075);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+:root{--green:#176b3a;--green2:#14532d;--gold:#b78a24;--bg:#f5f8f6;--card:#ffffff;--line:#dce7df;--muted:#64756b;--text:#18231d;--ok:#21834c;--danger:#c2413b;--warn:#a87912;--radius:18px;--shadow:0 8px 24px rgba(20,55,37,.075);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
 body{background:var(--bg)}.content{max-width:1080px;padding:12px 14px}.top{padding:17px 14px}.brand{font-size:15px;letter-spacing:.2px}.sub{font-size:11px}.card{border-radius:14px;padding:10px;margin-bottom:8px;box-shadow:var(--shadow)}h2{font-size:21px;margin:0 0 4px}h3{font-size:16px;margin:0 0 5px}h4{font-size:14px}.grid{gap:10px}.grid2,.grid3{gap:10px}.btn{min-height:38px;border-radius:11px;padding:7px 11px;display:inline-flex;align-items:center;justify-content:center;gap:6px;transition:.18s transform,.18s box-shadow}.btn:active{transform:scale(.98)}.btn.primary{box-shadow:0 5px 14px rgba(22,107,59,.18)}.btn.secondary{border:1px solid #d9e5dd}.field{gap:5px;margin:10px 0}.field input,.field select,.field textarea{min-height:44px;border-radius:12px}.list{gap:7px}.list-item{border-radius:13px;padding:11px}.metric{font-size:23px}.menu-grid{gap:7px}.menu-item{min-height:48px}.bottom{height:66px}.bottom button{font-size:11px}.drawer-panel{width:min(330px,84vw);padding:14px}.drawer-panel .menu-item{display:flex!important;align-items:center!important;justify-content:flex-start!important;gap:8px!important;min-height:44px!important;padding:8px 10px!important;line-height:1.15!important;text-align:left!important}.drawer-panel .menu-item .menu-label{display:flex!important;align-items:center!important;gap:8px!important;font-size:14px!important;line-height:1.15!important}.drawer-panel .menu-item .icon{flex:0 0 18px!important}.drawer-head{position:sticky;top:0;background:#fff;padding-bottom:8px;z-index:2}.section-title{margin:14px 0 7px}.icon{width:18px;height:18px;display:inline-grid;place-items:center;flex:0 0 18px}.icon svg{width:18px;height:18px;stroke:currentColor}.app-icon{width:34px;height:34px;border-radius:11px;background:#eaf5ee;display:grid;place-items:center;color:var(--green)}.app-icon svg{width:19px}.module-head{display:flex;align-items:center;gap:10px}.module-head .app-icon{flex:0 0 34px}.photo{width:72px;height:92px;border-radius:12px;object-fit:cover;background:#edf2ee;border:1px solid var(--line)}.photo.square{width:70px;height:70px;border-radius:50%}.photo-lg{width:110px;height:145px;border-radius:14px;object-fit:cover}.photo-placeholder{display:grid;place-items:center;color:var(--muted);font-size:11px}.profile-row{display:flex;gap:12px;align-items:center}.head-card{display:flex;gap:12px;align-items:center}.album-chair{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}.album-chair .photo-lg{display:block;margin:0 auto}.album{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.album-photo{aspect-ratio:3/4;width:100%;object-fit:cover;border-radius:13px;border:1px solid var(--line);background:#edf2ee}.album-caption{text-align:center;font-size:11px;font-weight:700;margin-top:5px;line-height:1.25}.number-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10mm}.number-ticket{aspect-ratio:1/1;display:grid;place-items:center;position:relative}.number-ticket img{width:100%;height:100%;object-fit:contain}.number-ticket span{position:absolute;font-size:42px;font-weight:900;line-height:1;color:#17221c;text-shadow:0 1px 0 #fff,0 -1px 0 #fff,1px 0 0 #fff,-1px 0 0 #fff}.edit-number{width:82px!important;text-align:center;font-weight:800}.whatsapp{background:#e9f7ed;color:#13763d}.compact-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}.compact-actions .btn{flex:0 0 auto}.muted-box{background:#f6f8f6;border:1px dashed var(--line);padding:10px;border-radius:12px}.hero{padding:18px}.hero h2{font-size:24px}.modal-sheet{position:fixed;inset:auto 0 0 0;background:#fff;border-radius:22px 22px 0 0;z-index:70;padding:16px;max-height:88vh;overflow:auto;box-shadow:0 -12px 36px rgba(0,0,0,.16)}.backdrop{position:fixed;inset:0;background:#0006;z-index:65}.backdrop{z-index:1100!important}.backdrop .modal-sheet{z-index:1101!important;max-height:calc(100dvh - 20px);padding-bottom:24px}.backdrop .modal-sheet>.row{position:sticky;top:0;z-index:5;background:#fff;padding-bottom:10px;margin:-16px -16px 8px;padding:12px 16px;border-bottom:1px solid var(--line)}.seg{display:flex;background:#edf3ee;border-radius:12px;padding:3px;gap:3px}.seg button{flex:1;border:0;background:transparent;border-radius:10px;padding:8px;font-weight:700;color:var(--muted)}.seg button.active{background:#fff;color:var(--green);box-shadow:0 2px 7px #0000000c}
 @media(max-width:700px){.album{grid-template-columns:repeat(3,minmax(0,1fr))}.content{padding:10px 11px}.grid3{grid-template-columns:repeat(2,minmax(0,1fr))}.number-grid{gap:5mm}.number-ticket span{font-size:34px}}
 @media(max-width:420px){.album{grid-template-columns:repeat(2,minmax(0,1fr))}.grid3{grid-template-columns:1fr 1fr}.toolbar>*{min-width:0}.number-ticket span{font-size:30px}}
@@ -99,7 +100,7 @@ body{background:var(--bg)}.content{max-width:1080px;padding:12px 14px}.top{paddi
 button[aria-label*="hapus" i],button[title*="hapus" i],button[aria-label*="delete" i],button[title*="delete" i],button[aria-label*="sampah" i],button[title*="sampah" i]{color:#dc2626!important},button[onclick*="hapus" i],button[onclick*="delete" i],button:has(svg.lucide-trash),button:has(svg.lucide-trash-2),button:has(svg[data-lucide*="trash" i]),button:has(i[class*="trash" i]){color:#dc2626!important}
 button[aria-label*="hapus" i] svg,button[title*="hapus" i] svg,button[aria-label*="delete" i] svg,button[title*="delete" i] svg,button[aria-label*="sampah" i] svg,button[title*="sampah" i] svg,button[onclick*="hapus" i] svg,button[onclick*="delete" i] svg,button:has(svg.lucide-trash) svg,button:has(svg.lucide-trash-2) svg,button:has(svg[data-lucide*="trash" i]) svg{color:#dc2626!important;stroke:#dc2626!important}
 </style>
-</style><meta content="BK FUSPAQ NU FINAL CONSOLIDATED · V546 NOTIFICATION PAGINATION + DIRECT DASHBOARD ROUTE" name="application-version"/><meta content="Daneva.studio @2026" name="deployment-brand"/><meta content="Ahmad Fathunnur" name="founder"/><style id="v180-notification-friendly">
+</style><meta content="BK FUSPAQ NU FINAL CONSOLIDATED · V554 DESIGN SYSTEM" name="application-version"/><meta content="Daneva.studio @2026" name="deployment-brand"/><meta content="Ahmad Fathunnur" name="founder"/><style id="v180-notification-friendly">
 .bkf-notification-list{display:grid;gap:9px;width:100%;max-width:100%;min-width:0;overflow:hidden}
 .bkf-notification-item{position:relative;width:100%;max-width:100%;min-width:0;box-sizing:border-box;border:1px solid #d9c995;border-radius:14px;background-color:#fbf4df;background-image:radial-gradient(circle at 0 0,rgba(23,76,54,.07) 0 2px,transparent 2.5px),radial-gradient(circle at 100% 100%,rgba(23,76,54,.055) 0 2px,transparent 2.5px),linear-gradient(45deg,transparent 46%,rgba(23,76,54,.045) 47%,rgba(23,76,54,.045) 53%,transparent 54%),linear-gradient(-45deg,transparent 46%,rgba(23,76,54,.045) 47%,rgba(23,76,54,.045) 53%,transparent 54%);background-size:28px 28px,28px 28px,28px 28px,28px 28px;padding:12px 50px 12px 13px;text-align:left;transition:.15s ease;box-shadow:0 2px 8px rgba(72,54,22,.08);overflow:hidden;display:block}
 .bkf-notification-item:hover{transform:translateY(-1px);box-shadow:0 5px 14px rgba(72,54,22,.14)}
@@ -595,7 +596,7 @@ const moduleHead=(k,t,d='')=>`<div class="module-head"><div class="app-icon icon
 const imgOr=(url,cl='photo')=>url?`<img class="${cl}" src="${esc(url)}" alt="Foto">`:`<div class="${cl} photo-placeholder">Belum ada foto</div>`;
 const waNumber=v=>{let n=String(v||'').replace(/\D/g,'');if(!n)return '';if(n.startsWith('0'))n='62'+n.slice(1);if(!n.startsWith('62'))n='62'+n;return n};
 const todayText=()=>new Date().toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'});
-const friendlyError=e=>{const m=String(e?.message||e||'Terjadi kesalahan.');if(/Invalid login credentials/i.test(m))return 'Email atau kata sandi tidak sesuai.';if(/Email not confirmed/i.test(m))return 'Email akun belum dikonfirmasi.';if(/JWT|token|session/i.test(m))return 'Sesi Anda sudah berakhir. Silakan masuk kembali.';if(/permission|not authorized|forbidden/i.test(m))return 'Anda tidak memiliki hak akses untuk tindakan ini.';if(/duplicate|unique/i.test(m))return 'Data tersebut sudah ada.';if(/violates row-level security|row-level security/i.test(m))return 'Perubahan tidak diizinkan untuk akun ini.';return 'Tindakan belum berhasil. Silakan periksa data lalu coba lagi.'};
+const friendlyError=e=>{if(window.bkfIsNetworkError?.(e))return window.bkfFriendlyNetworkMessage(e);const m=String(e?.message||e||'Terjadi kesalahan.');if(/Invalid login credentials/i.test(m))return 'Email atau kata sandi tidak sesuai.';if(/Email not confirmed/i.test(m))return 'Email akun belum dikonfirmasi.';if(/JWT|token|session/i.test(m))return 'Sesi Anda sudah berakhir. Silakan masuk kembali.';if(/permission|not authorized|forbidden/i.test(m))return 'Anda tidak memiliki hak akses untuk tindakan ini.';if(/duplicate|unique/i.test(m))return 'Data tersebut sudah ada.';if(/violates row-level security|row-level security/i.test(m))return 'Perubahan tidak diizinkan untuk akun ini.';return 'Tindakan belum berhasil. Silakan periksa data lalu coba lagi.'};
 
 async function refreshHeaderAvatar(){
   const host=document.getElementById('topAvatarContent');
@@ -1638,7 +1639,7 @@ window.printExamCards=async function(){
 })();
 </script>
 <style id="v23-bright-ui">
-:root{--green:#087f5b;--green2:#05a66d;--bg:#f4fbf7;--card:#fff;--line:#d7eee3;--muted:#52665d;--text:#12251c;--gold:#f6b800;--blue:#087fbd;--red:#e63946;--purple:#7b3ff2;--orange:#f47c20}
+:root{--green:#176b3a;--green2:#14532d;--bg:#f5f8f6;--card:#ffffff;--line:#dce7df;--muted:#64756b;--text:#18231d;--gold:#b78a24;--blue:#2563eb;--red:#c2413b;--purple:#7c3aed;--orange:#ea580c}
 body{background:var(--bg);color:var(--text)}.top{background:#078b61!important}.btn{font-weight:500!important;border:0!important;color:#fff!important;text-shadow:none!important;background:#087f5b!important;box-shadow:0 5px 12px rgba(0,80,55,.14)}.btn.primary,.btn.success{background:#078b61!important;color:#fff!important}.btn.secondary{background:#087fbd!important;color:#fff!important}.btn.gold{background:#f6b800!important;color:#172000!important}.btn.danger{background:#e63946!important;color:#fff!important}.btn.info{background:#06a6d6!important;color:#fff!important}.btn.purple{background:#7b3ff2!important;color:#fff!important}.btn.orange{background:#f47c20!important;color:#241000!important}.btn.neutral{background:#53656e!important;color:#fff!important}.btn.whatsapp{background:#10a957!important;color:#fff!important}.btn:hover{filter:brightness(1.06);box-shadow:0 7px 15px rgba(0,80,55,.18)}.icon{filter:drop-shadow(0 2px 1px rgba(0,0,0,.22));font-weight:900}.app-icon{background:#dff8ec!important;color:#078b61!important;box-shadow:inset 0 2px 3px #fff,0 4px 9px rgba(0,100,70,.12)}.bottom button{color:#53665e!important}.bottom button.active{color:#078b61!important}.menu-item{color:#fff!important}.seg{background:#dff3eb!important}.seg button{color:#31584a!important}.seg button.active{background:#fff!important;color:#078b61!important}.bright-note{background:#fff8cf;border:1px solid #f0d76b;border-radius:14px;padding:12px}.finance-report-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.finance-report-box{border-radius:14px;padding:13px;background:#fff;border:1px solid var(--line)}@media(max-width:700px){.finance-report-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 </style>
 <script id="v23-final-global">
@@ -1809,7 +1810,7 @@ button,.btn,a.btn{display:inline-flex!important;align-items:center!important;jus
 })();
 </script>
 <style id="v26-final-palette">
-:root{--primary:#006B4D;--primary2:#2f8f62;--indigo:#6B21A8;--amber:#F59E0B;--neutral:#E9ECEF;--bg:#F8F9FA;--card:#FFFFFF;--ink:#212529;--muted:#6c757d;--line:#e5e7eb}
+:root{--primary:#176b3a;--primary2:#21834c;--indigo:#6b21a8;--amber:#d69e20;--neutral:#e9eeeb;--bg:#f5f8f6;--card:#ffffff;--ink:#212529;--muted:#64756b;--line:#dce7df}
 body{background:var(--bg)!important;color:var(--ink)!important}
 .top{background:linear-gradient(135deg,#006B4D 0%,#0b7655 58%,#5c8f35 100%)!important}
 .card{background:#fff!important;border:1px solid #ece8f3!important;border-radius:14px!important;box-shadow:0 3px 12px rgba(88,28,135,.07)!important}
@@ -1856,7 +1857,7 @@ input:focus,select:focus,textarea:focus{border-color:#6B21A8!important;box-shado
  })();
 </script>
 <style id="v30-design-system">
-:root{--primary-dark:#0d5c2e;--primary:#1a6b3c;--primary-light:#2a8a50;--gold:#f5c542;--gold-light:#ffd966;--app-bg:#f0f5f0;--app-card:#fafffa;--text-main:#333;--text-second:#666;--ok:#16a34a;--warn:#f59e0b;--danger:#dc2626;--info:#3b82f6}
+:root{--primary-dark:#14532d;--primary:#176b3a;--primary-light:#3b9b65;--gold:#b78a24;--gold-light:#ffd966;--app-bg:#f5f8f6;--app-card:#ffffff;--text-main:#18231d;--text-second:#64756b;--ok:#21834c;--warn:#a87912;--danger:#c2413b;--info:#2563eb}
 html,body{background:var(--app-bg)!important;color:var(--text-main)!important;font-family:'Segoe UI',-apple-system,BlinkMacSystemFont,sans-serif!important}.card{background:var(--app-card)!important;border:1px solid #d7e5d9!important;border-radius:14px!important;box-shadow:0 6px 20px rgba(13,92,46,.08)!important}.top{background:linear-gradient(135deg,var(--primary-dark),var(--primary) 55%,var(--primary-light))!important}.btn{border-radius:10px!important;min-height:44px!important;font-weight:700!important;white-space:normal!important;overflow-wrap:anywhere!important;word-break:normal!important;writing-mode:horizontal-tb!important;box-shadow:0 4px 10px rgba(0,0,0,.10)!important}.btn.primary,.btn.success{background:linear-gradient(135deg,var(--primary-dark),var(--primary),var(--primary-light))!important;color:#fff!important;border:1px solid #0b4b27!important}.btn.gold{background:linear-gradient(135deg,var(--gold),var(--gold-light))!important;color:#173b25!important;border:1px solid #c79a17!important}.btn.secondary{background:linear-gradient(135deg,#4f7d16,#7fae2d 55%,#b4cc4d)!important;color:#fff!important;border:2px solid #c5d75c!important}.btn.orange{background:#f59e0b!important;color:#fff!important;border:1px solid #b86e00!important}.btn.info{background:#3b82f6!important;color:#fff!important;border:1px solid #1d4ed8!important}.btn.danger{background:#dc2626!important;color:#fff!important;border:1px solid #991b1b!important}.btn.neutral{background:#fff!important;color:var(--primary-dark)!important;border:2px solid var(--primary)!important}.btn.whatsapp{background:#16a34a!important;color:#fff!important;border:1px solid #0b7a32!important}.drawer-panel{background:linear-gradient(180deg,#fbfff9,#f0f7ee)!important;border-right:2px solid #b9d36a!important}.drawer-head{border-bottom:1px solid #c9d9a1;padding-bottom:12px;margin-bottom:10px}.drawer-panel .menu-item{background:linear-gradient(135deg,#4f7d16,#7fae2d 55%,#b4cc4d)!important;color:#fff!important;border:2px solid #c5d75c!important;border-radius:12px!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 5px 12px rgba(70,100,15,.20)!important}.drawer-panel .menu-item:hover{filter:brightness(1.08)!important;transform:translateY(-1px)}.drawer-panel .menu-item strong,.drawer-panel .menu-item .small{color:#fff!important}.bottom{background:#fff!important;border-top:1px solid #cddbcf!important}.bottom button{background:#fff!important;color:#666!important}.bottom button.active{color:var(--primary-dark)!important}.quick-module{min-height:64px!important;text-align:center!important;display:flex!important;align-items:center!important;justify-content:center!important}.quick-module .small{display:none!important}.management-actions{gap:8px;flex-wrap:wrap}.management-actions .btn{flex:1;min-width:150px}.approval-box{border:2px solid #e8bf35!important;background:#fff8d9!important}.module-head h2{font-weight:800!important;color:#173b25!important}.status.ok{color:#166534!important;background:#dcfce7!important}.status.bad{color:#991b1b!important;background:#fee2e2!important}.status.lock{color:#92400e!important;background:#fef3c7!important}@media(max-width:600px){.content{padding:12px!important}.management-actions .btn{min-width:100%!important}.btn{font-size:14px!important}}
 </style>
 <script id="v30-management-add">
@@ -3775,30 +3776,35 @@ function ensureToastWrap52(){let wrap=document.querySelector('.toast-wrap');if(!
 // Toast validasi khusus dua formulir pendaftaran; gunakan satu implementasi agar tidak ada handler duplikat.
 window.bkfRegistrationToast=function(title,missing,detail){const wrap=ensureToastWrap52();const el=document.createElement('div');el.className='toast error';el.setAttribute('role','alert');el.style.cssText='position:relative;isolation:isolate;overflow:hidden;pointer-events:auto;display:flex;align-items:flex-start;gap:10px;padding:15px 42px 15px 16px;border:1px solid #d8e6d9;border-left:5px solid #a95a48;background:linear-gradient(145deg,#fff 0%,#f4f8f1 58%,#eaf2e8 100%);color:#244333;border-radius:17px;box-shadow:inset 0 1px 0 #fff,0 16px 38px rgba(20,55,37,.2);width:100%;box-sizing:border-box';const icon=document.createElement('div');icon.className='toast-icon';icon.textContent='⚠️';icon.setAttribute('aria-hidden','true');const box=document.createElement('div');box.style.cssText='min-width:0;flex:1';const heading=document.createElement('strong');heading.textContent=String(title||'Pendaftaran belum lengkap');heading.style.cssText='display:block;font-size:14px;margin:0 0 5px;color:#185536';const list=document.createElement('div');list.style.cssText='font-size:13px;line-height:1.5;color:#385b43';if(Array.isArray(missing)&&missing.length){const intro=document.createElement('div');intro.textContent='Bagian yang belum diisi:';list.appendChild(intro);const ul=document.createElement('ul');ul.style.cssText='margin:4px 0 6px;padding-left:20px';missing.forEach(label=>{const li=document.createElement('li');li.textContent=String(label);ul.appendChild(li)});list.appendChild(ul)}const help=document.createElement('div');help.textContent=String(detail||'Lengkapi data wajib sebelum menyimpan.');help.style.cssText='font-size:12px;color:#607466';box.append(heading,list,help);const close=document.createElement('button');close.type='button';close.textContent='×';close.setAttribute('aria-label','Tutup peringatan');close.style.cssText='position:absolute;right:8px;top:7px;border:0;background:transparent;color:#555;font-size:24px;line-height:1;cursor:pointer;padding:4px 7px;pointer-events:auto';close.onclick=()=>el.remove();el.append(icon,box,close);wrap.appendChild(el);const timer=setTimeout(()=>el.remove(),8000);close.addEventListener('click',()=>clearTimeout(timer),{once:true});return el};
 window.alert=function(message){const wrap=ensureToastWrap52();const el=document.createElement('div');el.className='toast';el.setAttribute('role','status');const icon=document.createElement('div');icon.className='toast-icon';icon.textContent='☪';const box=document.createElement('div');const title=document.createElement('strong');title.textContent='Informasi';const text=document.createElement('div');text.textContent=String(message??'');box.append(title,text);el.append(icon,box);wrap.appendChild(el);setTimeout(()=>el.remove(),5000)};
-const oldV12Toast=window.v12Toast;if(typeof oldV12Toast==='function'){window.v12Toast=function(message,type){try{if(type==='error'&&/failed to fetch|networkerror|load failed|fetch failed|err_internet_disconnected|network request failed/i.test(String(message||''))&&typeof window.bkfShowCrudNetworkWarning==='function'){window.bkfShowCrudNetworkWarning();return}const result=oldV12Toast.apply(this,arguments);const wrap=ensureToastWrap52();wrap.style.left='50%';wrap.style.right='auto';wrap.style.top='50%';wrap.style.bottom='auto';wrap.style.transform='translate(-50%,-50%)';wrap.style.zIndex='2147483647';return result}catch(e){return window.bkAlert(message)}}}
-window.bkfShowCrudNetworkWarning=function(){
-  var now=Date.now();if(window.__bkfCrudNetworkWarningAt&&now-window.__bkfCrudNetworkWarningAt<8000)return;
-  window.__bkfCrudNetworkWarningAt=now;
-  var wrap=ensureToastWrap52(),el=document.createElement("div");el.className="toast error";el.setAttribute("role","alert");
-  var icon=document.createElement("div");icon.className="toast-icon";icon.textContent="☪";
-  var box=document.createElement("div"),heading=document.createElement("strong"),body=document.createElement("div");
-  heading.textContent="Koneksi Internet Terputus";body.textContent="Mohon maaf, koneksi ke layanan SIMFAQ sedang terputus. Data belum dapat diproses atau dimuat. Periksa jaringan internet, kemudian silakan coba kembali.";var brand=document.createElement("div");brand.textContent="Daneva.Studio";brand.style.cssText="margin-top:7px;font-size:9px;color:#718174;font-weight:600";
-  box.append(heading,body,brand);el.append(icon,box);wrap.appendChild(el);setTimeout(function(){el.remove()},7000);
+const BKF_NETWORK_PATTERN=/failed to fetch|networkerror|load failed|fetch failed|err_internet_disconnected|network request failed|bkf_network_unavailable|koneksi internet terputus|layanan simfaq belum dapat dijangkau/i;
+window.bkfIsNetworkError=function(error){const message=String(error?.message||error||'');return navigator.onLine===false||error?.code==='BKF_NETWORK_UNAVAILABLE'||BKF_NETWORK_PATTERN.test(message)};
+window.bkfFriendlyNetworkMessage=function(error){return navigator.onLine===false?'Koneksi Internet Terputus. Perangkat tidak terhubung ke internet. Periksa jaringan, lalu coba kembali.':'Layanan SIMFAQ belum dapat dijangkau. Periksa koneksi internet Anda, kemudian coba kembali.'};
+window.bkfClearCrudNetworkWarning=function(){const el=document.getElementById('bkfPersistentNetworkWarning');if(el)el.remove();window.__bkfNetworkWarningReason=null};
+const oldV12Toast=window.v12Toast;if(typeof oldV12Toast==='function'){window.v12Toast=function(message,type){try{if(type==='error'&&window.bkfIsNetworkError(message)){window.bkfShowCrudNetworkWarning();return}const result=oldV12Toast.apply(this,arguments);const wrap=ensureToastWrap52();wrap.style.left='50%';wrap.style.right='auto';wrap.style.top='50%';wrap.style.bottom='auto';wrap.style.transform='translate(-50%,-50%)';wrap.style.zIndex='2147483647';return result}catch(e){return window.bkAlert(message)}}}
+window.bkfShowCrudNetworkWarning=function(reason){
+  const offline=navigator.onLine===false||reason==='offline';
+  const message=offline?'Perangkat sedang tidak terhubung ke internet. Pencarian dan pemuatan data belum dapat dilakukan. Periksa jaringan Anda.':'Koneksi ke layanan SIMFAQ sedang terganggu. Data belum dapat dimuat. Periksa jaringan internet, lalu coba kembali.';
+  let el=document.getElementById('bkfPersistentNetworkWarning');
+  if(!el){el=document.createElement('div');el.id='bkfPersistentNetworkWarning';el.setAttribute('role','alert');el.setAttribute('aria-live','assertive');el.style.cssText='position:fixed;left:12px;right:12px;top:calc(env(safe-area-inset-top,0px) + 10px);z-index:2147483647;display:flex;gap:10px;align-items:flex-start;padding:13px 15px;border:1px solid #e4c6a3;border-left:5px solid #a95a48;border-radius:13px;background:#fff8ef;color:#573b2d;box-shadow:0 8px 26px rgba(35,30,20,.2);font:13px/1.45 system-ui,sans-serif;box-sizing:border-box';document.body.appendChild(el)}
+  el.innerHTML='';const icon=document.createElement('span');icon.textContent='⚠️';icon.setAttribute('aria-hidden','true');const content=document.createElement('div');content.style.minWidth='0';const title=document.createElement('strong');title.textContent=offline?'Koneksi Internet Terputus':'Layanan SIMFAQ Belum Dapat Dijangkau';title.style.cssText='display:block;margin-bottom:3px;font-size:14px';const body=document.createElement('div');body.textContent=message;content.append(title,body);el.append(icon,content);window.__bkfNetworkWarningReason=offline?'offline':'service';
+  return el;
 };
+window.addEventListener('offline',function(){window.bkfShowCrudNetworkWarning('offline')});
+window.addEventListener('online',function(){if(window.__bkfNetworkWarningReason==='offline')window.bkfClearCrudNetworkWarning()});
+if(navigator.onLine===false){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>window.bkfShowCrudNetworkWarning('offline'),{once:true});else window.bkfShowCrudNetworkWarning('offline')}
 (function(){
   if(typeof window.fetch!=="function"||window.fetch.__bkfCrudNetworkWrapped)return;
   var original=window.fetch.bind(window);
   var wrapped=function(input,init){
     var url=typeof input==="string"?input:(input&&input.url)||"";
-    var method=String((init&&init.method)||(input&&input.method)||"GET").toUpperCase();
-    var isSupabaseApi=/\/rest\/v1\/|\/storage\/v1\/|\/functions\/v1\//i.test(url);
+    var isSupabaseApi=/\/(?:rest|auth|storage|functions)\/v1\//i.test(url)||/\/realtime\//i.test(url);
     var promise=original(input,init);
     if(!isSupabaseApi)return promise;
     return promise.then(function(response){
-      if(response&&[502,503,504].includes(response.status))window.bkfShowCrudNetworkWarning();
+      if(response&&[502,503,504].includes(response.status)){window.bkfShowCrudNetworkWarning('service')}else if(response&&response.status<500&&navigator.onLine!==false){window.bkfClearCrudNetworkWarning()}
       return response;
     }).catch(function(error){
-      if(error instanceof TypeError||navigator.onLine===false)window.bkfShowCrudNetworkWarning();
+      if(error instanceof TypeError||navigator.onLine===false){window.bkfShowCrudNetworkWarning(navigator.onLine===false?'offline':'service');const friendly=new TypeError(window.bkfFriendlyNetworkMessage(error));friendly.code='BKF_NETWORK_UNAVAILABLE';friendly.cause=error;throw friendly}
       throw error;
     });
   };
@@ -4842,7 +4848,7 @@ window.showHome=async function(){
 }
 </style>
 <script id="v85-authoritative-friendly-error">
-window.friendlyError=function(e){const m=String(e?.message||e||'Terjadi kesalahan.');if(/Invalid login credentials/i.test(m))return 'Email atau kata sandi tidak sesuai.';if(/Email not confirmed/i.test(m))return 'Email akun belum dikonfirmasi.';if(/JWT|token|session/i.test(m))return 'Sesi Anda sudah berakhir. Silakan masuk kembali.';if(/permission|not authorized|forbidden/i.test(m))return 'Anda tidak memiliki hak akses untuk tindakan ini.';if(/duplicate|unique/i.test(m))return 'Data tersebut sudah ada.';if(/infinite recursion detected in policy for relation ['"]?exam_sessions['"]?/i.test(m))return 'Data sesi ujian belum dapat ditampilkan. Silakan coba lagi.';if(/infinite recursion detected in policy/i.test(m))return 'Data belum dapat ditampilkan karena terjadi masalah keamanan akses. Silakan coba lagi.';if(/violates row-level security|row-level security/i.test(m))return 'Perubahan tidak diizinkan untuk akun ini.';if(/does not exist|not found/i.test(m))return 'Fitur atau data yang diminta belum tersedia.';return 'Tindakan belum berhasil. Silakan periksa data lalu coba lagi.'};
+window.friendlyError=function(e){if(window.bkfIsNetworkError?.(e))return window.bkfFriendlyNetworkMessage(e);const m=String(e?.message||e||'Terjadi kesalahan.');if(/Invalid login credentials/i.test(m))return 'Email atau kata sandi tidak sesuai.';if(/Email not confirmed/i.test(m))return 'Email akun belum dikonfirmasi.';if(/JWT|token|session/i.test(m))return 'Sesi Anda sudah berakhir. Silakan masuk kembali.';if(/permission|not authorized|forbidden/i.test(m))return 'Anda tidak memiliki hak akses untuk tindakan ini.';if(/duplicate|unique/i.test(m))return 'Data tersebut sudah ada.';if(/infinite recursion detected in policy for relation ['"]?exam_sessions['"]?/i.test(m))return 'Data sesi ujian belum dapat ditampilkan. Silakan coba lagi.';if(/infinite recursion detected in policy/i.test(m))return 'Data belum dapat ditampilkan karena terjadi masalah keamanan akses. Silakan coba lagi.';if(/violates row-level security|row-level security/i.test(m))return 'Perubahan tidak diizinkan untuk akun ini.';if(/does not exist|not found/i.test(m))return 'Fitur atau data yang diminta belum tersedia.';return 'Tindakan belum berhasil. Silakan periksa data lalu coba lagi.'};
 </script>
 <script id="v126-final-management-settings">
 (function(){
@@ -7358,64 +7364,88 @@ window.showExamGovernance=async function(){const host=document.getElementById('p
   };
 })();
 </script>
-<style id="bkf-v543-universal-3d-glossy-buttons">
-/* V543: satu sistem permukaan glossy 3D; warna dasar masing-masing tombol tetap dipertahankan. */
-button,.drawer-panel .menu-item,#bkfGlobalFooterNav .bkf-footer-link{
-  position:relative;isolation:isolate;
-  -webkit-tap-highlight-color:transparent;
-  box-shadow:inset 0 1.5px 0 rgba(255,255,255,.94),
-    inset 0 -3px 0 rgba(0,0,0,.17),
-    0 3px 0 rgba(0,0,0,.09),
-    0 7px 15px rgba(13,52,31,.20)!important;
+<style>
+/* V554: sistem visual terpadu — Modern Professional + 3D Glossy yang lebih halus. */
+/* Efek glossy dibatasi pada kontrol navigasi/tombol aplikasi agar tidak mengubah tombol khusus modul. */
+.btn,.bottom button,.seg button,.drawer-panel .menu-item,#bkfGlobalFooterNav .bkf-footer-link,.bkf-universal-back,.bkf-document-viewer .bkf-document-toolbar-actions button{
+  position:relative;isolation:isolate;-webkit-tap-highlight-color:transparent;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.72),
+    inset 0 -2px 0 rgba(0,0,0,.10),
+    0 2px 0 rgba(0,0,0,.045),
+    0 4px 10px rgba(20,83,45,.11)!important;
   transition:transform .16s ease,filter .16s ease,box-shadow .16s ease;
 }
-/* Refleksi cahaya atas dan garis sisi bawah membentuk permukaan cembung. */
-button::before,.drawer-panel .menu-item::before,#bkfGlobalFooterNav .bkf-footer-link::before{
+.btn::before,.bottom button::before,.seg button::before,
+.drawer-panel .menu-item::before,#bkfGlobalFooterNav .bkf-footer-link::before,.bkf-universal-back::before,.bkf-document-viewer .bkf-document-toolbar-actions button::before{
   content:"";position:absolute;z-index:-1;pointer-events:none;
-  left:5%;right:5%;top:2px;height:42%;border-radius:inherit;
-  background:linear-gradient(180deg,rgba(255,255,255,.34) 0%,rgba(255,255,255,.13) 48%,rgba(255,255,255,0) 100%);
+  left:6%;right:6%;top:2px;height:38%;border-radius:inherit;
+  background:linear-gradient(180deg,rgba(255,255,255,.24),rgba(255,255,255,.07) 55%,transparent);
 }
-button::after,.drawer-panel .menu-item::after,#bkfGlobalFooterNav .bkf-footer-link::after{
+.btn::after,.bottom button::after,.seg button::after,
+.drawer-panel .menu-item::after,#bkfGlobalFooterNav .bkf-footer-link::after,.bkf-universal-back::after,.bkf-document-viewer .bkf-document-toolbar-actions button::after{
   content:"";position:absolute;z-index:-1;pointer-events:none;
-  left:2px;right:2px;bottom:1px;height:3px;border-radius:0 0 10px 10px;
-  background:linear-gradient(90deg,rgba(0,0,0,.02),rgba(0,0,0,.16),rgba(0,0,0,.02));
+  left:3px;right:3px;bottom:1px;height:2px;border-radius:0 0 9px 9px;
+  background:linear-gradient(90deg,transparent,rgba(0,0,0,.10),transparent);
 }
-/* Navigasi dan tab yang sebelumnya transparan diberi permukaan kaca ringan. */
+/* Surface controls: clean white, subtle border, emerald focus. */
+input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),select,textarea{
+  border-color:var(--bkf-border);
+}
+input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):focus,
+select:focus,textarea:focus{
+  outline:0;border-color:#21834c!important;
+  box-shadow:0 0 0 3px rgba(33,131,76,.12)!important;
+}
+.table th{background:#eaf2ec;color:#234b34}
+.table-wrap,.table{border-color:var(--bkf-border)}
 .bottom button,.seg button{
-  background:linear-gradient(180deg,#fff 0%,#f3f8f4 100%)!important;
-  border:1px solid #d8e7dc!important;border-radius:11px!important;
-  color:#315b42!important;
+  background:linear-gradient(180deg,#fff 0%,#f4f8f5 100%)!important;
+  border:1px solid #dce7df!important;border-radius:11px!important;color:#315b42!important;
 }
 .bottom button.active,.seg button.active{
-  background:linear-gradient(145deg,#54b879 0%,#21834c 55%,#105b34 100%)!important;
+  background:linear-gradient(145deg,#49a96d 0%,#21834c 58%,#14532d 100%)!important;
   border-color:rgba(255,255,255,.48)!important;color:#fff!important;
-  box-shadow:inset 0 1.5px 0 rgba(255,255,255,.88),inset 0 -3px 0 rgba(0,0,0,.18),0 3px 0 rgba(8,65,35,.16),0 6px 12px rgba(8,65,35,.16)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.78),inset 0 -2px 0 rgba(0,0,0,.13),0 2px 0 rgba(8,65,35,.12),0 5px 10px rgba(8,65,35,.13)!important;
 }
 #bkfGlobalFooterNav .bkf-footer-link{
-  background:linear-gradient(180deg,#fff 0%,#f0f6f1 100%)!important;
-  border-color:#d8e7dc!important;color:#245b39!important;
+  background:linear-gradient(180deg,#fff 0%,#f2f7f3 100%)!important;
+  border-color:#dce7df!important;color:#245b39!important;
+}
+/* V555: dua kontrol yang sebelumnya berada di luar cakupan glossy. */
+.bkf-universal-back{
+  background:linear-gradient(180deg,#fff 0%,#f2f7f3 100%)!important;
+  border-color:#dce7df!important;color:#245b39!important;
+}
+.bkf-document-viewer .bkf-document-toolbar-actions button{
+  position:relative!important;isolation:isolate!important;
+  background:linear-gradient(180deg,#fff 0%,#f2f7f3 100%)!important;
+  border:1px solid #dce7df!important;border-radius:10px!important;
+  color:#245b39!important;font-weight:700!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.78),inset 0 -2px 0 rgba(0,0,0,.08),0 2px 0 rgba(0,0,0,.04),0 4px 9px rgba(20,83,45,.10)!important;
+  transition:transform .16s ease,filter .16s ease,box-shadow .16s ease;
+}
+.bkf-document-viewer .bkf-document-toolbar-actions button:disabled{
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.3)!important;filter:saturate(.62);
 }
 #bkfGlobalFooterNav .bkf-footer-link.active{
-  background:linear-gradient(145deg,#54b879 0%,#21834c 55%,#105b34 100%)!important;
+  background:linear-gradient(145deg,#49a96d 0%,#21834c 58%,#14532d 100%)!important;
   border-color:rgba(255,255,255,.5)!important;color:#fff!important;
-  box-shadow:inset 0 1.5px 0 rgba(255,255,255,.9),inset 0 -3px 0 rgba(0,0,0,.16),0 3px 0 rgba(8,65,35,.16),0 6px 12px rgba(8,65,35,.16)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.8),inset 0 -2px 0 rgba(0,0,0,.12),0 2px 0 rgba(8,65,35,.12),0 5px 10px rgba(8,65,35,.13)!important;
 }
-button:active:not(:disabled),.drawer-panel .menu-item:active,#bkfGlobalFooterNav .bkf-footer-link:active{
-  transform:translateY(2px);
-  filter:brightness(.97) saturate(1.08);
-  box-shadow:inset 0 3px 6px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.52),0 1px 2px rgba(13,52,31,.12)!important;
+.btn:active:not(:disabled),.bottom button:active:not(:disabled),.seg button:active:not(:disabled),
+.drawer-panel .menu-item:active,#bkfGlobalFooterNav .bkf-footer-link:active,.bkf-universal-back:active,.bkf-document-viewer .bkf-document-toolbar-actions button:active:not(:disabled){
+  transform:translateY(1px);filter:brightness(.98) saturate(1.04);
+  box-shadow:inset 0 2px 4px rgba(0,0,0,.14),inset 0 1px 0 rgba(255,255,255,.4),0 1px 2px rgba(13,52,31,.08)!important;
 }
-button:focus-visible,#bkfGlobalFooterNav .bkf-footer-link:focus-visible{
-  outline:2px solid rgba(33,131,76,.9);outline-offset:2px;
-}
-button:disabled{box-shadow:inset 0 1px 0 rgba(255,255,255,.4)!important;filter:saturate(.62);}
-@media(hover:hover){
-  button:hover:not(:disabled),.drawer-panel .menu-item:hover,#bkfGlobalFooterNav .bkf-footer-link:hover{
-    filter:brightness(1.045) saturate(1.08);transform:translateY(-1px);
-    box-shadow:inset 0 1.5px 0 rgba(255,255,255,.98),inset 0 -3px 0 rgba(0,0,0,.16),0 4px 0 rgba(0,0,0,.09),0 10px 19px rgba(13,52,31,.23)!important;
-  }
-}
-@media(prefers-reduced-motion:reduce){button,.drawer-panel .menu-item,#bkfGlobalFooterNav .bkf-footer-link{transition:none!important}}
+.btn:focus-visible,.bottom button:focus-visible,.seg button:focus-visible,
+#bkfGlobalFooterNav .bkf-footer-link:focus-visible,.bkf-universal-back:focus-visible,.bkf-document-viewer .bkf-document-toolbar-actions button:focus-visible{outline:2px solid rgba(33,131,76,.82);outline-offset:2px}
+.btn:disabled,.bottom button:disabled,.seg button:disabled{box-shadow:inset 0 1px 0 rgba(255,255,255,.3)!important;filter:saturate(.62)}
+@media(hover:hover){.btn:hover:not(:disabled),.bottom button:hover:not(:disabled),.seg button:hover:not(:disabled),
+.drawer-panel .menu-item:hover,#bkfGlobalFooterNav .bkf-footer-link:hover,.bkf-universal-back:hover,.bkf-document-viewer .bkf-document-toolbar-actions button:hover:not(:disabled){
+  filter:brightness(1.025) saturate(1.04);transform:translateY(-1px);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.78),inset 0 -2px 0 rgba(0,0,0,.10),0 3px 0 rgba(0,0,0,.05),0 7px 13px rgba(13,52,31,.14)!important;
+}}
+@media(prefers-reduced-motion:reduce){.btn,.bottom button,.seg button,.drawer-panel .menu-item,#bkfGlobalFooterNav .bkf-footer-link,.bkf-universal-back,.bkf-document-viewer .bkf-document-toolbar-actions button{transition:none!important}}
 </style>
 </html>
 
