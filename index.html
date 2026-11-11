@@ -1,3 +1,4 @@
+<!-- BK-FUSPAQ-NU V560: footer global disembunyikan khusus pada daftar peserta dan form penilaian; baseline V558; logika penilaian dan data tidak diubah. -->
 <!-- BK-FUSPAQ-NU V555: penyelesaian cakupan 3D Glossy untuk tombol Kembali dan toolbar preview dokumen; basis V554. -->
 <!-- BK-FUSPAQ-NU V554: penyelarasan sistem desain visual; basis V553. -->
 <!-- V550: pagination cursor-offset 50+1 untuk mendeteksi halaman berikutnya; kontrol tunggal di bawah daftar. -->
@@ -6896,13 +6897,15 @@ window.showExamGovernance=async function(){const host=document.getElementById('p
 })();
 </script>
 
-<script id="bkf-push-deep-link-v548">
+<!-- BK-FUSPAQ-NU V560: tujuan klik push diperinci; baseline V559 dipertahankan. -->
+<script id="bkf-push-deep-link-v560">
 (function(){
   'use strict';
-  const KEY='bkf_pending_push_navigation_v548';
+  const KEY='bkf_pending_push_navigation_v560';
   const ROUTES=new Set(['home','activities','exams','pengujian','pengujian-pra','pengujian-tashih','graduation','payments','finance','secretariat','distribution','reports','notifications','management','institutions','album','organization','auditbackup','settings','governance']);
+  const TABLES=new Set(['activities','activity_publications','activity_tasks','exam_registrations','exam_participants','exam_sessions','exam_number_histories','exam_scores','exam_results','exam_selections','exam_remedials','graduation_events','graduation_registrations','graduation_participants','bills','bill_items','payments','selapanan_dues_obligations','cash_transactions','cash_allocations','budgets','budget_items','finance_categories','distribution_items','distribution_periods','distribution_allocations','distribution_receipts','inventory_transactions','incoming_letters','outgoing_letters','meetings','meeting_action_items','dispositions']);
   function safeRoute(value){const route=String(value||'').trim().toLowerCase();return ROUTES.has(route)?route:'notifications'}
-  function normalize(data){data=data&&typeof data==='object'?data:{};return {route:safeRoute(data.route),notificationId:String(data.notificationId||data.notification_id||''),relatedTable:String(data.relatedTable||data.related_table||''),relatedId:String(data.relatedId||data.related_id||''),activityId:String(data.activityId||data.activity_id||''),eventType:String(data.eventType||data.event_type||'')}}
+  function normalize(data){data=data&&typeof data==='object'?data:{};const table=String(data.relatedTable||data.related_table||'').trim().toLowerCase();return {route:safeRoute(data.route),notificationId:String(data.notificationId||data.notification_id||''),relatedTable:TABLES.has(table)?table:'',relatedId:String(data.relatedId||data.related_id||''),activityId:String(data.activityId||data.activity_id||''),eventType:String(data.eventType||data.event_type||'')}}
   function savePending(data){try{sessionStorage.setItem(KEY,JSON.stringify(normalize(data)))}catch(_){}}
   function readUrl(){
     try{
@@ -6915,11 +6918,83 @@ window.showExamGovernance=async function(){const host=document.getElementById('p
       return data;
     }catch(_){return null}
   }
+  const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+  async function openRelatedTarget(data){
+    const table=data.relatedTable,id=data.relatedId;
+    if(!table||!id)return false;
+    try{
+      if(table==='activities'){
+        if(typeof window.showActivityDetailV365==='function'){await window.showActivityDetailV365(id);return true;}
+      }
+      if(table==='exam_participants'&&typeof window.editExamParticipant==='function'){await window.editExamParticipant(id);return true;}
+      if(table==='exam_selections'&&typeof window.openExamSelection==='function'){await window.openExamSelection();return true;}
+      if(table==='exam_remedials'&&typeof window.openExamRemedial==='function'){await window.openExamRemedial();return true;}
+      if(table==='exam_scores'||table==='exam_results'||table==='exam_sessions'){
+        let sessionId=id;
+        if(table!=='exam_sessions'){
+          const scoreOrResult=await window.sb.from(table).select('exam_session_id').eq('id',id).maybeSingle();
+          if(scoreOrResult.error)throw scoreOrResult.error;
+          sessionId=scoreOrResult.data?.exam_session_id||'';
+        }
+        if(sessionId){
+          const session=await window.sb.from('exam_sessions').select('id,participant_id,exam_registration_id').eq('id',sessionId).maybeSingle();
+          if(session.error)throw session.error;
+          const row=session.data;
+          if(row?.participant_id&&typeof window.openParticipantFromPengujian==='function'){
+            const registration=await window.sb.from('exam_registrations').select('exam_type,wave').eq('id',row.exam_registration_id).maybeSingle();
+            if(registration.error)throw registration.error;
+            const examType=String(registration.data?.exam_type||'PRA_TASHIH').toUpperCase();
+            const targetRoute=examType==='TASHIH'?'pengujian-tashih':'pengujian-pra';
+            await window.openParticipantFromPengujian(row.id,row.participant_id,targetRoute,Number(registration.data?.wave)===2?2:1);
+            return true;
+          }
+        }
+      }
+      if(table==='activity_tasks'||table==='activity_publications'){
+        const q=await window.sb.from(table).select('activity_id').eq('id',id).maybeSingle();
+        if(q.error)throw q.error;
+        const activityId=q.data?.activity_id||data.activityId;
+        if(activityId&&typeof window.showActivityDetailV365==='function'){await window.showActivityDetailV365(activityId);return true;}
+      }
+      if(table==='meetings'&&typeof window.v14MeetingForm==='function'){await window.v14MeetingForm(id);return true;}
+      if(table==='meeting_action_items'&&typeof window.v14TaskForm==='function'){await window.v14TaskForm(id);return true;}
+      if(table==='incoming_letters'&&typeof window.v14In==='function'){await window.v14In(id);return true;}
+      if(table==='outgoing_letters'&&typeof window.v14Out==='function'){await window.v14Out(id);return true;}
+      if(table==='graduation_participants'&&typeof window.editGraduationParticipant==='function'){await window.editGraduationParticipant(id);return true;}
+      if(table==='bills'){
+        if(typeof window.v97FinanceTab==='function'){
+          const button=document.querySelector('[data-fin-tab="bills"]');
+          await window.v97FinanceTab('bills',button);return true;
+        }
+        if(typeof window.financeTab2==='function'){await window.financeTab2('bills',document.querySelector('[data-fin-tab="bills"]'));return true;}
+      }
+      if(table==='cash_transactions'){
+        if(typeof window.v97FinanceTab==='function'){await window.v97FinanceTab('cash',document.querySelector('[data-fin-tab="cash"]'));return true;}
+        if(typeof window.financeTab2==='function'){await window.financeTab2('cash',document.querySelector('[data-fin-tab="cash"]'));return true;}
+      }
+      if(table==='distribution_items'&&typeof window.distributionTabV30==='function'){await window.distributionTabV30('barang',document.querySelector('#page .seg button:nth-child(2)'));return true;}
+      if(['distribution_allocations','distribution_periods','distribution_receipts','inventory_transactions'].includes(table)&&typeof window.distributionTabV30==='function'){await window.distributionTabV30('riwayat',document.querySelector('#page .seg button:last-child'));return true;}
+      if(table==='selapanan_dues_obligations'||table==='general_dues'){
+        if(typeof window.v97FinanceTab==='function'){await window.v97FinanceTab('dues',document.querySelector('[data-fin-tab="dues"]'));return true;}
+        if(typeof window.financeTab2==='function'){await window.financeTab2('dues',document.querySelector('[data-fin-tab="dues"]'));return true;}
+      }
+      if(table==='payments'||table==='bill_items'){
+        if(typeof window.v97FinanceTab==='function'){await window.v97FinanceTab('bills',document.querySelector('[data-fin-tab="bills"]'));return true;}
+        if(typeof window.financeTab2==='function'){await window.financeTab2('bills',document.querySelector('[data-fin-tab="bills"]'));return true;}
+      }
+    }catch(error){console.warn('[SIMFAQ PUSH TARGET]',error);try{window.v12Toast?.('Data tujuan belum dapat dibuka. Modul terkait tetap ditampilkan.','error')}catch(_){}}
+    return false;
+  }
   window.bkfHandlePushNavigation=async function(input){
     const data=normalize(input);
-    try{window.__BKF_PUSH_CONTEXT__=data;sessionStorage.setItem('bkf_last_push_context_v548',JSON.stringify(data))}catch(_){}
-    if(!window.__BKF_BOOT_READY__||!state?.profile?.id||typeof window.navigate!=='function'){savePending(data);return false}
-    try{await window.navigate(data.route);return true}catch(error){console.warn('[SIMFAQ PUSH NAVIGATION]',error);return false}
+    try{window.__BKF_PUSH_CONTEXT__=data;sessionStorage.setItem('bkf_last_push_context_v560',JSON.stringify(data))}catch(_){}
+    if(!window.__BKF_BOOT_READY__||typeof state==='undefined'||!state?.profile?.id||typeof window.navigate!=='function'){savePending(data);return false}
+    try{
+      await window.navigate(data.route);
+      await wait(180);
+      await openRelatedTarget(data);
+      return true;
+    }catch(error){console.warn('[SIMFAQ PUSH NAVIGATION]',error);return false}
   };
   window.bkfConsumePendingPushNavigation=async function(){
     let data=null;
@@ -7140,16 +7215,23 @@ window.showExamGovernance=async function(){const host=document.getElementById('p
 })();
 </script>
 
+<style id="bkf-v559-penilaian-footer-visibility">
+/* V559: sembunyikan footer global hanya pada daftar peserta dan form penilaian. */
+body.bkf-pengujian-no-footer #bkfGlobalFooter{display:none!important}
+body.bkf-pengujian-no-footer .shell{padding-bottom:20px!important}
+</style>
 <script id="bkf-global-footer-role-nav-v524">
 (function(){
  'use strict';
  const footerId='bkfGlobalFooterNav';
  const escText=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  window.bkfUpdateGlobalFooter=function(){
+   const activeRoute=String(state?.route||'home');
+   const hideForScoring=activeRoute==='pengujian-pra'||activeRoute==='pengujian-tashih';
+   document.body?.classList.toggle('bkf-pengujian-no-footer',hideForScoring);
    const nav=document.getElementById(footerId);if(!nav)return;
    const items=Array.isArray(menu)?menu:[];
    const canRoute=typeof window.bkfCanRoute==='function'?window.bkfCanRoute:()=>false;
-   const activeRoute=String(state?.route||'home');
    const visible=items.filter(([route])=>{try{return !!canRoute(route)}catch(_){return false}});
    nav.innerHTML=visible.map(([route,label])=>{const active=activeRoute===route||(route==='pengujian'&&activeRoute.startsWith('pengujian-'));return '<button type="button" class="bkf-footer-link'+(active?' active':'')+'" data-bkf-footer-route="'+escText(route)+'" aria-current="'+(active?'page':'false')+'">'+escText(label)+'</button>'}).join('');
    nav.querySelectorAll('[data-bkf-footer-route]').forEach(btn=>btn.addEventListener('click',()=>{
@@ -7488,8 +7570,10 @@ select:focus,textarea:focus{
   const AUDIO_FILES={Fajr:'adzan-subuh.mp3',Dhuhr:'adzan-biasa.mp3',Asr:'adzan-biasa.mp3',Maghrib:'adzan-biasa.mp3',Isha:'adzan-biasa.mp3'};
   const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const invoke=async body=>{const client=(typeof sb!=='undefined'?sb:null);if(!client?.functions?.invoke)throw new Error('Koneksi belum siap');const r=await client.functions.invoke('bkf-adzan',{body});if(r?.error)throw r.error;if(r?.data?.error)throw new Error(r.data.error);return r.data||{}};
-  async function ensureAudioAssets(){if(audioUrls)return audioUrls;const r=await invoke({action:'ensure_audio_assets'});audioUrls=r.audio_urls||null;return audioUrls}
-  function playPrayerAudio(key){if(!audioUrls||!audioUrls[key]||document.hidden)return;const audio=document.getElementById('bkfAdzanAudio');if(!audio)return;audio.pause();audio.src=audioUrls[key];audio.currentTime=0;audio.play().catch(()=>{status('Suara adzan perlu diaktifkan saat aplikasi terbuka',true)})}
+  const AUDIO_PUBLIC_BASE='https://yhxetkdsuogbehxnarhk.supabase.co/storage/v1/object/public/'+AUDIO_BUCKET+'/';
+  function getAudioUrls(){if(!audioUrls)audioUrls={Fajr:AUDIO_PUBLIC_BASE+AUDIO_FILES.Fajr,Dhuhr:AUDIO_PUBLIC_BASE+AUDIO_FILES.Dhuhr,Asr:AUDIO_PUBLIC_BASE+AUDIO_FILES.Asr,Maghrib:AUDIO_PUBLIC_BASE+AUDIO_FILES.Maghrib,Isha:AUDIO_PUBLIC_BASE+AUDIO_FILES.Isha};return audioUrls}
+  async function ensureAudioAssets(){return getAudioUrls()}
+  function playPrayerAudio(key,allowHidden){const urls=getAudioUrls();const url=urls[key];const audio=document.getElementById('bkfAdzanAudio');if(!url||!audio){status('Pemutar suara belum siap. Tutup lalu buka kembali menu Pengingat Sholat.',true);return false}if(document.hidden&&!allowHidden)return false;audio.pause();audio.removeAttribute('src');audio.src=url;audio.preload='auto';audio.load();audio.currentTime=0;try{const playback=audio.play();if(playback&&typeof playback.catch==='function')playback.catch(error=>{console.warn('[BKF ADZAN AUDIO PLAY]',error);status('Suara belum dapat diputar. Periksa volume media dan koneksi internet.',true)});return true}catch(error){console.warn('[BKF ADZAN AUDIO PLAY]',error);status('Suara belum dapat diputar. Periksa volume media dan koneksi internet.',true);return false}}
   function startPrayerAudioWatcher(){if(prayerAudioTimer)return;prayerAudioTimer=setInterval(()=>{if(document.hidden||!settings?.schedule||notifyPermission()!=='granted')return;const now=new Date();const parts=new Intl.DateTimeFormat('en-GB',{timeZone:settings.timezone||localTimezone(),hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).formatToParts(now);const v=Object.fromEntries(parts.map(x=>[x.type,x.value]));const current=v.hour+':'+v.minute;const offsets=settings.prayer_adjustments||DEFAULT_OFFSETS;for(const [key] of PRAYERS){if(settings.prayer_enabled?.[key]===false)continue;const raw=String(settings.schedule[key]||'').match(/\b([01]\d|2[0-3]):[0-5]\d\b/);if(!raw)continue;const [h,m]=raw[0].split(':').map(Number);const total=(h*60+m+(Number(offsets[key])||0)+1440)%1440;const at=String(Math.floor(total/60)).padStart(2,'0')+':'+String(total%60).padStart(2,'0');const stamp=new Intl.DateTimeFormat('en-CA',{timeZone:settings.timezone||localTimezone(),year:'numeric',month:'2-digit',day:'2-digit'}).format(now)+'-'+key;if(current===at&&lastPlayedPrayer!==stamp){lastPlayedPrayer=stamp;playPrayerAudio(key);break}}},15000)}
   const localTimezone=()=>{try{return Intl.DateTimeFormat().resolvedOptions().timeZone||'Asia/Jakarta'}catch(_){return 'Asia/Jakarta'}};
   const notifyPermission=()=>('Notification' in window?Notification.permission:'unsupported');
@@ -7513,7 +7597,7 @@ select:focus,textarea:focus{
   async function load(){const r=await invoke({action:'get'});settings=r.settings||{enabled:true,timezone:localTimezone(),prayer_enabled:DEFAULT_ENABLED,prayer_adjustments:DEFAULT_OFFSETS};render();}
   function ensureModal(){if(document.getElementById('bkfAdzanReminder'))return;const el=document.createElement('div');el.id='bkfAdzanReminder';el.className='bkf-adzan-backdrop';el.setAttribute('role','dialog');el.setAttribute('aria-modal','true');el.setAttribute('aria-label','Pengingat Sholat');el.innerHTML='<section class="bkf-adzan-panel"><header class="bkf-adzan-head"><div><div class="bkf-adzan-head-title">🕌 Pengingat Sholat</div><div class="bkf-adzan-head-sub">Jadwal sholat otomatis mengikuti lokasi perangkat</div></div><button type="button" class="bkf-adzan-close" id="bkfAdzanClose">Tutup ✕</button></header><div class="bkf-adzan-body"><section class="bkf-adzan-section"><div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap"><h3 style="margin:0">Status</h3><span id="bkfAdzanStatus" class="bkf-adzan-status wait">Memuat…</span></div><p class="bkf-adzan-muted" style="margin:7px 0 0">Pengingat mengikuti aktivasi notifikasi SIMFAQ.</p></section><section class="bkf-adzan-section"><h3>Lokasi</h3><div class="bkf-adzan-muted" id="bkfAdzanCurrentLocation" style="margin-bottom:9px">Mendeteksi lokasi perangkat…</div><button type="button" class="bkf-adzan-action" id="bkfAdzanChangeLocation">Ubah lokasi</button><div id="bkfAdzanManualLocation" hidden style="margin-top:10px"><div class="bkf-adzan-field"><label for="bkfAdzanSearch">Cari kota atau kecamatan</label><input id="bkfAdzanSearch" type="search" placeholder="Contoh: Ungaran, Semarang" autocomplete="off"></div><div class="bkf-adzan-actions"><button type="button" class="bkf-adzan-action" id="bkfAdzanSearchBtn">Cari daerah</button><button type="button" class="bkf-adzan-action" id="bkfAdzanGpsBtn">Gunakan GPS</button></div><div id="bkfAdzanSearchResults"></div><button type="button" class="bkf-adzan-action primary" id="bkfAdzanSaveLocation" style="margin-top:8px" disabled>Simpan lokasi</button></div></section><section class="bkf-adzan-section"><div style="display:flex;align-items:center;justify-content:space-between;gap:8px"><h3 style="margin:0">Jadwal Sholat Hari Ini</h3><button type="button" class="bkf-adzan-action" id="bkfAdzanRefresh">Perbarui</button></div><div id="bkfAdzanSchedule" style="margin-top:8px"></div><div class="bkf-adzan-muted" style="margin-top:8px">Jadwal dihitung otomatis berdasarkan lokasi dan zona waktu perangkat.</div><audio id="bkfAdzanAudio" preload="none"></audio><div class="bkf-adzan-actions"><button type="button" class="bkf-adzan-action" id="bkfAdzanTestAudio">Uji suara adzan</button><span class="bkf-adzan-muted">Suara otomatis diputar saat aplikasi terbuka.</span></div></section><section class="bkf-adzan-section"><h3>Pengaturan Pengingat</h3><div class="bkf-adzan-muted" style="margin-bottom:6px">Pilih waktu sholat yang ingin diingatkan. Penyesuaian waktu bersifat opsional.</div><div id="bkfAdzanPrayerSettings"></div><div class="bkf-adzan-actions"><button type="button" class="bkf-adzan-action primary" id="bkfAdzanSaveSettings">Simpan pengaturan</button></div></section><div class="bkf-adzan-muted" style="text-align:center;padding:4px 0 8px">SIMFAQ · BK FUSPAQ NU · Daneva.Studio</div></div></section>';
     document.body.appendChild(el);el.querySelector('#bkfAdzanClose').addEventListener('click',close);el.addEventListener('click',e=>{if(e.target===el)close()});document.addEventListener('keydown',function escKey(e){if(e.key==='Escape'&&document.getElementById('bkfAdzanReminder')){close();document.removeEventListener('keydown',escKey)}});
-    el.querySelector('#bkfAdzanChangeLocation').addEventListener('click',()=>{const box=el.querySelector('#bkfAdzanManualLocation');box.hidden=!box.hidden});el.querySelector('#bkfAdzanSearchBtn').addEventListener('click',searchLocation);el.querySelector('#bkfAdzanSearch').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();searchLocation()}});el.querySelector('#bkfAdzanGpsBtn').addEventListener('click',()=>detectAndSaveGps(false));el.querySelector('#bkfAdzanSaveLocation').addEventListener('click',saveManualLocation);el.querySelector('#bkfAdzanRefresh').addEventListener('click',refreshSchedule);el.querySelector('#bkfAdzanSaveSettings').addEventListener('click',()=>saveSettings());el.querySelector('#bkfAdzanTestAudio').addEventListener('click',async()=>{try{await ensureAudioAssets();playPrayerAudio('Dhuhr')}catch(e){status('Suara adzan belum tersedia',true)}});
+    el.querySelector('#bkfAdzanChangeLocation').addEventListener('click',()=>{const box=el.querySelector('#bkfAdzanManualLocation');box.hidden=!box.hidden});el.querySelector('#bkfAdzanSearchBtn').addEventListener('click',searchLocation);el.querySelector('#bkfAdzanSearch').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();searchLocation()}});el.querySelector('#bkfAdzanGpsBtn').addEventListener('click',()=>detectAndSaveGps(false));el.querySelector('#bkfAdzanSaveLocation').addEventListener('click',saveManualLocation);el.querySelector('#bkfAdzanRefresh').addEventListener('click',refreshSchedule);el.querySelector('#bkfAdzanSaveSettings').addEventListener('click',()=>saveSettings());el.querySelector('#bkfAdzanTestAudio').addEventListener('click',()=>{playPrayerAudio('Dhuhr',true)});
   }
   function getGps(){return new Promise((resolve,reject)=>{if(!navigator.geolocation)return reject(new Error('GPS tidak tersedia'));navigator.geolocation.getCurrentPosition(resolve,reject,{enableHighAccuracy:true,timeout:15000,maximumAge:600000})})}
   async function gpsLocationLabel(latitude,longitude){try{const u='https://api.bigdatacloud.net/data/reverse-geocode-client?latitude='+encodeURIComponent(latitude)+'&longitude='+encodeURIComponent(longitude)+'&localityLanguage=id';const r=await fetch(u);if(!r.ok)throw new Error();const d=await r.json();return [d.locality||d.city||d.principalSubdivision,d.principalSubdivision].filter((v,i,a)=>v&&a.indexOf(v)===i).join(', ')||'Lokasi GPS perangkat'}catch(_){return 'Lokasi GPS perangkat'}}
