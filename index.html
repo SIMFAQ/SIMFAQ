@@ -28,7 +28,7 @@
 <!-- BK-FUSPAQ-NU V481: Tombol dan mode edit Aturan Ujian & Wisuda; revisi aturan tetap berversi, biaya tetap terkendali. Baseline V480. -->
 
 <html><head>
-<!-- BK-FUSPAQ-NU-V430: targeted registration save-state fix based on V429; no schema changes. --><!-- BK-FUSPAQ-NU V456: fokus keyboard berurutan pada form Penilaian dan Pendaftaran Ujian; baseline V455; hanya dua alur ini yang diubah. --><meta content="V564 - hitung mundur sholat global pada header, kontras header dan tombol; basis V563" name="bkf-version"/><meta charset="utf-8"><meta content="width=device-width,initial-scale=1" name="viewport"/><meta name="theme-color" content="#176b3a"><meta name="application-name" content="SIMFAQ - BK FUSPAQ NU"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" href="./icons/icon-512.png"><link rel="apple-touch-icon" href="./icons/icon-512.png"><title>SIMFAQ V564</title><style>
+<!-- BK-FUSPAQ-NU-V430: targeted registration save-state fix based on V429; no schema changes. --><!-- BK-FUSPAQ-NU V456: fokus keyboard berurutan pada form Penilaian dan Pendaftaran Ujian; baseline V455; hanya dua alur ini yang diubah. --><meta content="V565 - teks hitung mundur header dan seluruh teks tombol putih; hapus baris waktu/lokasi header; basis V564" name="bkf-version"/><meta charset="utf-8"><meta content="width=device-width,initial-scale=1" name="viewport"/><meta name="theme-color" content="#176b3a"><meta name="application-name" content="SIMFAQ - BK FUSPAQ NU"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" href="./icons/icon-512.png"><link rel="apple-touch-icon" href="./icons/icon-512.png"><title>SIMFAQ V565</title><style>
 :root{--green:#176b3a;--green2:#14532d;--gold:#b78a24;--bg:#f5f8f6;--card:#ffffff;--line:#dce7df;--muted:#64756b;--text:#18231d;--ok:#21834c;--danger:#c2413b;--warn:#a87912;--radius:16px;--shadow:0 6px 22px rgba(25,55,38,.07);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;--bkf-primary:#176b3a;--bkf-primary-dark:#14532d;--bkf-primary-soft:#eaf2ec;--bkf-accent:#b78a24;--bkf-surface:#ffffff;--bkf-page:#f5f8f6;--bkf-border:#dce7df;--bkf-text:#18231d;--bkf-muted:#64756b;--bkf-info:#2563eb;--bkf-success:#21834c;--bkf-warning:#d69e20;--bkf-danger:#c2413b;--bkf-shadow-soft:0 4px 14px rgba(20,83,45,.07);}*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text)}button,input,select,textarea{font:inherit}a{color:inherit}
 
 body{min-height:100vh}.shell{min-height:100vh;padding-top:76px;padding-bottom:20px}
@@ -7541,12 +7541,11 @@ select:focus,textarea:focus{
 
 <style id="bkf-adzan-global-header-v564">
 .top-user-meta{min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:2px}
-.bkf-adzan-header-countdown{display:block;max-width:min(72vw,420px);margin-top:2px;color:#06451f;font-size:11px;font-weight:900;line-height:1.3;letter-spacing:.05px;font-variant-numeric:tabular-nums;overflow-wrap:anywhere;text-shadow:0 1px 0 rgba(255,255,255,.7)}
-.bkf-adzan-header-countdown small{display:block;color:#174b2b;font-size:9px;font-weight:750;line-height:1.25}
-.bkf-adzan-dashboard-btn{color:#052e16!important}
-.bkf-adzan-dashboard-title{color:#052e16!important;font-weight:950!important}
-.bkf-adzan-dashboard-countdown{color:#063b20!important;font-weight:950!important;text-shadow:0 1px 0 rgba(255,255,255,.55)}
-.bkf-adzan-dashboard-countdown small{color:#17452c!important;font-weight:800!important}
+.bkf-adzan-header-countdown{display:block;max-width:min(72vw,420px);margin-top:2px;color:#fff!important;font-size:11px;font-weight:900;line-height:1.3;letter-spacing:.05px;font-variant-numeric:tabular-nums;overflow-wrap:anywhere;text-shadow:0 1px 2px rgba(0,0,0,.55)}
+.bkf-adzan-dashboard-btn{color:#fff!important;background:linear-gradient(145deg,#21834c 0%,#176b3a 52%,#0e4f2b 100%)!important}
+.bkf-adzan-dashboard-btn :is(span,small,strong,em){color:#fff!important}
+.bkf-adzan-dashboard-title{color:#fff!important;font-weight:950!important}
+.bkf-adzan-dashboard-countdown,.bkf-adzan-dashboard-countdown small{color:#fff!important;font-weight:900!important;text-shadow:0 1px 2px rgba(0,0,0,.45)}
 @media(max-width:420px){.bkf-adzan-header-countdown{max-width:calc(100vw - 112px);font-size:10px}.top-user-role{font-size:10px}}
 </style>
 
@@ -7647,7 +7646,7 @@ select:focus,textarea:focus{
       const dashboardText=remaining<=0?`${prefix} telah tiba`:`${prayer}${dayLabel?' '+dayLabel:''} · ${dashboardCountdownLabel(remaining)}`;
       targets.forEach(el=>{
         el.textContent=el.id==='bkfAdzanHeaderCountdown'?headerText:dashboardText;
-        const small=document.createElement('small');small.textContent=`Pukul ${at} WIB${settings.location_label?' · '+settings.location_label:''}`;el.appendChild(small);
+        if(el.id!=='bkfAdzanHeaderCountdown'){const small=document.createElement('small');small.textContent=`Pukul ${at} WIB${settings.location_label?' · '+settings.location_label:''}`;el.appendChild(small)}
       });
     };
     const hasLocation=settings?.latitude!=null&&settings?.longitude!=null&&Number.isFinite(Number(settings.latitude))&&Number.isFinite(Number(settings.longitude));
@@ -7674,7 +7673,7 @@ select:focus,textarea:focus{
       const nextClock=dashboardLocalClock(timezone),nextNowSeconds=(nextClock.hour*60+nextClock.minute)*60+nextClock.second;
       const next=dashboardPrayerCandidates(nextSchedule,enabled,offsets,nextNowSeconds,1).filter(x=>x.remaining>0).sort((a,b)=>a.remaining-b.remaining)[0];
       if(!next){freshTargets.forEach(el=>el.textContent='Tidak ada pengingat sholat aktif.');return}
-      freshTargets.forEach(el=>{el.textContent=el.id==='bkfAdzanHeaderCountdown'?`${next.label} besok kurang ${dashboardCountdownLabel(next.remaining)}`:`${next.label} besok · ${dashboardCountdownLabel(next.remaining)}`;const small=document.createElement('small');small.textContent=`Pukul ${next.at} WIB${settings.location_label?' · '+settings.location_label:''}`;el.appendChild(small)});
+      freshTargets.forEach(el=>{el.textContent=el.id==='bkfAdzanHeaderCountdown'?`${next.label} besok kurang ${dashboardCountdownLabel(next.remaining)}`:`${next.label} besok · ${dashboardCountdownLabel(next.remaining)}`;if(el.id!=='bkfAdzanHeaderCountdown'){const small=document.createElement('small');small.textContent=`Pukul ${next.at} WIB${settings.location_label?' · '+settings.location_label:''}`;el.appendChild(small)}});
     }).catch(()=>{freshTargets.forEach(el=>el.textContent='Jadwal sholat berikutnya belum dapat dimuat.')});
   }
   window.bkfRenderDashboardPrayerCountdown=async function(){
@@ -7713,5 +7712,6 @@ select:focus,textarea:focus{
 
 <!-- SIMFAQ V563: revisi hitung mundur sholat, deep-link adzan, dan badge notifikasi baru. -->
 
-<!-- V564: Hitung mundur sholat tampil global di bawah jabatan header; hapus label BK FUSPAQ NU di header; kontras teks tombol ditingkatkan. Basis V563. -->
+<!-- V564: Hitung mundur sholat global di header; basis V563. -->
+<!-- V565: Teks hitung mundur header putih tanpa baris waktu/lokasi; seluruh teks tombol Pengingat Sholat putih dengan latar hijau gelap. Mekanisme jadwal dan interval tetap. -->
 <!-- V563: Countdown jam-menit-detik diintegrasikan ke tombol Pengingat Sholat; tidak menambah tombol baru. -->
