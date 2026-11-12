@@ -1,7 +1,7 @@
 /* SIMFAQ PWA Service Worker. Cache only same-origin app documents/assets. */
 'use strict';
 const CACHE_PREFIX = 'simfaq-pwa-';
-const CACHE_VERSION = 'v5';
+const CACHE_VERSION = 'v6';
 const CACHE_NAME = CACHE_PREFIX + CACHE_VERSION;
 const APP_BASE = new URL('./', self.registration.scope);
 const OFFLINE_URL = new URL('offline.html', APP_BASE).href;
@@ -82,7 +82,41 @@ self.addEventListener('push', event => {
     lang: 'id-ID',
     dir: 'auto'
   };
-  event.waitUntil(self.registration.showNotification(title, options));
+  // Keep the signed display-ack data with the notification so the SW can
+  // report successful showNotification() completion even when no page is open.
+  options.data.ack = payload.ack && typeof payload.ack === 'object' ? {
+    url: String(payload.ack.url || ''),
+    subscriptionId: String(payload.ack.subscriptionId || ''),
+    token: String(payload.ack.token || '')
+  } : null;
+
+  event.waitUntil((async () => {
+    await self.registration.showNotification(title, options);
+
+    // This confirms that the browser accepted showNotification(), not that
+    // Android necessarily rendered a heads-up banner on screen.
+    const ack = options.data.ack;
+    if (!ack || !ack.url || !ack.subscriptionId || !ack.token) return;
+    try {
+      const ackUrl = new URL(ack.url);
+      if (ackUrl.origin !== 'https://yhxetkdsuogbehxnarhk.supabase.co' ||
+          ackUrl.pathname !== '/functions/v1/bkf-push') return;
+      await fetch(ackUrl.href, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'ack_display',
+          notificationId: options.data.notificationId,
+          subscriptionId: ack.subscriptionId,
+          token: ack.token
+        }),
+        cache: 'no-store',
+        credentials: 'omit'
+      });
+    } catch (error) {
+      console.warn('[SIMFAQ PUSH ACK] Konfirmasi tampilan gagal dikirim:', error);
+    }
+  })());
 });
 
 self.addEventListener('notificationclick', event => {
