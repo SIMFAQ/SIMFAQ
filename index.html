@@ -28,7 +28,7 @@
 <!-- BK-FUSPAQ-NU V481: Tombol dan mode edit Aturan Ujian & Wisuda; revisi aturan tetap berversi, biaya tetap terkendali. Baseline V480. -->
 
 <html><head>
-<!-- BK-FUSPAQ-NU-V430: targeted registration save-state fix based on V429; no schema changes. --><!-- BK-FUSPAQ-NU V456: fokus keyboard berurutan pada form Penilaian dan Pendaftaran Ujian; baseline V455; hanya dua alur ini yang diubah. --><meta content="V565 - teks hitung mundur header dan seluruh teks tombol putih; hapus baris waktu/lokasi header; basis V564" name="bkf-version"/><meta charset="utf-8"><meta content="width=device-width,initial-scale=1" name="viewport"/><meta name="theme-color" content="#176b3a"><meta name="application-name" content="SIMFAQ - BK FUSPAQ NU"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" href="./icons/icon-512.png"><link rel="apple-touch-icon" href="./icons/icon-512.png"><title>SIMFAQ V565</title><style>
+<!-- BK-FUSPAQ-NU-V430: targeted registration save-state fix based on V429; no schema changes. --><!-- BK-FUSPAQ-NU V456: fokus keyboard berurutan pada form Penilaian dan Pendaftaran Ujian; baseline V455; hanya dua alur ini yang diubah. --><meta content="V568 - pemantauan kesehatan langganan Push dan konfirmasi showNotification; basis V566" name="bkf-version"/><meta charset="utf-8"><meta content="width=device-width,initial-scale=1" name="viewport"/><meta name="theme-color" content="#176b3a"><meta name="application-name" content="SIMFAQ - BK FUSPAQ NU"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" href="./icons/icon-512.png"><link rel="apple-touch-icon" href="./icons/icon-512.png"><title>SIMFAQ V568</title><style>
 :root{--green:#176b3a;--green2:#14532d;--gold:#b78a24;--bg:#f5f8f6;--card:#ffffff;--line:#dce7df;--muted:#64756b;--text:#18231d;--ok:#21834c;--danger:#c2413b;--warn:#a87912;--radius:16px;--shadow:0 6px 22px rgba(25,55,38,.07);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;--bkf-primary:#176b3a;--bkf-primary-dark:#14532d;--bkf-primary-soft:#eaf2ec;--bkf-accent:#b78a24;--bkf-surface:#ffffff;--bkf-page:#f5f8f6;--bkf-border:#dce7df;--bkf-text:#18231d;--bkf-muted:#64756b;--bkf-info:#2563eb;--bkf-success:#21834c;--bkf-warning:#d69e20;--bkf-danger:#c2413b;--bkf-shadow-soft:0 4px 14px rgba(20,83,45,.07);}*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text)}button,input,select,textarea{font:inherit}a{color:inherit}
 
 body{min-height:100vh}.shell{min-height:100vh;padding-top:76px;padding-bottom:20px}
@@ -6247,7 +6247,31 @@ window.showMemoryAlbum=async function(eventId=''){
   function pushDiagWrite(type,detail){return new Promise(function(resolve){try{var req=indexedDB.open(PUSH_DIAG_DB,1);req.onupgradeneeded=function(){if(!req.result.objectStoreNames.contains("events"))req.result.createObjectStore("events",{keyPath:"id",autoIncrement:true})};req.onsuccess=function(){var db=req.result;try{var tx=db.transaction("events","readwrite");tx.objectStore("events").add({time:new Date().toISOString(),type:type,detail:String(detail||"").slice(0,240)});tx.oncomplete=function(){db.close();resolve(true)};tx.onerror=function(){db.close();resolve(false)}}catch(e){try{db.close()}catch(_){}resolve(false)}};req.onerror=function(){resolve(false)}}catch(e){resolve(false)}})}
   function pushDiagRead(){return new Promise(function(resolve){try{var req=indexedDB.open(PUSH_DIAG_DB,1);req.onupgradeneeded=function(){if(!req.result.objectStoreNames.contains("events"))req.result.createObjectStore("events",{keyPath:"id",autoIncrement:true})};req.onsuccess=function(){var db=req.result;try{var tx=db.transaction("events","readonly"),q=tx.objectStore("events").getAll();q.onsuccess=function(){db.close();resolve((q.result||[]).slice(-30).reverse())};q.onerror=function(){db.close();resolve([])}}catch(e){try{db.close()}catch(_){}resolve([])}};req.onerror=function(){resolve([])}}catch(e){resolve([])}})}
   window.bkfGetPushDiagnostics=pushDiagRead;
-  async function syncGranted(){try{if(!currentUserId()||!supported()||Notification.permission!=="granted")return null;var reg=await registerSW();var sub=await reg.pushManager.getSubscription();if(!sub)sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:b64ToUint8Array(VAPID_PUBLIC_KEY)});await saveSub(sub);setReminder("granted");await pushDiagWrite("subscription_sync_success","Subscription perangkat tersinkron ke akun");return sub}catch(e){console.warn("[BKF PUSH SYNC]",e);await pushDiagWrite("subscription_sync_error",e&&((e.name||"Error")+": "+(e.message||String(e)))||"Kesalahan tidak diketahui");return null}}
+  async function checkPushHealth(reg,sub){
+    var report={checkedAt:new Date().toISOString(),supported:supported(),permission:permission(),serviceWorkerState:reg&&reg.active?reg.active.state:"unavailable",subscriptionPresent:!!sub,subscriptionExpirationTime:sub&&sub.expirationTime?new Date(sub.expirationTime).toISOString():null,serverRecordFound:null,serverRecordUpdatedAt:null};
+    try{
+      if(sub&&currentUserId()){
+        var q=await sb.from("push_subscriptions").select("updated_at").eq("user_id",currentUserId()).eq("endpoint",sub.endpoint).maybeSingle();
+        if(q.error)throw q.error;
+        report.serverRecordFound=!!q.data;
+        report.serverRecordUpdatedAt=q.data&&q.data.updated_at||null;
+      }
+      await pushDiagWrite("subscription_health_check",JSON.stringify(report));
+    }catch(e){
+      report.serverCheckError=String(e&&e.message||e).slice(0,180);
+      await pushDiagWrite("subscription_health_check_error",report.serverCheckError);
+    }
+    return report;
+  }
+  window.bkfCheckPushHealth=async function(){
+    try{
+      if(!supported())return {supported:false,permission:permission()};
+      var reg=await registerSW();
+      var sub=await reg.pushManager.getSubscription();
+      return await checkPushHealth(reg,sub);
+    }catch(e){return {supported:supported(),permission:permission(),error:String(e&&e.message||e)}}
+  };
+  async function syncGranted(){try{if(!currentUserId()||!supported()||Notification.permission!=="granted")return null;var reg=await registerSW();var sub=await reg.pushManager.getSubscription();if(!sub)sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:b64ToUint8Array(VAPID_PUBLIC_KEY)});await saveSub(sub);setReminder("granted");await pushDiagWrite("subscription_sync_success","Subscription perangkat tersinkron ke akun");await checkPushHealth(reg,sub);return sub}catch(e){console.warn("[BKF PUSH SYNC]",e);await pushDiagWrite("subscription_sync_error",e&&((e.name||"Error")+": "+(e.message||String(e)))||"Kesalahan tidak diketahui");return null}}
   async function removeCurrentDeviceForLogout(){var uid=currentUserId();if(!uid||!supported()||Notification.permission!=="granted")return true;var reg=await registerSW();var sub=await reg.pushManager.getSubscription();if(!sub)return true;if(!sb||!sb.functions||typeof sb.functions.invoke!=="function")throw new Error("Layanan pelepasan notifikasi belum siap.");var result=await sb.functions.invoke("bkf-push-unsubscribe",{body:{endpoint:sub.endpoint}});if(result&&result.error)throw result.error;return true}
   window.bkfRemovePushSubscriptionForLogout=removeCurrentDeviceForLogout;
   function refreshVisiblePrompt(){
