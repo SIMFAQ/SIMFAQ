@@ -28,7 +28,7 @@
 <!-- BK-FUSPAQ-NU V481: Tombol dan mode edit Aturan Ujian & Wisuda; revisi aturan tetap berversi, biaya tetap terkendali. Baseline V480. -->
 
 <html><head>
-<!-- BK-FUSPAQ-NU-V430: targeted registration save-state fix based on V429; no schema changes. --><!-- BK-FUSPAQ-NU V456: fokus keyboard berurutan pada form Penilaian dan Pendaftaran Ujian; baseline V455; hanya dua alur ini yang diubah. --><meta content="V561 - Sistem desain visual Modern Professional + 3D Glossy; basis V560" name="bkf-version"/><meta charset="utf-8"><meta content="width=device-width,initial-scale=1" name="viewport"/><meta name="theme-color" content="#176b3a"><meta name="application-name" content="SIMFAQ - BK FUSPAQ NU"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" href="./icons/icon-512.png"><link rel="apple-touch-icon" href="./icons/icon-512.png"><title>BK FUSPAQ NU V561</title><style>
+<!-- BK-FUSPAQ-NU-V430: targeted registration save-state fix based on V429; no schema changes. --><!-- BK-FUSPAQ-NU V456: fokus keyboard berurutan pada form Penilaian dan Pendaftaran Ujian; baseline V455; hanya dua alur ini yang diubah. --><meta content="V564 - hitung mundur sholat global pada header, kontras header dan tombol; basis V563" name="bkf-version"/><meta charset="utf-8"><meta content="width=device-width,initial-scale=1" name="viewport"/><meta name="theme-color" content="#176b3a"><meta name="application-name" content="SIMFAQ - BK FUSPAQ NU"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" href="./icons/icon-512.png"><link rel="apple-touch-icon" href="./icons/icon-512.png"><title>SIMFAQ V564</title><style>
 :root{--green:#176b3a;--green2:#14532d;--gold:#b78a24;--bg:#f5f8f6;--card:#ffffff;--line:#dce7df;--muted:#64756b;--text:#18231d;--ok:#21834c;--danger:#c2413b;--warn:#a87912;--radius:16px;--shadow:0 6px 22px rgba(25,55,38,.07);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;--bkf-primary:#176b3a;--bkf-primary-dark:#14532d;--bkf-primary-soft:#eaf2ec;--bkf-accent:#b78a24;--bkf-surface:#ffffff;--bkf-page:#f5f8f6;--bkf-border:#dce7df;--bkf-text:#18231d;--bkf-muted:#64756b;--bkf-info:#2563eb;--bkf-success:#21834c;--bkf-warning:#d69e20;--bkf-danger:#c2413b;--bkf-shadow-soft:0 4px 14px rgba(20,83,45,.07);}*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text)}button,input,select,textarea{font:inherit}a{color:inherit}
 
 body{min-height:100vh}.shell{min-height:100vh;padding-top:76px;padding-bottom:20px}
@@ -101,7 +101,7 @@ body{background:var(--bg)}.content{max-width:1080px;padding:12px 14px}.top{paddi
 button[aria-label*="hapus" i],button[title*="hapus" i],button[aria-label*="delete" i],button[title*="delete" i],button[aria-label*="sampah" i],button[title*="sampah" i]{color:#dc2626!important},button[onclick*="hapus" i],button[onclick*="delete" i],button:has(svg.lucide-trash),button:has(svg.lucide-trash-2),button:has(svg[data-lucide*="trash" i]),button:has(i[class*="trash" i]){color:#dc2626!important}
 button[aria-label*="hapus" i] svg,button[title*="hapus" i] svg,button[aria-label*="delete" i] svg,button[title*="delete" i] svg,button[aria-label*="sampah" i] svg,button[title*="sampah" i] svg,button[onclick*="hapus" i] svg,button[onclick*="delete" i] svg,button:has(svg.lucide-trash) svg,button:has(svg.lucide-trash-2) svg,button:has(svg[data-lucide*="trash" i]) svg{color:#dc2626!important;stroke:#dc2626!important}
 </style>
-</style><meta content="BK FUSPAQ NU FINAL CONSOLIDATED · V561" name="application-version"/><meta content="Daneva.studio @2026" name="deployment-brand"/><meta content="Ahmad Fathunnur" name="founder"/><style id="v180-notification-friendly">
+</style><meta content="BK FUSPAQ NU FINAL CONSOLIDATED · V564" name="application-version"/><meta content="Daneva.studio @2026" name="deployment-brand"/><meta content="Ahmad Fathunnur" name="founder"/><style id="v180-notification-friendly">
 .bkf-notification-list{display:grid;gap:9px;width:100%;max-width:100%;min-width:0;overflow:hidden}
 .bkf-notification-item{position:relative;width:100%;max-width:100%;min-width:0;box-sizing:border-box;border:1px solid #d9c995;border-radius:14px;background-color:#fbf4df;background-image:radial-gradient(circle at 0 0,rgba(23,76,54,.07) 0 2px,transparent 2.5px),radial-gradient(circle at 100% 100%,rgba(23,76,54,.055) 0 2px,transparent 2.5px),linear-gradient(45deg,transparent 46%,rgba(23,76,54,.045) 47%,rgba(23,76,54,.045) 53%,transparent 54%),linear-gradient(-45deg,transparent 46%,rgba(23,76,54,.045) 47%,rgba(23,76,54,.045) 53%,transparent 54%);background-size:28px 28px,28px 28px,28px 28px,28px 28px;padding:12px 50px 12px 13px;text-align:left;transition:.15s ease;box-shadow:0 2px 8px rgba(72,54,22,.08);overflow:hidden;display:block}
 .bkf-notification-item:hover{transform:translateY(-1px);box-shadow:0 5px 14px rgba(72,54,22,.14)}
@@ -642,9 +642,11 @@ function renderShell(){
   const avatar=profile.photo_url
     ? `<img src="${esc(profile.photo_url)}" alt="Foto profil ${esc(userName)}">`
     : `<span class="top-avatar-fallback">${icon('user')}</span>`;
-  app.innerHTML=`<div class="shell"><header class="top"><div class="top-identity"><div class="top-avatar" id="topAvatarContent">${avatar}</div><div class="top-user-meta"><div class="brand">BK FUSPAQ NU</div><div class="top-user-name">${esc(userName)}</div><div class="top-user-role">${esc(userRole)}</div></div></div><div class="toolbar"><button id="menuBtn" class="btn secondary">${icon('settings')} Menu</button></div></header><main class="content"><section id="page"></section></main></div><footer id="bkfGlobalFooter" class="bkf-global-footer" aria-label="Navigasi dan branding aplikasi"><nav id="bkfGlobalFooterNav" class="bkf-global-footer-nav" aria-label="Navigasi modul"></nav><div class="bkf-global-footer-brand" aria-label="Branding"><span>Deployment: <strong>Daneva.Studio</strong></span><span>Founder: <strong>Ahmad Fathunnur</strong></span><a href="https://wa.me/6283198740074" class="bkf-footer-wa" id="bkfFooterWhatsApp" aria-label="Hubungi Daneva.Studio melalui WhatsApp">083198740074</a></div></footer>`;
+  app.innerHTML=`<div class="shell"><header class="top"><div class="top-identity"><div class="top-avatar" id="topAvatarContent">${avatar}</div><div class="top-user-meta"><div class="top-user-name">${esc(userName)}</div><div class="top-user-role">${esc(userRole)}</div><div id="bkfAdzanHeaderCountdown" class="bkf-adzan-header-countdown" aria-live="polite">Memuat waktu sholat…</div></div></div><div class="toolbar"><button id="menuBtn" class="btn secondary">${icon('settings')} Menu</button></div></header><main class="content"><section id="page"></section></main></div><footer id="bkfGlobalFooter" class="bkf-global-footer" aria-label="Navigasi dan branding aplikasi"><nav id="bkfGlobalFooterNav" class="bkf-global-footer-nav" aria-label="Navigasi modul"></nav><div class="bkf-global-footer-brand" aria-label="Branding"><span>Deployment: <strong>Daneva.Studio</strong></span><span>Founder: <strong>Ahmad Fathunnur</strong></span><a href="https://wa.me/6283198740074" class="bkf-footer-wa" id="bkfFooterWhatsApp" aria-label="Hubungi Daneva.Studio melalui WhatsApp">083198740074</a></div></footer>`;
   document.getElementById('menuBtn').onclick=openDrawer;
   window.bkfUpdateGlobalFooter?.();
+  // Hitung mundur global dimulai saat shell tampil dan tetap aktif lintas menu.
+  try{window.bkfRenderDashboardPrayerCountdown?.()}catch(e){console.warn('[Header prayer countdown]',e)}
   // Sinkronisasi foto lembaga dilakukan setelah shell tampil agar header tidak tertahan.
   refreshHeaderAvatar();
 }
@@ -2773,7 +2775,7 @@ window.v12TogglePassword=function(id,btn){const e=document.getElementById(id);if
     const results=await Promise.all(targets.map(async t=>{
       const el=document.getElementById('metric-'+t);if(!el)return [t,null];
       let q;
-      if(t==='notifications'){const pid=state.profile?.id;if(!pid)return [t,0];q=await sb.from('notifications').select('id').eq('user_id',pid).is('read_at',null).limit(1)}
+      if(t==='notifications'){const pid=state.profile?.id;if(!pid)return [t,0];q=await sb.from('notifications').select('id',{count:'exact',head:true}).eq('user_id',pid).is('read_at',null)}
       else if(isOperator&&t==='institutions')q=await sb.from('institutions').select('id',{count:'exact',head:true}).eq('status','ACTIVE');
       else if(t==='activities'){q=await sb.from('activities').select('id,status,start_at');if(q.error)return [t,null];const active=(q.data||[]).filter(a=>!['SELESAI','DIBATALKAN'].includes(window.bkfActivityStatus(a)));return [t,active.length]}
       else if(t==='bills'){
@@ -2799,7 +2801,7 @@ window.v12TogglePassword=function(id,btn){const e=document.getElementById(id);if
       else q=await sb.from(t).select('id',{count:'exact',head:true});
       return [t,q.error?null:(q.count??0)];
     }));
-    results.forEach(([t,v])=>{const el=document.getElementById('metric-'+t);if(!el)return;const previous=Number(String(el.textContent||'').trim());const next=Number(v);el.textContent=v==null?'—':v;if(t==='notifications'&&v!=null&&Number.isFinite(previous)&&Number.isFinite(next)&&next>previous){el.classList.remove('bkf-notification-count-spin');void el.offsetWidth;el.classList.add('bkf-notification-count-spin')}});
+    results.forEach(([t,v])=>{const el=document.getElementById('metric-'+t);if(!el)return;const previous=Number(String(el.textContent||'').trim());const next=Number(v);el.textContent=v==null?'—':v;if(t==='notifications'){const badge=document.getElementById('metric-notifications-badge');if(badge){const count=Number(v)||0;badge.textContent=count.toLocaleString('id-ID')+' BARU';badge.hidden=!(v!=null&&count>0)}}if(t==='notifications'&&v!=null&&Number.isFinite(previous)&&Number.isFinite(next)&&next>previous){el.classList.remove('bkf-notification-count-spin');void el.offsetWidth;el.classList.add('bkf-notification-count-spin')}});
   };
 
   // Sidebar footer branding + closes as soon as the user touches the active module/content area.
@@ -4297,10 +4299,10 @@ window.showHome=async function(){
  const status=state.profile?.status||'ACTIVE';
  const anggotaPengurus=Array.isArray(state?.roles)&&state.roles.includes('ANGGOTA');
  const visibleCounters=homeCounters.filter(x=>!(anggotaPengurus&&(x[1]==='bills'||x[1]==='payments')));
- const counters=visibleCounters.map(x=>`<button type="button" class="card v75-dashboard-counter" data-dashboard-detail="${E(x[1])}" aria-label="${x[1]==='notifications'?'Buka menu Notifikasi':'Lihat detail '+E(x[0])}"><div class="v173-counter-title">${E(x[0])}</div><div class="metric v173-counter-number" id="metric-${E(x[1])}"${x[1]==='bills'?' style="font-size:clamp(13px,3.6vw,20px);overflow-wrap:anywhere"':''}>…</div><div class="v173-counter-help">${x[1]==='bills'?'Total sisa nominal tagihan':'Ringkasan data saat ini'}</div><div class="v173-counter-detail">${x[1]==='notifications'?'Buka menu Notifikasi':'Ketuk untuk detail'}</div></button>`).join('');
+ const counters=visibleCounters.map(x=>`<button type="button" class="card v75-dashboard-counter" data-dashboard-detail="${E(x[1])}" aria-label="${x[1]==='notifications'?'Buka menu Notifikasi':'Lihat detail '+E(x[0])}"><div class="v173-counter-title">${E(x[0])}</div>${x[1]==='notifications'?'<span class="bkf-notification-new-badge" id="metric-notifications-badge" hidden></span>':''}<div class="metric v173-counter-number" id="metric-${E(x[1])}"${x[1]==='bills'?' style="font-size:clamp(13px,3.6vw,20px);overflow-wrap:anywhere"':''}>…</div><div class="v173-counter-help">${x[1]==='bills'?'Total sisa nominal tagihan':'Ringkasan data saat ini'}</div><div class="v173-counter-detail">${x[1]==='notifications'?'Buka menu Notifikasi':'Ketuk untuk detail'}</div></button>`).join('');
  const roleQuick=quickByRole[dashboardPrimaryRole()]||quickByRole.ANGGOTA||[];
  const quickHtml='<div class="module-card-grid">'+roleQuick.map(x=>'<button class="btn secondary menu-item quick-module module-card-btn" type="button" onclick="navigate(\''+x[1]+'\')"><strong>'+E(x[0])+'</strong></button>').join('')+'</div>';
- host.innerHTML='<div class="card hero v35-welcome"><div style="font-size:14px;color:#6b7c70;font-weight:700">Assalamu\'alaikum Wr. Wb.</div><h2 class="v41-user-name" style="margin:6px 0 2px">'+E(name)+'</h2><div class="row bkf-dashboard-profile-actions" style="justify-content:flex-start;align-items:center;gap:8px;margin:6px 0 0"><span class="status ok">'+E(role)+'</span><span class="status '+(status==='ACTIVE'?'ok':'bad')+'">'+E(status==='ACTIVE'?'Aktif':status)+'</span><button type="button" class="status ok bkf-update-app-link" id="bkfUpdateAppBtn" onclick="window.bkfPwaInstallOrUpdate?.()" aria-label="Instal atau perbarui aplikasi SIMFAQ">Update Aplikasi</button></div><div class="bkf-darus-center"><button type="button" class="darus-quran-link" onclick="openDarusQuranViewer()" aria-label="Buka Darus Al-Qur\'an di dalam aplikasi"><span class="darus-quran-icon" aria-hidden="true">☪</span><span>Darus Al-Qur\'an</span><span class="darus-quran-arrow" aria-hidden="true">↗</span></button></div><div class="bkf-adzan-center"><button type="button" class="bkf-adzan-dashboard-btn" onclick="window.bkfOpenAdzanReminder?.()" aria-label="Buka Pengingat Sholat"><span aria-hidden="true">🕌</span><span>Pengingat Sholat</span><span aria-hidden="true">›</span></button></div><p class="v35-message" style="margin:8px 0 4px">Selamat datang di Sistem Informasi BK FUSPAQ NU.</p><p class="small muted" style="margin:0">'+E(dashboardGreeting())+'</p></div><div class="v75-dashboard-counters" id="dashboardAllCounters">'+counters+'<div id="dashboardExamParticipantCards" style="display:contents"></div></div>';
+ host.innerHTML='<div class="card hero v35-welcome"><div style="font-size:14px;color:#6b7c70;font-weight:700">Assalamu\'alaikum Wr. Wb.</div><h2 class="v41-user-name" style="margin:6px 0 2px">'+E(name)+'</h2><div class="row bkf-dashboard-profile-actions" style="justify-content:flex-start;align-items:center;gap:8px;margin:6px 0 0"><span class="status ok">'+E(role)+'</span><span class="status '+(status==='ACTIVE'?'ok':'bad')+'">'+E(status==='ACTIVE'?'Aktif':status)+'</span><button type="button" class="status ok bkf-update-app-link" id="bkfUpdateAppBtn" onclick="window.bkfPwaInstallOrUpdate?.()" aria-label="Instal atau perbarui aplikasi SIMFAQ">Update Aplikasi</button></div><div class="bkf-darus-center"><button type="button" class="darus-quran-link" onclick="openDarusQuranViewer()" aria-label="Buka Darus Al-Qur\'an di dalam aplikasi"><span class="darus-quran-icon" aria-hidden="true">☪</span><span>Darus Al-Qur\'an</span><span class="darus-quran-arrow" aria-hidden="true">↗</span></button></div><div class="bkf-adzan-center"><button type="button" class="bkf-adzan-dashboard-btn" onclick="window.bkfOpenAdzanReminder?.()" aria-label="Buka Pengingat Sholat"><span class="bkf-adzan-dashboard-icon" aria-hidden="true">🕌</span><span class="bkf-adzan-dashboard-content"><span class="bkf-adzan-dashboard-title">Pengingat Sholat</span><span id="bkfAdzanDashboardCountdown" class="bkf-adzan-dashboard-countdown" aria-live="polite">Memuat jadwal sholat…</span></span><span class="bkf-adzan-dashboard-arrow" aria-hidden="true">›</span></button></div><p class="v35-message" style="margin:8px 0 4px">Selamat datang di Sistem Informasi BK FUSPAQ NU.</p><p class="small muted" style="margin:0">'+E(dashboardGreeting())+'</p></div><div class="v75-dashboard-counters" id="dashboardAllCounters">'+counters+'<div id="dashboardExamParticipantCards" style="display:contents"></div></div>';
  const welcomeCard=host.querySelector('.v35-welcome');
  try{
    const orgIdsQ=await sb.rpc('current_organization_ids');
@@ -4314,6 +4316,7 @@ window.showHome=async function(){
  host.querySelectorAll('[data-dashboard-detail]').forEach(card=>card.addEventListener('click',()=>card.dataset.dashboardDetail==='notifications'?window.navigate('notifications'):openDashboardDetail(card.dataset.dashboardDetail)));
  await loadDashboardExamCards();
  try{if(typeof loadMetrics==='function')await loadMetrics()}catch(e){console.warn('[Dashboard metrics]',e)}
+ try{await window.bkfRenderDashboardPrayerCountdown?.()}catch(e){console.warn('[Dashboard prayer countdown]',e)}
  try{window.bkfRenderDashboardPushPrompt?.()}catch(e){console.warn('[Dashboard push prompt]',e)}
 };
 })();
@@ -6153,7 +6156,7 @@ window.showMemoryAlbum=async function(eventId=''){
       const n=payload?.new||{};
       try{if(!document.hidden)playInternalNotificationSound()}catch(_){}
       try{if(typeof window.loadMetrics==='function')window.loadMetrics()}catch(_){}
-      try{if(document.hidden&&"Notification" in window&&Notification.permission==="granted"){const pushLines=String(n.message||"").split("\n").map(line=>line.trim()).filter(line=>line&&!/^assalamu[’' -]*alaikum/i.test(line)&&!/^wassalamu[’' -]*alaikum/i.test(line));new Notification(n.title||"BK FUSPAQ NU",{body:pushLines.slice(0,2).join("\n")||"Ada pemberitahuan baru. Silakan buka SIMFAQ untuk membaca rinciannya.",tag:n.id})}}catch(_){ }
+      try{if(document.hidden&&"Notification" in window&&Notification.permission==="granted"){const pushLines=String(n.message||"").split("\n").map(line=>line.trim()).filter(line=>line&&!/^assalamu[’' -]*alaikum/i.test(line)&&!/^wassalamu[’' -]*alaikum/i.test(line));const isAdzan=String(n.event_type||"").trim().toUpperCase()==="ADZAN_REMINDER";const notice=new Notification(n.title||"BK FUSPAQ NU",{body:pushLines.slice(0,2).join("\n")||"Ada pemberitahuan baru. Silakan buka SIMFAQ untuk membaca rinciannya.",tag:n.id,data:{eventType:n.event_type||"",notificationId:n.id||""}});notice.onclick=function(){try{window.focus()}catch(_){};try{if(isAdzan&&typeof window.bkfHandlePushNavigation==="function")window.bkfHandlePushNavigation({route:"home",eventType:"ADZAN_REMINDER",notificationId:n.id||""});else if(typeof window.navigate==="function")window.navigate("notifications")}catch(error){console.warn("[BKF REALTIME NOTIFICATION CLICK]",error)};try{notice.close()}catch(_){}}}}catch(_){ }
     });
     c.on("postgres_changes",{event:"UPDATE",schema:"public",table:"notifications",filter:"user_id=eq."+pid},function(){try{if(typeof window.loadMetrics==='function')window.loadMetrics()}catch(_){} });
     c.on("postgres_changes",{event:"DELETE",schema:"public",table:"notifications",filter:"user_id=eq."+pid},function(){try{if(typeof window.loadMetrics==='function')window.loadMetrics()}catch(_){} });
@@ -6897,7 +6900,7 @@ window.showExamGovernance=async function(){const host=document.getElementById('p
 })();
 </script>
 
-<!-- BK-FUSPAQ-NU V560: tujuan klik push diperinci; baseline V559 dipertahankan. -->
+<!-- BK-FUSPAQ-NU V563: hitung mundur dashboard, tujuan klik adzan, dan badge notifikasi baru. -->
 <script id="bkf-push-deep-link-v560">
 (function(){
   'use strict';
@@ -6987,9 +6990,15 @@ window.showExamGovernance=async function(){const host=document.getElementById('p
   }
   window.bkfHandlePushNavigation=async function(input){
     const data=normalize(input);
-    try{window.__BKF_PUSH_CONTEXT__=data;sessionStorage.setItem('bkf_last_push_context_v560',JSON.stringify(data))}catch(_){}
+    try{window.__BKF_PUSH_CONTEXT__=data;sessionStorage.setItem('bkf_last_push_context_v562',JSON.stringify(data))}catch(_){}
     if(!window.__BKF_BOOT_READY__||typeof state==='undefined'||!state?.profile?.id||typeof window.navigate!=='function'){savePending(data);return false}
     try{
+      if(String(data.eventType||'').trim().toUpperCase()==='ADZAN_REMINDER'){
+        await window.navigate('home');
+        await wait(220);
+        if(typeof window.bkfOpenAdzanReminder==='function')await window.bkfOpenAdzanReminder();
+        return true;
+      }
       await window.navigate(data.route);
       await wait(180);
       await openRelatedTarget(data);
@@ -7530,10 +7539,22 @@ select:focus,textarea:focus{
 @media(prefers-reduced-motion:reduce){.btn,.bottom button,.seg button,.drawer-panel .menu-item,#bkfGlobalFooterNav .bkf-footer-link,.bkf-universal-back,.bkf-document-viewer .bkf-document-toolbar-actions button{transition:none!important}}
 </style>
 
+<style id="bkf-adzan-global-header-v564">
+.top-user-meta{min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:2px}
+.bkf-adzan-header-countdown{display:block;max-width:min(72vw,420px);margin-top:2px;color:#06451f;font-size:11px;font-weight:900;line-height:1.3;letter-spacing:.05px;font-variant-numeric:tabular-nums;overflow-wrap:anywhere;text-shadow:0 1px 0 rgba(255,255,255,.7)}
+.bkf-adzan-header-countdown small{display:block;color:#174b2b;font-size:9px;font-weight:750;line-height:1.25}
+.bkf-adzan-dashboard-btn{color:#052e16!important}
+.bkf-adzan-dashboard-title{color:#052e16!important;font-weight:950!important}
+.bkf-adzan-dashboard-countdown{color:#063b20!important;font-weight:950!important;text-shadow:0 1px 0 rgba(255,255,255,.55)}
+.bkf-adzan-dashboard-countdown small{color:#17452c!important;font-weight:800!important}
+@media(max-width:420px){.bkf-adzan-header-countdown{max-width:calc(100vw - 112px);font-size:10px}.top-user-role{font-size:10px}}
+</style>
+
 <style id="bkf-adzan-reminder-v1-style">
 .bkf-adzan-center{display:flex;justify-content:center;align-items:center;width:100%;margin:5px 0 8px}
-.bkf-adzan-dashboard-btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;min-height:40px;padding:8px 16px;border:1px solid rgba(255,255,255,.65);border-radius:12px;background:linear-gradient(145deg,#e9f7ed 0%,#c8e8d2 52%,#a8d8b7 100%);color:#14532d;font:800 13px system-ui,sans-serif;box-shadow:inset 0 1px 0 rgba(255,255,255,.95),inset 0 -2px 0 rgba(20,83,45,.10),0 2px 0 rgba(20,83,45,.08),0 5px 12px rgba(20,83,45,.13);cursor:pointer;transition:transform .16s ease,filter .16s ease}
+.bkf-adzan-dashboard-btn{display:flex;align-items:center;justify-content:center;gap:9px;width:min(100%,340px);min-height:48px;padding:7px 12px;border:1px solid rgba(255,255,255,.65);border-radius:12px;background:linear-gradient(145deg,#e9f7ed 0%,#c8e8d2 52%,#a8d8b7 100%);color:#14532d;font:800 13px system-ui,sans-serif;box-shadow:inset 0 1px 0 rgba(255,255,255,.95),inset 0 -2px 0 rgba(20,83,45,.10),0 2px 0 rgba(20,83,45,.08),0 5px 12px rgba(20,83,45,.13);cursor:pointer;transition:transform .16s ease,filter .16s ease;text-align:center}.bkf-adzan-dashboard-icon{flex:0 0 auto;font-size:17px}.bkf-adzan-dashboard-content{display:flex;min-width:0;flex:1;flex-direction:column;align-items:center;gap:1px}.bkf-adzan-dashboard-title{font-size:12px;font-weight:850;line-height:1.15}.bkf-adzan-dashboard-arrow{flex:0 0 auto;font-size:19px;line-height:1}
 .bkf-adzan-dashboard-btn:active{transform:translateY(1px);filter:brightness(.98)}
+.bkf-adzan-dashboard-countdown{display:block;max-width:100%;margin:0;padding:0;border:0;background:transparent;color:#185536;text-align:center;font-size:10px;font-weight:800;line-height:1.25;box-shadow:none;font-variant-numeric:tabular-nums;white-space:normal}.bkf-adzan-dashboard-countdown small{display:block;margin-top:1px;color:#52705d;font-size:9px;font-weight:650;line-height:1.2}.bkf-notification-new-badge{display:inline-flex;align-items:center;justify-content:center;align-self:flex-start;width:max-content;max-width:100%;margin:3px 0 0;padding:3px 7px;border-radius:999px;background:#d92d45;color:#fff;font-size:9px;font-weight:900;line-height:1.2;letter-spacing:.25px;box-shadow:0 2px 5px rgba(160,20,40,.2)}.bkf-notification-new-badge[hidden]{display:none!important}
 .bkf-adzan-backdrop{position:fixed;inset:0;z-index:10020;display:flex;align-items:center;justify-content:center;padding:12px;background:rgba(7,25,16,.62);backdrop-filter:blur(5px)}
 .bkf-adzan-panel{display:flex;flex-direction:column;width:100%;max-width:760px;max-height:94dvh;overflow:hidden;border:1px solid rgba(255,255,255,.7);border-radius:18px;background:var(--card,#fff);color:var(--text,#17251c);box-shadow:0 18px 60px rgba(0,0,0,.28)}
 .bkf-adzan-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;background:linear-gradient(145deg,#176b3a,#0e4f2b);color:#fff}
@@ -7608,6 +7629,64 @@ select:focus,textarea:focus{
   async function saveManualLocation(){if(!pendingLocation)return;const btn=document.getElementById('bkfAdzanSaveLocation');if(btn)btn.disabled=true;try{const r=await invoke({action:'save',...pendingLocation});settings=r.settings||settings;pendingLocation=null;render();startPrayerAudioWatcher()}catch(e){if(btn)btn.disabled=false;const target=document.getElementById('bkfAdzanSearchResults');if(target)target.textContent='Lokasi belum berhasil disimpan. Silakan coba lagi.'}}
   async function refreshSchedule(){if(settings?.latitude==null||settings?.longitude==null){await detectAndSaveGps(false);return}try{const r=await invoke({action:'save',latitude:settings.latitude,longitude:settings.longitude,location_label:settings.location_label||'',timezone:settings.timezone||localTimezone()});settings=r.settings||settings;render();startPrayerAudioWatcher()}catch(e){status('Jadwal belum dapat diperbarui',true)}}
   async function saveSettings(){const btn=document.getElementById('bkfAdzanSaveSettings');if(btn)btn.disabled=true;try{const body={action:'save',latitude:settings?.latitude??null,longitude:settings?.longitude??null,location_label:settings?.location_label||'',timezone:settings?.timezone||localTimezone(),prayer_enabled:{},prayer_adjustments:{}};PRAYERS.forEach(([key])=>{body.prayer_enabled[key]=!!document.querySelector('[data-adzan-enabled="'+key+'"]')?.checked;body.prayer_adjustments[key]=Math.max(-30,Math.min(30,Number(document.querySelector('[data-adzan-offset="'+key+'"]')?.value||0)))});const r=await invoke(body);settings=r.settings||settings;render();startPrayerAudioWatcher()}catch(e){status('Pengaturan belum tersimpan',true)}finally{if(btn)btn.disabled=false}}
+  let dashboardCountdownTimer=null, dashboardNextScheduleCache=null, dashboardScheduleRefreshPromise=null;
+  function dashboardLocalClock(timezone){const parts=new Intl.DateTimeFormat('en-GB',{timeZone:timezone,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hourCycle:'h23'}).formatToParts(new Date());const p=Object.fromEntries(parts.map(x=>[x.type,x.value]));return{date:`${p.year}-${p.month}-${p.day}`,hour:Number(p.hour),minute:Number(p.minute),second:Number(p.second)}}
+  function dashboardDateNext(date){const[y,m,d]=date.split('-').map(Number);return new Date(Date.UTC(y,m-1,d+1)).toISOString().slice(0,10)}
+  async function dashboardFetchSchedule(date,timezone){const[y,m,d]=date.split('-');const url=new URL(`https://api.aladhan.com/v1/timings/${d}-${m}-${y}`);url.searchParams.set('latitude',String(settings.latitude));url.searchParams.set('longitude',String(settings.longitude));url.searchParams.set('method','20');url.searchParams.set('school','0');url.searchParams.set('timezonestring',timezone);const response=await fetch(url,{headers:{Accept:'application/json'}});if(!response.ok)throw new Error('Jadwal berikutnya belum dapat diambil.');const payload=await response.json();if(payload?.code!==200||!payload?.data?.timings)throw new Error('Format jadwal berikutnya tidak valid.');return payload.data.timings}
+  function dashboardPrayerCandidates(schedule,enabled,offsets,nowSeconds,dayOffset){return PRAYERS.filter(([key])=>enabled[key]!==false).map(([key,label])=>{const raw=String(schedule?.[key]||'');const match=raw.match(/\b([01]\d|2[0-3]):[0-5]\d\b/);if(!match)return null;const [h,m]=match[0].split(':').map(Number);const target=((h*60+m+Math.trunc(Number(offsets[key])||0)+1440)%1440)*60;return{key,label,at:`${String(Math.floor(target/3600)).padStart(2,'0')}:${String(Math.floor(target%3600/60)).padStart(2,'0')}`,remaining:dayOffset*86400+target-nowSeconds,dayOffset}}).filter(Boolean)}
+  function dashboardCountdownLabel(seconds){const total=Math.max(0,Math.floor(seconds));const hours=Math.floor(total/3600),minutes=Math.floor((total%3600)/60),secs=total%60;return `${String(hours).padStart(2,'0')} jam ${String(minutes).padStart(2,'0')} menit ${String(secs).padStart(2,'0')} detik`}
+  function renderDashboardCountdown(){
+    const dashboardEl=document.getElementById('bkfAdzanDashboardCountdown');
+    const headerEl=document.getElementById('bkfAdzanHeaderCountdown');
+    const targets=[dashboardEl,headerEl].filter(Boolean);
+    if(!targets.length)return;
+    const setMessage=(message,sub='')=>targets.forEach(el=>{el.textContent=message;if(sub){const small=document.createElement('small');small.textContent=sub;el.appendChild(small)}});
+    const setPrayer=(prayer,remaining,at,dayLabel='')=>{
+      const prefix=`Waktu ${prayer}`;
+      const headerText=remaining<=0?`${prefix} telah tiba`:`${prayer}${dayLabel?' '+dayLabel:''} kurang ${dashboardCountdownLabel(remaining)}`;
+      const dashboardText=remaining<=0?`${prefix} telah tiba`:`${prayer}${dayLabel?' '+dayLabel:''} · ${dashboardCountdownLabel(remaining)}`;
+      targets.forEach(el=>{
+        el.textContent=el.id==='bkfAdzanHeaderCountdown'?headerText:dashboardText;
+        const small=document.createElement('small');small.textContent=`Pukul ${at} WIB${settings.location_label?' · '+settings.location_label:''}`;el.appendChild(small);
+      });
+    };
+    const hasLocation=settings?.latitude!=null&&settings?.longitude!=null&&Number.isFinite(Number(settings.latitude))&&Number.isFinite(Number(settings.longitude));
+    if(!hasLocation){setMessage('Atur lokasi untuk melihat hitung mundur sholat.');return}
+    const timezone=settings.timezone||localTimezone();let clock;
+    try{clock=dashboardLocalClock(timezone)}catch(_){setMessage('Zona waktu jadwal belum valid.');return}
+    if(settings.schedule_date!==clock.date){
+      if(!dashboardScheduleRefreshPromise){dashboardScheduleRefreshPromise=invoke({action:'save',latitude:settings.latitude,longitude:settings.longitude,location_label:settings.location_label||'',timezone:timezone}).then(refreshed=>{settings=refreshed.settings||settings;dashboardNextScheduleCache=null}).catch(error=>{console.warn('[BK DASHBOARD PRAYER DATE REFRESH]',error)}).finally(()=>{dashboardScheduleRefreshPromise=null;renderDashboardCountdown()})}
+      setMessage('Memperbarui jadwal sholat hari ini…');return;
+    }
+    const schedule=settings.schedule||{};
+    if(!schedule.Fajr){setMessage('Jadwal sholat belum tersedia. Buka Pengingat Sholat untuk memperbarui.');return}
+    const enabled=settings.prayer_enabled||DEFAULT_ENABLED,offsets=settings.prayer_adjustments||DEFAULT_OFFSETS;
+    const nowSeconds=(clock.hour*60+clock.minute)*60+clock.second;
+    const today=dashboardPrayerCandidates(schedule,enabled,offsets,nowSeconds,0);
+    const justArrived=today.filter(x=>x.remaining<=0&&x.remaining>=-300).sort((a,b)=>b.remaining-a.remaining)[0];
+    if(justArrived){setPrayer(justArrived.label,0,justArrived.at);return}
+    const nextToday=today.filter(x=>x.remaining>0).sort((a,b)=>a.remaining-b.remaining)[0];
+    if(nextToday){setPrayer(nextToday.label,nextToday.remaining,nextToday.at);return}
+    const nextDate=dashboardDateNext(clock.date);
+    if(!dashboardNextScheduleCache||dashboardNextScheduleCache.date!==nextDate){dashboardNextScheduleCache={date:nextDate,promise:dashboardFetchSchedule(nextDate,timezone)}}
+    dashboardNextScheduleCache.promise.then(nextSchedule=>{
+      const freshTargets=[document.getElementById('bkfAdzanDashboardCountdown'),document.getElementById('bkfAdzanHeaderCountdown')].filter(Boolean);if(!freshTargets.length)return;
+      const nextClock=dashboardLocalClock(timezone),nextNowSeconds=(nextClock.hour*60+nextClock.minute)*60+nextClock.second;
+      const next=dashboardPrayerCandidates(nextSchedule,enabled,offsets,nextNowSeconds,1).filter(x=>x.remaining>0).sort((a,b)=>a.remaining-b.remaining)[0];
+      if(!next){freshTargets.forEach(el=>el.textContent='Tidak ada pengingat sholat aktif.');return}
+      freshTargets.forEach(el=>{el.textContent=el.id==='bkfAdzanHeaderCountdown'?`${next.label} besok kurang ${dashboardCountdownLabel(next.remaining)}`:`${next.label} besok · ${dashboardCountdownLabel(next.remaining)}`;const small=document.createElement('small');small.textContent=`Pukul ${next.at} WIB${settings.location_label?' · '+settings.location_label:''}`;el.appendChild(small)});
+    }).catch(()=>{freshTargets.forEach(el=>el.textContent='Jadwal sholat berikutnya belum dapat dimuat.')});
+  }
+  window.bkfRenderDashboardPrayerCountdown=async function(){
+    if(dashboardCountdownTimer){renderDashboardCountdown();return}
+    const headerEl=document.getElementById('bkfAdzanHeaderCountdown'),dashboardEl=document.getElementById('bkfAdzanDashboardCountdown');
+    if(!headerEl&&!dashboardEl)return;
+    try{
+      const response=await invoke({action:'get'});settings=response.settings||null;
+      if(settings?.latitude!=null&&settings?.longitude!=null){let local;try{local=dashboardLocalClock(settings.timezone||localTimezone())}catch(_){local=null}if(local&&settings.schedule_date!==local.date){const refreshed=await invoke({action:'save',latitude:settings.latitude,longitude:settings.longitude,location_label:settings.location_label||'',timezone:settings.timezone||localTimezone()});settings=refreshed.settings||settings}}
+      renderDashboardCountdown();dashboardCountdownTimer=setInterval(renderDashboardCountdown,1000);
+    }catch(error){console.warn('[BKF DASHBOARD PRAYER]',error);[headerEl,dashboardEl].filter(Boolean).forEach(el=>el.textContent='Jadwal sholat belum dapat dimuat.')}
+  };
   window.bkfAdzanEnsureActive=async function(){try{if(notifyPermission()!=='granted'||!(typeof state!=='undefined'&&state.profile?.id))return null;const r=await invoke({action:'activate'});if(!settings)await load();if(settings?.latitude==null||settings?.longitude==null)await detectAndSaveGps(true);await ensureAudioAssets();startPrayerAudioWatcher();return r}catch(e){console.warn('[BKF ADZAN ACTIVATION]',e);return null}};
   window.bkfOpenAdzanReminder=async function(){ensureModal();try{if(notifyPermission()==='granted')await window.bkfAdzanEnsureActive();await load();if(settings?.latitude==null||settings?.longitude==null)await detectAndSaveGps(true);try{await ensureAudioAssets();startPrayerAudioWatcher()}catch(audioError){console.warn('[BKF ADZAN AUDIO]',audioError)}render()}catch(e){status('Jadwal belum tersedia',true);console.warn('[BKF ADZAN LOAD]',e)}};
   window.addEventListener('focus',()=>{if(document.getElementById('bkfAdzanReminder')&&notifyPermission()!=='granted')status('Notifikasi SIMFAQ belum aktif',true)});
@@ -7631,3 +7710,8 @@ select:focus,textarea:focus{
 <!-- BK-FUSPAQ-NU V541: header mengambil foto OPERATOR dari institutions.head_photo_url berdasarkan user_roles.institution_id; pengurus tetap memakai profiles.photo_url. Tanpa perubahan database, Storage, atau mekanisme upload. -->
 
 <!-- SIMFAQ V561: pemutar audio persisten dan pemicu adzan foreground otomatis; berbasis V560, tanpa perubahan database atau Service Worker. -->
+
+<!-- SIMFAQ V563: revisi hitung mundur sholat, deep-link adzan, dan badge notifikasi baru. -->
+
+<!-- V564: Hitung mundur sholat tampil global di bawah jabatan header; hapus label BK FUSPAQ NU di header; kontras teks tombol ditingkatkan. Basis V563. -->
+<!-- V563: Countdown jam-menit-detik diintegrasikan ke tombol Pengingat Sholat; tidak menambah tombol baru. -->
