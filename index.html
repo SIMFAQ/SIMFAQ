@@ -6991,7 +6991,7 @@ window.showExamGovernance=async function(){const host=document.getElementById('p
     host.innerHTML='<div class="card"><div class="muted">Memuat hasil ujian peserta...</div></div>';
     try{
       const sessionQ=await window.sb.from('exam_sessions').select(
-        'id,participant_id,exam_registration_id,participant:participant_id(id,name,nis,exam_number,status,media_id,participant_media:media_id(storage_path)),exam_registrations:exam_registration_id(exam_type,wave,management_period_id,institution_id,institutions:institution_id(name))'
+        'id,participant_id,exam_registration_id,participant:exam_participants!exam_sessions_participant_id_fkey(id,name,nis,exam_number,status,media_id,participant_media!exam_participants_media_id_fkey(storage_path)),exam_registrations!exam_sessions_exam_registration_id_fkey(exam_type,wave,management_period_id,institution_id,institutions!exam_registrations_institution_id_fkey(name))'
       ).eq('id',sessionId).maybeSingle();
       if(sessionQ.error)throw sessionQ.error;
       const session=sessionQ.data;
@@ -7008,7 +7008,7 @@ window.showExamGovernance=async function(){const host=document.getElementById('p
       ]);
       for(const q of [ruleQ,resultQ,scoreQ,remedialQ])if(q.error)throw q.error;
       if(!ruleQ.data?.id)throw new Error('Aturan ujian aktif untuk periode dan jenis ujian ini belum tersedia.');
-      const detailQ=await window.sb.from('exam_rule_details').select('exam_material_id,minimum_score,exam_materials:exam_material_id(id,name,code,sequence)').eq('exam_rule_id',ruleQ.data.id);
+      const detailQ=await window.sb.from('exam_rule_details').select('exam_material_id,minimum_score,exam_materials!exam_rule_details_exam_material_id_fkey(id,name,code,sequence)').eq('exam_rule_id',ruleQ.data.id);
       if(detailQ.error)throw detailQ.error;
       const details=(detailQ.data||[]).filter(d=>d.exam_materials).sort((a,b)=>Number(a.exam_materials.sequence||9999)-Number(b.exam_materials.sequence||9999));
       if(!details.length)throw new Error('Daftar materi pada aturan ujian aktif belum tersedia.');
