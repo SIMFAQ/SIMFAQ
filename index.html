@@ -3480,7 +3480,7 @@ html,body{margin:0;padding:0;background:#fff!important;color:#111;font-family:Ar
       const meta=[n.institution_name?`Lembaga: ${n.institution_name}`:'',n.cash_type||displayContextType,n.cash_category?`Kategori: ${n.cash_category}`:'',contextName?`Item/Kegiatan: ${contextName}`:''].filter(Boolean).join(' · ');
       const notificationBody=(n.event_type==='EXAM_MATERIAL_COMPLETE')?n.message:(n.context_description||n.message||'-');
       const detail=isCash?`<div class="bkf-notification-detail">${n.institution_name?`<strong>Lembaga:</strong> ${E(n.institution_name)}<br>`:''}${n.cash_type?`<strong>Jenis:</strong> ${E(n.cash_type)}<br>`:''}${n.cash_category?`<strong>Kategori:</strong> ${E(n.cash_category)}<br>`:''}${contextName?`<strong>Item:</strong> ${E(contextName)}<br>`:''}${n.cash_amount!=null?`<strong>Nominal:</strong> ${E(fmt(n.cash_amount))}<br>`:''}<strong>Keterangan:</strong> ${E(n.cash_description||n.context_description||n.message||'-')}</div>`:`<div class="bkf-notification-detail">${n.institution_name?`<strong>Lembaga:</strong> ${E(n.institution_name)}<br>`:''}${contextName?`<strong>Item/Kegiatan:</strong> ${E(contextName)}<br>`:''}${displayContextType?`<strong>Jenis/Status:</strong> ${E(displayContextType)}<br>`:''}${E(noticeDomain?window.bkfHumanizeDomainTextV420(notificationBody,noticeDomain):window.bkfFormatNotificationTextV360(notificationBody))}</div>`;
-      window.__bkfNotificationDetailsV566.set(String(n.id),{title:displayTitle,detail,created:date(n.created_at),type:noticeDomain?window.bkfHumanizeDomainTextV420(n.type||'',noticeDomain):(n.type||''),read:!!n.read_at});
+      window.__bkfNotificationDetailsV566.set(String(n.id),{title:displayTitle,detail,created:date(n.created_at),type:noticeDomain?window.bkfHumanizeDomainTextV420(n.type||'',noticeDomain):(n.type||''),read:!!n.read_at,relatedTable:n.related_table||'',relatedId:n.related_id||'',eventType:n.event_type||''});
       const previewSource=String(displayMessage||'-').replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim();
       const preview=previewSource.length>190?previewSource.slice(0,187).trimEnd()+'…':previewSource;
       return `<article class="bkf-notification-item ${n.read_at?'is-read':'is-unread'}"><div class="bkf-notification-main" role="button" tabindex="0" aria-label="Buka detail notifikasi: ${E(displayTitle)}" onclick="readNotificationV40('${E(n.id)}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();readNotificationV40('${E(n.id)}')}"><div class="bkf-notification-title"><span class="bkf-notification-dot ${n.read_at?'read':''}"></span><strong>${E(displayTitle)}</strong><span class="bkf-notification-status">${n.read_at?'Sudah dibaca':'Belum dibaca'}</span></div>${!isCash&&meta?`<div class="small muted">${E(meta)}</div>`:''}<div class="bkf-notification-preview">${E(preview)}</div><span class="bkf-notification-open-hint">Ketuk untuk membaca selengkapnya</span><div class="bkf-notification-time">${date(n.created_at)} · ${E(noticeDomain?window.bkfHumanizeDomainTextV420(n.type||'',noticeDomain):(n.type||''))}</div><div class="bkf-notification-brand">Notifikasi ini dikirim otomatis oleh Daneva.studio</div></div><button class="bkf-notification-delete" type="button" title="Hapus notifikasi" aria-label="Hapus notifikasi" onclick="event.stopPropagation();deleteNotificationV40('${E(n.id)}')">🗑</button></article>`;
@@ -3519,6 +3519,18 @@ html,body{margin:0;padding:0;background:#fff!important;color:#111;font-family:Ar
         const check=await sb.from('notifications').select('read_at').eq('id',id).eq('user_id',pid).maybeSingle();
         if(!check.error&&check.data?.read_at)cached.read=true;
       }
+    }
+    const eventType=String(cached.eventType||'').trim().toUpperCase();
+    const examNotice=/^EXAM_(SCORE|RESULT|MATERIAL_COMPLETE|ALL_MATERIALS_COMPLETE|ALL_MATERIALS_COMPLETED)/.test(eventType)||/^(NILAI UJIAN|PERUBAHAN NILAI|HASIL UJIAN|SELURUH MATERI UJIAN SELESAI)/i.test(String(cached.title||''));
+    const examTable=['exam_scores','exam_results','exam_sessions','exam_remedials'].includes(String(cached.relatedTable||'').toLowerCase());
+    if((examNotice||examTable)&&typeof window.bkfHandlePushNavigation==='function'){
+      document.getElementById('bkfNotificationDetailV566')?.remove();
+      await window.bkfHandlePushNavigation({route:'notifications',notificationId:id,relatedTable:cached.relatedTable,relatedId:cached.relatedId,eventType:cached.eventType});
+      if(cached.read){
+        const card=[...document.querySelectorAll('.bkf-notification-item')].find(el=>el.querySelector('[onclick*="'+String(id).replace(/['"\\]/g,'')+'"]'));
+        if(card){card.classList.remove('is-unread');card.classList.add('is-read');const dot=card.querySelector('.bkf-notification-dot');dot?.classList.add('read');const status=card.querySelector('.bkf-notification-status');if(status)status.textContent='Sudah dibaca';}
+      }
+      return;
     }
     window.bkfOpenNotificationDetailV566(id);
     if(cached.read){
@@ -6991,7 +7003,7 @@ window.showExamGovernance=async function(){const host=document.getElementById('p
     host.innerHTML='<div class="card"><div class="muted">Memuat hasil ujian peserta...</div></div>';
     try{
       const sessionQ=await window.sb.from('exam_sessions').select(
-        'id,participant_id,exam_registration_id,participant:exam_participants!exam_sessions_participant_id_fkey(id,name,nis,exam_number,status,media_id,participant_media!exam_participants_media_id_fkey(storage_path)),exam_registrations!exam_sessions_exam_registration_id_fkey(exam_type,wave,management_period_id,institution_id,institutions!exam_registrations_institution_id_fkey(name))'
+        'id,participant_id,exam_registration_id,participant:exam_participants!exam_sessions_participant_id_fkey(id,name,nis,exam_number,status,media_id),exam_registrations!exam_sessions_exam_registration_id_fkey(exam_type,wave,management_period_id,institution_id,institutions!exam_registrations_institution_id_fkey(name))'
       ).eq('id',sessionId).maybeSingle();
       if(sessionQ.error)throw sessionQ.error;
       const session=sessionQ.data;
@@ -7029,8 +7041,16 @@ window.showExamGovernance=async function(){const host=document.getElementById('p
       const overallLabels={LULUS:'LULUS',LULUS_SETELAH_REMEDI:'LULUS SETELAH REMEDIAL',LULUS_SETELAH_REMIDI:'LULUS SETELAH REMEDIAL',REMEDIAL:'PERLU REMEDIAL',GAGAL:'BELUM LULUS',BELUM_LULUS:'BELUM LULUS',BELUM_DINILAI:'BELUM DINILAI'};
       const overall=complete?(overallLabels[String(result.status||'').toUpperCase()]||String(result.status||'HASIL TERSEDIA').replaceAll('_',' ')):'PENILAIAN BERLANGSUNG';
       const focused=scores.find(x=>x.id===focusScoreId)?.exam_material_id||'';
-      let photo=p.participant?.participant_media?.storage_path||'';
-      if(photo&&!/^https?:\/\//i.test(photo)){try{photo=window.sb.storage.from('bkfuspaq-media').getPublicUrl(photo).data?.publicUrl||''}catch(_){photo=''}}
+      let photo='';
+      if(p.media_id){
+        try{
+          const mediaQ=await window.sb.from('participant_media').select('id,storage_path').eq('id',p.media_id).maybeSingle();
+          if(mediaQ.error)throw mediaQ.error;
+          const mediaPath=mediaQ.data?.storage_path||'';
+          const u=String(mediaPath);
+          photo=!u?'':(/^https?:\/\//i.test(u)?u:(window.sb.storage.from('bkfuspaq-media').getPublicUrl(u).data?.publicUrl||''));
+        }catch(mediaError){console.warn('[BKF HASIL UJIAN FOTO]',mediaError);photo=''}
+      }
       const typeLabel=examType==='PRA_TASHIH'?'Pra Tashih':'Tashih';
       let greeting='Alhamdulillah, satu tahapan penilaian telah tercatat. Tetap semangat mengikuti materi berikutnya. Semoga Allah memberikan kemudahan dan keberkahan dalam menuntut ilmu.';
       if(complete&&/^LULUS/.test(overall))greeting='Alhamdulillah, seluruh materi ujian telah dilalui dengan hasil yang memenuhi ketentuan. بارك الله فيك. Semoga ilmu yang diperoleh menjadi ilmu yang bermanfaat.';
@@ -7044,6 +7064,31 @@ window.showExamGovernance=async function(){const host=document.getElementById('p
   };
   async function openRelatedTarget(data){
     const table=data.relatedTable,id=data.relatedId;
+    const eventType=String(data.eventType||'').trim().toUpperCase();
+    const examNotice=/^EXAM_(SCORE|RESULT|MATERIAL_COMPLETE|ALL_MATERIALS_COMPLETE|ALL_MATERIALS_COMPLETED)/.test(eventType);
+    if((examNotice||['exam_scores','exam_results','exam_sessions','exam_remedials'].includes(table))&&id){
+      try{
+        let sessionId='';
+        if(table==='exam_sessions')sessionId=id;
+        else if(['exam_scores','exam_results','exam_remedials'].includes(table)){
+          const rel=await window.sb.from(table).select('exam_session_id').eq('id',id).maybeSingle();
+          if(rel.error)throw rel.error;
+          sessionId=rel.data?.exam_session_id||'';
+        }else if(table==='exam_participants'){
+          const rel=await window.sb.from('exam_sessions').select('id').eq('participant_id',id).limit(1).maybeSingle();
+          if(rel.error)throw rel.error;
+          sessionId=rel.data?.id||'';
+        }else if(examNotice){
+          // Sebagian notifikasi hasil ujian membawa ID sesi langsung tanpa related_table.
+          const rel=await window.sb.from('exam_sessions').select('id').eq('id',id).maybeSingle();
+          if(rel.error)throw rel.error;
+          sessionId=rel.data?.id||'';
+        }
+        if(sessionId&&typeof window.bkfShowExamResultForm==='function'){
+          return await window.bkfShowExamResultForm(sessionId,table==='exam_scores'?id:'',data.route);
+        }
+      }catch(error){console.warn('[SIMFAQ PUSH HASIL UJIAN]',error)}
+    }
     if(!table||!id)return false;
     try{
       if(table==='activities'){
@@ -7099,7 +7144,13 @@ window.showExamGovernance=async function(){const host=document.getElementById('p
     return false;
   }
   window.bkfHandlePushNavigation=async function(input){
-    const data=normalize(input);
+    let data=normalize(input);
+    if(data.notificationId&&window.sb?.from&&typeof state!=='undefined'&&state?.profile?.id&&(!data.relatedTable||!data.relatedId||!data.eventType)){
+      try{
+        const nq=await window.sb.from('notifications').select('related_table,related_id,event_type').eq('id',data.notificationId).eq('user_id',state.profile.id).maybeSingle();
+        if(!nq.error&&nq.data)data=normalize({...data,relatedTable:data.relatedTable||nq.data.related_table,relatedId:data.relatedId||nq.data.related_id,eventType:data.eventType||nq.data.event_type});
+      }catch(error){console.warn('[SIMFAQ PUSH NOTIFICATION CONTEXT]',error)}
+    }
     try{window.__BKF_PUSH_CONTEXT__=data;sessionStorage.setItem('bkf_last_push_context_v562',JSON.stringify(data))}catch(_){}
     if(!window.__BKF_BOOT_READY__||typeof state==='undefined'||!state?.profile?.id||typeof window.navigate!=='function'){savePending(data);return false}
     try{
