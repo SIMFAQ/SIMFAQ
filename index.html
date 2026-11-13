@@ -1,3 +1,4 @@
+<!-- SIMFAQ V575: perbaikan penggantian foto profil/pengurus memakai jalur Storage unik agar cache lama tidak menahan foto lama; pembersihan foto lama hanya setelah audit referensi. Tanpa perubahan database atau Service Worker. -->
 <!-- BK-FUSPAQ-NU V560: footer global disembunyikan khusus pada daftar peserta dan form penilaian; baseline V558; logika penilaian dan data tidak diubah. -->
 <!-- BK-FUSPAQ-NU V555: penyelesaian cakupan 3D Glossy untuk tombol Kembali dan toolbar preview dokumen; basis V554. -->
 <!-- BK-FUSPAQ-NU V554: penyelarasan sistem desain visual; basis V553. -->
@@ -1905,7 +1906,52 @@ window.v12TogglePassword=function(id,btn){const e=document.getElementById(id);if
     document.body.insertAdjacentHTML('beforeend',`<div class="backdrop" id="v32ProfileModal"><div class="modal-sheet"><div class="row"><div><h3>Edit Profil Saya</h3><div class="small muted">Nama, nomor telepon, foto, dan password akun.</div></div><button class="btn secondary" type="button" onclick="document.getElementById('v32ProfileModal')?.remove()">Tutup</button></div><form id="v32ProfileForm"><div class="field"><label>Nama lengkap</label><input name="full_name" required value="${_E(p.full_name||'')}"></div><div class="field"><label>Nomor telepon</label><input name="phone" inputmode="tel" value="${_E(p.phone||'')}"></div><div class="field"><label>Foto profil</label><input id="v32ProfilePhoto" type="file" accept="image/*"><div id="v32ProfilePreview">${typeof imgOr==='function'?imgOr(p.photo_url,'photo-lg'):'<div class="photo-lg photo-placeholder">Belum ada foto</div>'}</div></div><div class="field"><label>Password baru <span class="small muted">(opsional)</span></label><input name="password" type="password" minlength="6" autocomplete="new-password" placeholder="Minimal 6 karakter"></div><div class="field"><label>Konfirmasi password baru</label><input name="password_confirm" type="password" minlength="6" autocomplete="new-password" placeholder="Ulangi password baru"><div class="small muted">Kosongkan keduanya jika password tidak ingin diubah.</div></div><button class="btn primary" style="width:100%">Simpan perubahan</button><p id="v32ProfileMsg" class="small"></p></form></div></div>`);
     const form=document.getElementById('v32ProfileForm');
     document.getElementById('v32ProfilePhoto').onchange=e=>{const f=e.target.files?.[0];if(!f)return;form._photoFile=f;document.getElementById('v32ProfilePreview').innerHTML='<span class="small muted">Foto baru siap disimpan.</span>'};
-    form.onsubmit=async e=>{e.preventDefault();const f=new FormData(form),msg=document.getElementById('v32ProfileMsg');msg.textContent='Menyimpan...';try{let photo=null;if(form._photoFile){photo=await (window.bkfUploadImage?window.bkfUploadImage(form._photoFile,'profiles/'+(state.profile?.id||state.user.id)+'.jpg'):new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=reject;r.readAsDataURL(form._photoFile)}))}const r=await sb.functions.invoke('user-management',{body:{action:'self_update_profile',full_name:String(f.get('full_name')||'').trim(),phone:String(f.get('phone')||'').trim()||null,photo_url:photo,password:String(f.get('password')||'').trim()||null,password_confirm:String(f.get('password_confirm')||'').trim()||null}});if(r.error||r.data?.error)throw new Error(r.data?.error||r.error?.message||'Profil belum berhasil disimpan.');document.getElementById('v32ProfileModal')?.remove();await loadIdentity();renderShell();navigate(state.route||'settings');if(window.v12Toast)v12Toast('Profil dan perubahan akun berhasil disimpan.')}catch(err){msg.className='error';msg.textContent=err?.message||'Gagal menyimpan profil.'}};
+    form.onsubmit=async e=>{
+      e.preventDefault();
+      const f=new FormData(form),msg=document.getElementById('v32ProfileMsg');
+      const oldPhoto=state.profile?.photo_url||null;
+      let newPhoto=null;
+      msg.textContent='Menyimpan...';
+      try{
+        let photo=null;
+        if(form._photoFile){
+          if(typeof window.v23UploadImage!=='function')throw new Error('Fungsi unggah foto versi terbaru belum tersedia. Muat ulang aplikasi lalu coba lagi.');
+          // Gunakan objek Storage baru setiap penggantian agar cache foto lama tidak terpakai.
+          photo=await window.v23UploadImage(form._photoFile,'profiles/'+(state.profile?.id||state.user.id)+'.jpg');
+          newPhoto=photo;
+        }
+        const r=await sb.functions.invoke('user-management',{body:{
+          action:'self_update_profile',
+          full_name:String(f.get('full_name')||'').trim(),
+          phone:String(f.get('phone')||'').trim()||null,
+          photo_url:photo,
+          password:String(f.get('password')||'').trim()||null,
+          password_confirm:String(f.get('password_confirm')||'').trim()||null
+        }});
+        if(r.error||r.data?.error)throw new Error(r.data?.error||r.error?.message||'Profil belum berhasil disimpan.');
+        await loadIdentity();
+        let cleanupNote='';
+        if(newPhoto&&oldPhoto&&newPhoto!==oldPhoto&&typeof window.bkfCleanupStorageUrlIfUnreferenced==='function'){
+          try{
+            const c=await window.bkfCleanupStorageUrlIfUnreferenced(oldPhoto);
+            if(!c.deleted&&c.reason==='still-referenced')cleanupNote=' Foto lama tetap dipertahankan karena masih digunakan data lain.';
+          }catch(cleanErr){
+            console.warn('[BKF PROFIL FOTO LAMA]',cleanErr);
+            cleanupNote=' Profil tersimpan, tetapi foto lama belum berhasil dibersihkan.';
+          }
+        }
+        document.getElementById('v32ProfileModal')?.remove();
+        renderShell();
+        navigate(state.route||'settings');
+        if(window.v12Toast)v12Toast('Profil dan perubahan akun berhasil disimpan.'+cleanupNote);
+      }catch(err){
+        if(newPhoto&&typeof window.bkfCleanupStorageUrlIfUnreferenced==='function'){
+          try{await window.bkfCleanupStorageUrlIfUnreferenced(newPhoto)}catch(cleanErr){console.warn('[BKF PROFIL FOTO BARU]',cleanErr)}
+        }
+        msg.className='error';
+        msg.textContent=err?.message||'Gagal menyimpan profil.';
+      }
+    };
     setTimeout(closeButtonify,0);
   };
 
@@ -2460,7 +2506,11 @@ window.v12TogglePassword=function(id,btn){const e=document.getElementById(id);if
       let authId=uid;
       if(!uid){const r=await sb.functions.invoke('user-management',{body:{action:'create',full_name:String(fd.get('full_name')||'').trim(),email:String(fd.get('email')||'').trim(),phone:String(fd.get('phone')||'').trim()||null,role_code:role,password:pw}});if(r.error||r.data?.error)throw new Error(r.data?.error||r.error?.message||'Akun belum berhasil dibuat.');authId=r.data.user_id;}
       else if(pw){const r=await sb.functions.invoke('user-management',{body:{action:'reset_password',user_id:authId,password:pw}});if(r.error||r.data?.error)throw new Error(r.data?.error||r.error?.message||'Password belum berhasil diubah.');}
-      let photo=null;if(f._photoFile)photo=await (window.bkfUploadImage?window.bkfUploadImage(f._photoFile,'profiles/admin-'+authId+'.jpg'):null);
+      let photo=null;
+      if(f._photoFile){
+        if(typeof window.v23UploadImage!=='function')throw new Error('Fungsi unggah foto versi terbaru belum tersedia. Muat ulang aplikasi lalu coba lagi.');
+        photo=await window.v23UploadImage(f._photoFile,'profiles/admin-'+authId+'.jpg');
+      }
       const q=await sb.rpc('admin_save_user_profile',{p_auth_user_id:authId,p_full_name:String(fd.get('full_name')||'').trim(),p_phone:String(fd.get('phone')||'').trim()||null,p_photo_url:photo,p_role_code:role,p_institution_id:inst});
       if(q.error)throw q.error;
       if(type==='organization'){const mm=await sb.rpc('add_management_member',{p_auth_user_id:authId,p_role_code:role,p_start_date:new Date().toISOString().slice(0,10),p_end_date:null});if(mm.error)throw mm.error;}
@@ -4956,7 +5006,15 @@ function managementModal(id,x){
       if(f.get('end')&&f.get('end')<f.get('start'))throw new Error('Tanggal akhir tidak boleh sebelum tanggal mulai.');
       const email=String(f.get('email')||'').trim(); if(!email)throw new Error('Email login wajib diisi.');
       const password=String(f.get('password')||''); if(!edit&&password.length<6)throw new Error('Password awal minimal 6 karakter.'); if(edit&&password&&password.length<6)throw new Error('Password baru minimal 6 karakter.');
-      let photo=x?.photo_url||null;const file=f.get('photo');if(file?.size&&window.bkfUploadImage)photo=await window.bkfUploadImage(file,'management/'+(id||Date.now())+'.jpg');
+      const oldPhoto=x?.photo_url||null;
+      let photo=oldPhoto,uploadedPhoto=null;
+      const file=f.get('photo');
+      if(file?.size){
+        if(typeof window.v23UploadImage!=='function')throw new Error('Fungsi unggah foto versi terbaru belum tersedia. Muat ulang aplikasi lalu coba lagi.');
+        // Nama objek baru untuk setiap penggantian; jangan menimpa URL foto yang sudah pernah dicache.
+        photo=await window.v23UploadImage(file,'management/'+(id||Date.now())+'.jpg');
+        uploadedPhoto=photo;
+      }
       const args={p_full_name:String(f.get('name')||'').trim(),p_email:email,p_phone:String(f.get('phone')||'').trim()||null,p_role_code:f.get('role'),p_task:String(f.get('task')||'').trim()||null,p_start_date:f.get('start'),p_end_date:f.get('end')||null,p_photo_url:photo};
       const invokeUserManagement=async(body,fallback)=>{
         const r=await sb.functions.invoke('user-management',{body});
@@ -4982,8 +5040,25 @@ function managementModal(id,x){
       if(String(f.get('role')||'')==='KETUA' && authUserId && photo){
         const sync=await sb.from('profiles').update({photo_url:photo,updated_at:new Date().toISOString()}).eq('auth_user_id',authUserId);if(sync.error)throw sync.error;
       }
-      document.getElementById('v126MgmtModal')?.remove();toast(edit?'Data pengurus diperbarui.':(accountResult?.existing_account?'Akun Pengurus yang sudah ada berhasil ditautkan.':'Pengurus dan akun berhasil didaftarkan.'));await window.v126RenderPengurus();
-    }catch(err){msg.className='error';msg.textContent=String(err?.message||friendly(err));}
+      let photoCleanupNote='';
+      if(uploadedPhoto&&oldPhoto&&uploadedPhoto!==oldPhoto&&typeof window.bkfCleanupStorageUrlIfUnreferenced==='function'){
+        try{
+          const cleanup=await window.bkfCleanupStorageUrlIfUnreferenced(oldPhoto);
+          if(!cleanup.deleted&&cleanup.reason==='still-referenced')photoCleanupNote=' Foto lama dipertahankan karena masih digunakan data lain.';
+        }catch(cleanErr){
+          console.warn('[BKF PENGURUS FOTO LAMA]',cleanErr);
+          photoCleanupNote=' Data tersimpan, tetapi foto lama belum berhasil dibersihkan.';
+        }
+      }
+      document.getElementById('v126MgmtModal')?.remove();
+      toast((edit?'Data pengurus diperbarui.':(accountResult?.existing_account?'Akun Pengurus yang sudah ada berhasil ditautkan.':'Pengurus dan akun berhasil didaftarkan.'))+photoCleanupNote,photoCleanupNote?'error':'success');
+      await window.v126RenderPengurus();
+    }catch(err){
+      if(uploadedPhoto&&typeof window.bkfCleanupStorageUrlIfUnreferenced==='function'){
+        try{await window.bkfCleanupStorageUrlIfUnreferenced(uploadedPhoto)}catch(cleanErr){console.warn('[BKF PENGURUS FOTO BARU]',cleanErr)}
+      }
+      msg.className='error';msg.textContent=String(err?.message||friendly(err));
+    }
   };
 }
 
