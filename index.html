@@ -3314,6 +3314,8 @@ html,body{margin:0;padding:0;background:#fff!important;color:#111;font-family:Ar
     const navState=window.__bkfNotificationPageState||(window.__bkfNotificationPageState={page:0,filter:'all',search:''});
     navState.page=Math.max(0,Number(navState.page)||0);
     listPage('Notifikasi','Pemberitahuan yang ditujukan khusus kepada akun ini.','<div id="v40Notifs" class="bkf-notification-list"><div class="empty">Memuat notifikasi...</div></div>');
+    const requestId=(window.__bkfNotificationLoadSeq=(Number(window.__bkfNotificationLoadSeq)||0)+1);
+    const box=document.getElementById('v40Notifs');
     const fields='id,title,message,type,read_at,created_at,related_table,related_id,event_scope,event_type,activity_id,institution_id,item_name';
     const buildNotificationQuery=(withRows)=>{
       let query=sb.from('notifications').select(withRows?fields:'id',{head:!withRows}).eq('user_id',pid);
@@ -3326,13 +3328,41 @@ html,body{margin:0;padding:0;background:#fff!important;color:#111;font-family:Ar
     };
     const [q,cq]=await Promise.all([
       buildNotificationQuery(true),
-      sb.from('notifications').select('id',{count:'exact',head:true}).eq('user_id',pid).is('read_at',null)
+      sb.from('notifications').select('id').eq('user_id',pid).is('read_at',null).limit(1)
     ]);
-    const box=document.getElementById('v40Notifs');
-    if(!box)return;
+    if(requestId!==window.__bkfNotificationLoadSeq||!box?.isConnected)return;
     if(q.error){box.innerHTML=`<div class="error">${E(err(q.error))}</div>`;return}
     if(cq.error){box.innerHTML=`<div class="error">${E(err(cq.error))}</div>`;return}
     const rows=q.data||[];
+    let instMap=new Map();
+    const unreadCount=(cq.data||[]).length?1:0;
+    const renderNotificationRows=()=>{
+      if(requestId!==window.__bkfNotificationLoadSeq||!box?.isConnected)return;
+      const hasMore=rows.length>50;
+      const visibleRows=rows.slice(0,50);
+      const filterButton=(value,label)=>`<button class="btn ${navState.filter===value?'primary':'secondary'}" type="button" onclick="window.bkfSetNotificationFilterV546('${value}')">${label}</button>`;
+      const start=visibleRows.length?navState.page*50+1:0,end=navState.page*50+visibleRows.length;
+      const head=`<div class="no-print" style="margin-bottom:12px"><div class="row" style="gap:8px;align-items:center;flex-wrap:wrap"><div class="small muted" style="flex:1">${unreadCount?'Ada notifikasi yang belum dibaca':'Semua notifikasi sudah dibaca'}</div>${unreadCount?'<button class="btn secondary" type="button" onclick="markAllNotificationsReadV40()">Tandai semua sudah dibaca</button>':''}</div><div class="row" style="gap:6px;flex-wrap:wrap;margin-top:9px">${filterButton('all','Semua')}${filterButton('unread','Belum dibaca')}${filterButton('read','Sudah dibaca')}</div><form onsubmit="event.preventDefault();window.bkfSearchNotificationsV546(this)" style="display:flex;gap:7px;margin-top:9px"><input name="search" type="search" value="${E(navState.search)}" placeholder="Cari judul atau isi notifikasi…" style="flex:1;min-width:0;border:1px solid var(--line);border-radius:10px;padding:9px 11px"><button class="btn secondary" type="submit">Cari</button></form><div class="small muted" style="margin-top:8px">Menampilkan ${start}–${end} notifikasi · 50 per halaman</div></div>`;
+      const pager=`<div class="row no-print" style="justify-content:space-between;align-items:center;gap:8px;margin-top:12px"><button class="btn secondary" type="button" ${navState.page===0?'disabled':''} onclick="window.bkfChangeNotificationPageV546(-1)">‹ Sebelumnya</button><span class="small muted">Halaman ${navState.page+1} · Maks. 50 data</span><button class="btn secondary" type="button" ${!hasMore?'disabled':''} onclick="window.bkfChangeNotificationPageV546(1)">Berikutnya ›</button></div>`;
+      window.__bkfNotificationDetailsV566=new Map();
+      box.innerHTML=head+(visibleRows.length?visibleRows.map(n=>{
+        const isCash=n.related_table==='cash_transactions'&&n.title==='Transaksi Kas Baru';
+        const contextName=n.item_name||n.context_name||'';
+        const ntxt=[n.related_table,n.event_scope,n.event_type,n.type,n.title,n.message].join(' ').toLowerCase();
+        const noticeDomain=(/exam|ujian|tashih|exam_registration|exam_participant|exam_result/.test(ntxt)||['exam_registrations','exam_participants','exam_sessions','exam_results','exam_scores','exam_remedials'].includes(n.related_table))?'exam':(/payment|pembayaran|tagihan|bill|iuran/.test(ntxt)||['bills','bill_items','payments','selapanan_dues_obligations'].includes(n.related_table))?'payment':'';
+        const displayTitle=noticeDomain?window.bkfHumanizeDomainTextV420(n.title||'Notifikasi',noticeDomain):(n.title||'Notifikasi');
+        const displayMessage=noticeDomain?window.bkfHumanizeDomainTextV420(n.message||'-',noticeDomain):window.bkfFormatNotificationTextV360(n.message||'-');
+        const displayContextType=noticeDomain?window.bkfHumanStatusV420(n.context_type,noticeDomain):(n.context_type||'');
+        const meta=[n.institution_name?`Lembaga: ${n.institution_name}`:'',n.cash_type||displayContextType,n.cash_category?`Kategori: ${n.cash_category}`:'',contextName?`Item/Kegiatan: ${contextName}`:''].filter(Boolean).join(' · ');
+        const notificationBody=(n.event_type==='EXAM_MATERIAL_COMPLETE')?n.message:(n.context_description||n.message||'-');
+        const detail=isCash?`<div class="bkf-notification-detail">${n.institution_name?`<strong>Lembaga:</strong> ${E(n.institution_name)}<br>`:''}${n.cash_type?`<strong>Jenis:</strong> ${E(n.cash_type)}<br>`:''}${n.cash_category?`<strong>Kategori:</strong> ${E(n.cash_category)}<br>`:''}${contextName?`<strong>Item:</strong> ${E(contextName)}<br>`:''}${n.cash_amount!=null?`<strong>Nominal:</strong> ${E(fmt(n.cash_amount))}<br>`:''}<strong>Keterangan:</strong> ${E(n.cash_description||n.context_description||n.message||'-')}</div>`:`<div class="bkf-notification-detail">${n.institution_name?`<strong>Lembaga:</strong> ${E(n.institution_name)}<br>`:''}${contextName?`<strong>Item/Kegiatan:</strong> ${E(contextName)}<br>`:''}${displayContextType?`<strong>Jenis/Status:</strong> ${E(displayContextType)}<br>`:''}${E(noticeDomain?window.bkfHumanizeDomainTextV420(notificationBody,noticeDomain):window.bkfFormatNotificationTextV360(notificationBody))}</div>`;
+        window.__bkfNotificationDetailsV566.set(String(n.id),{title:displayTitle,detail,created:date(n.created_at),type:noticeDomain?window.bkfHumanizeDomainTextV420(n.type||'',noticeDomain):(n.type||''),read:!!n.read_at,relatedTable:n.related_table||'',relatedId:n.related_id||'',eventType:n.event_type||''});
+        const previewSource=String(displayMessage||'-').replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim();
+        const preview=previewSource.length>190?previewSource.slice(0,187).trimEnd()+'…':previewSource;
+        return `<article class="bkf-notification-item ${n.read_at?'is-read':'is-unread'}"><div class="bkf-notification-main" role="button" tabindex="0" aria-label="Buka detail notifikasi: ${E(displayTitle)}" onclick="readNotificationV40('${E(n.id)}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();readNotificationV40('${E(n.id)}')}"><div class="bkf-notification-title"><span class="bkf-notification-dot ${n.read_at?'read':''}"></span><strong>${E(displayTitle)}</strong><span class="bkf-notification-status">${n.read_at?'Sudah dibaca':'Belum dibaca'}</span></div>${!isCash&&meta?`<div class="small muted">${E(meta)}</div>`:''}<div class="bkf-notification-preview">${E(preview)}</div><span class="bkf-notification-open-hint">Ketuk untuk membaca selengkapnya</span><div class="bkf-notification-time">${date(n.created_at)} · ${E(noticeDomain?window.bkfHumanizeDomainTextV420(n.type||'',noticeDomain):(n.type||''))}</div><div class="bkf-notification-brand">Notifikasi ini dikirim otomatis oleh Daneva.studio</div></div><button class="bkf-notification-delete" type="button" title="Hapus notifikasi" aria-label="Hapus notifikasi" onclick="event.stopPropagation();deleteNotificationV40('${E(n.id)}')">🗑</button></article>`;
+      }).join(''):'<div class="empty">Tidak ada notifikasi pada halaman atau filter ini.</div>')+pager;
+    };
+    renderNotificationRows();
     if(Array.isArray(state?.roles)&&state.roles.some(r=>String(r).toUpperCase()==='OPERATOR'))rows.forEach(n=>{if(String(n.event_type||'').toUpperCase()==='EXAM_SELECTION_FINAL')n.message=window.bkfInstitutionSelectionNoticeTextV500(n)});
     // Notifikasi Iuran Selapanan ditampilkan dengan nama kegiatan, tanggal, dan tempat;
     // UUID asli tetap tersimpan di database dan hanya diganti pada teks tampilan.
@@ -3343,13 +3373,14 @@ html,body{margin:0;padding:0;background:#fff!important;color:#111;font-family:Ar
       noticeActivityIds.length?sb.from('activities').select('id,name,start_at,venue').in('id',noticeActivityIds):Promise.resolve({data:[],error:null}),
       instIds.length?sb.from('institutions').select('id,name').in('id',instIds):Promise.resolve({data:[],error:null})
     ]);
+    if(requestId!==window.__bkfNotificationLoadSeq||!box?.isConnected)return;
     if(noticeActivitiesQ.error){box.innerHTML=`<div class="error">${E(err(noticeActivitiesQ.error))}</div>`;return}
     if(iq.error){box.innerHTML=`<div class="error">${E(err(iq.error))}</div>`;return}
     const noticeActivityMap=new Map((noticeActivitiesQ.data||[]).map(a=>[a.id,a]));
     const noticeActivityLabel=id=>{const a=noticeActivityMap.get(id);if(!a)return '';const d=a.start_at?new Date(a.start_at).toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric',timeZone:'Asia/Jakarta'}):'tanggal belum ditentukan';const v=String(a.venue||'').trim().replace(/\s+/g,' ');const short=v?(v.length>48?v.slice(0,45).trim()+'…':v):'lokasi belum ditentukan';return `Selapanan ${d} · ${short}`};
     const humanizeSelapananNotice=value=>{let out=String(value??'');for(const id of noticeActivityIds){const label=noticeActivityLabel(id);if(label)out=out.split(id).join(label)}return out.replace(/\bISSUED\b/g,'Belum dibayar').replace(/\bUNPAID\b/g,'Belum dibayar').replace(/\bPAID\b/g,'Lunas').replace(/\bPARTIAL\b/g,'Dibayar sebagian').replace(/\bCANCELLED\b|\bCANCELED\b/g,'Dibatalkan').replace(/\bCONFIRMED\b/g,'Pembayaran dikonfirmasi').replace(/\bPENDING\b/g,'Menunggu konfirmasi').replace(/selapanan_dues_obligations/gi,'tagihan Iuran Selapanan').replace(/activity_id/gi,'kegiatan')};
     rows.forEach(n=>{if(n.activity_id&&noticeActivityMap.has(n.activity_id)){n.context_name=noticeActivityLabel(n.activity_id);n.context_description=humanizeSelapananNotice(n.context_description||'')}if(n.related_table==='selapanan_dues_obligations'){n.title=humanizeSelapananNotice(n.title||'Pengingat Iuran Selapanan');n.message=humanizeSelapananNotice(n.message||'');}});
-    const instMap=new Map((iq.data||[]).map(x=>[x.id,x.name]));
+    instMap=new Map((iq.data||[]).map(x=>[x.id,x.name]));
     rows.forEach(n=>{n.institution_name=instMap.get(n.institution_id)||''});
 
     // Konteks transaksi kas: jalankan lookup kategori dan pembayaran secara paralel.
@@ -3466,30 +3497,7 @@ html,body{margin:0;padding:0;background:#fff!important;color:#111;font-family:Ar
     ]);
     const extraInstIds=[...new Set(rows.map(n=>n.institution_id).filter(id=>id&&!instMap.has(id)))];
     if(extraInstIds.length){const exq=await sb.from('institutions').select('id,name').in('id',extraInstIds);if(!exq.error)(exq.data||[]).forEach(x=>instMap.set(x.id,x.name));rows.forEach(n=>{if(!n.institution_name&&n.institution_id)n.institution_name=instMap.get(n.institution_id)||''})}
-    const unreadCount=Number(cq.count||0);
-    const hasMore=rows.length>50;
-    rows.splice(50);
-    const filterButton=(value,label)=>`<button class="btn ${navState.filter===value?'primary':'secondary'}" type="button" onclick="window.bkfSetNotificationFilterV546('${value}')">${label}</button>`;
-    const start=rows.length?navState.page*50+1:0,end=navState.page*50+rows.length;
-    const head=`<div class="no-print" style="margin-bottom:12px"><div class="row" style="gap:8px;align-items:center;flex-wrap:wrap"><div class="small muted" style="flex:1">${unreadCount?'Ada notifikasi yang belum dibaca':'Semua notifikasi sudah dibaca'}</div>${unreadCount?'<button class="btn secondary" type="button" onclick="markAllNotificationsReadV40()">Tandai semua sudah dibaca</button>':''}</div><div class="row" style="gap:6px;flex-wrap:wrap;margin-top:9px">${filterButton('all','Semua')}${filterButton('unread','Belum dibaca')}${filterButton('read','Sudah dibaca')}</div><form onsubmit="event.preventDefault();window.bkfSearchNotificationsV546(this)" style="display:flex;gap:7px;margin-top:9px"><input name="search" type="search" value="${E(navState.search)}" placeholder="Cari judul atau isi notifikasi…" style="flex:1;min-width:0;border:1px solid var(--line);border-radius:10px;padding:9px 11px"><button class="btn secondary" type="submit">Cari</button></form><div class="small muted" style="margin-top:8px">Menampilkan ${start}–${end} notifikasi · 50 per halaman</div></div>`;
-    const pager=`<div class="row no-print" style="justify-content:space-between;align-items:center;gap:8px;margin-top:12px"><button class="btn secondary" type="button" ${navState.page===0?'disabled':''} onclick="window.bkfChangeNotificationPageV546(-1)">‹ Sebelumnya</button><span class="small muted">Halaman ${navState.page+1} · Maks. 50 data</span><button class="btn secondary" type="button" ${!hasMore?'disabled':''} onclick="window.bkfChangeNotificationPageV546(1)">Berikutnya ›</button></div>`;
-    window.__bkfNotificationDetailsV566=new Map();
-    box.innerHTML=head+(rows.length?rows.map(n=>{
-      const isCash=n.related_table==='cash_transactions'&&n.title==='Transaksi Kas Baru';
-      const contextName=n.item_name||n.context_name||'';
-      const ntxt=[n.related_table,n.event_scope,n.event_type,n.type,n.title,n.message].join(' ').toLowerCase();
-      const noticeDomain=(/exam|ujian|tashih|exam_registration|exam_participant|exam_result/.test(ntxt)||['exam_registrations','exam_participants','exam_sessions','exam_results','exam_scores','exam_remedials'].includes(n.related_table))?'exam':(/payment|pembayaran|tagihan|bill|iuran/.test(ntxt)||['bills','bill_items','payments','selapanan_dues_obligations'].includes(n.related_table))?'payment':'';
-      const displayTitle=noticeDomain?window.bkfHumanizeDomainTextV420(n.title||'Notifikasi',noticeDomain):(n.title||'Notifikasi');
-      const displayMessage=noticeDomain?window.bkfHumanizeDomainTextV420(n.message||'-',noticeDomain):window.bkfFormatNotificationTextV360(n.message||'-');
-      const displayContextType=noticeDomain?window.bkfHumanStatusV420(n.context_type,noticeDomain):(n.context_type||'');
-      const meta=[n.institution_name?`Lembaga: ${n.institution_name}`:'',n.cash_type||displayContextType,n.cash_category?`Kategori: ${n.cash_category}`:'',contextName?`Item/Kegiatan: ${contextName}`:''].filter(Boolean).join(' · ');
-      const notificationBody=(n.event_type==='EXAM_MATERIAL_COMPLETE')?n.message:(n.context_description||n.message||'-');
-      const detail=isCash?`<div class="bkf-notification-detail">${n.institution_name?`<strong>Lembaga:</strong> ${E(n.institution_name)}<br>`:''}${n.cash_type?`<strong>Jenis:</strong> ${E(n.cash_type)}<br>`:''}${n.cash_category?`<strong>Kategori:</strong> ${E(n.cash_category)}<br>`:''}${contextName?`<strong>Item:</strong> ${E(contextName)}<br>`:''}${n.cash_amount!=null?`<strong>Nominal:</strong> ${E(fmt(n.cash_amount))}<br>`:''}<strong>Keterangan:</strong> ${E(n.cash_description||n.context_description||n.message||'-')}</div>`:`<div class="bkf-notification-detail">${n.institution_name?`<strong>Lembaga:</strong> ${E(n.institution_name)}<br>`:''}${contextName?`<strong>Item/Kegiatan:</strong> ${E(contextName)}<br>`:''}${displayContextType?`<strong>Jenis/Status:</strong> ${E(displayContextType)}<br>`:''}${E(noticeDomain?window.bkfHumanizeDomainTextV420(notificationBody,noticeDomain):window.bkfFormatNotificationTextV360(notificationBody))}</div>`;
-      window.__bkfNotificationDetailsV566.set(String(n.id),{title:displayTitle,detail,created:date(n.created_at),type:noticeDomain?window.bkfHumanizeDomainTextV420(n.type||'',noticeDomain):(n.type||''),read:!!n.read_at,relatedTable:n.related_table||'',relatedId:n.related_id||'',eventType:n.event_type||''});
-      const previewSource=String(displayMessage||'-').replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim();
-      const preview=previewSource.length>190?previewSource.slice(0,187).trimEnd()+'…':previewSource;
-      return `<article class="bkf-notification-item ${n.read_at?'is-read':'is-unread'}"><div class="bkf-notification-main" role="button" tabindex="0" aria-label="Buka detail notifikasi: ${E(displayTitle)}" onclick="readNotificationV40('${E(n.id)}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();readNotificationV40('${E(n.id)}')}"><div class="bkf-notification-title"><span class="bkf-notification-dot ${n.read_at?'read':''}"></span><strong>${E(displayTitle)}</strong><span class="bkf-notification-status">${n.read_at?'Sudah dibaca':'Belum dibaca'}</span></div>${!isCash&&meta?`<div class="small muted">${E(meta)}</div>`:''}<div class="bkf-notification-preview">${E(preview)}</div><span class="bkf-notification-open-hint">Ketuk untuk membaca selengkapnya</span><div class="bkf-notification-time">${date(n.created_at)} · ${E(noticeDomain?window.bkfHumanizeDomainTextV420(n.type||'',noticeDomain):(n.type||''))}</div><div class="bkf-notification-brand">Notifikasi ini dikirim otomatis oleh Daneva.studio</div></div><button class="bkf-notification-delete" type="button" title="Hapus notifikasi" aria-label="Hapus notifikasi" onclick="event.stopPropagation();deleteNotificationV40('${E(n.id)}')">🗑</button></article>`;
-    }).join(''):'<div class="empty">Tidak ada notifikasi pada halaman atau filter ini.</div>')+pager;
+    renderNotificationRows();
   };
   window.bkfOpenNotificationDetailV566=function(id){
     const item=window.__bkfNotificationDetailsV566?.get(String(id));if(!item)return;
