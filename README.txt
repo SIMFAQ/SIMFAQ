@@ -1,34 +1,31 @@
-SIMFAQ V568 — PENYESUAIAN JUDUL NOTIFIKASI & MIGRASI OTOMATIS
-Tanggal: 12 November 2026
-Baseline aplikasi: SIMFAQ V567 Push Monitoring
+SIMFAQ V569 — FORM HASIL UJIAN TERPADU
+Tanggal: 13 November 2026
+Baseline: V568 NOTIFIKASI & MIGRASI
 
-PERUBAHAN DATABASE YANG SUDAH DITERAPKAN
-1. Judul notifikasi nilai ujian dibuat dinamis:
-   - Nilai Ujian — [Nama Peserta] | [Materi]
-   - Perubahan Nilai — [Nama Peserta] | [Materi]
-2. Migrasi otomatis Pra Tashih ke Tashih memakai judul:
-   - Peserta Tashih Baru — [Nama Peserta]
-   Mekanisme migrasi dan aturan kelulusan tidak diubah.
-3. Ditambahkan notifikasi khusus ketika peserta Tashih berhasil masuk ke daftar Wisuda:
-   - Peserta Wisuda Baru — [Nama Peserta]
-4. Penerima notifikasi Wisuda mengikuti routing modul Wisuda yang sudah ada:
-   - akun aktif lembaga asal peserta;
-   - pengurus organisasi yang memiliki izin modul Wisuda.
-   - Migrasi Pra Tashih ke Tashih: akun aktif lembaga asal dan pengurus organisasi yang memiliki izin modul Ujian.
-5. Pencegahan notifikasi ganda untuk peserta migrasi Wisuda: notifikasi generik peserta wisuda pada transaksi migrasi yang sama digantikan notifikasi khusus migrasi.
+PERUBAHAN APLIKASI
+1. Ditambahkan satu halaman baca-saja “Hasil Ujian” yang dipakai bersama untuk Pra Tashih dan Tashih.
+2. Klik notifikasi nilai tersimpan/perubahan nilai (related_table exam_scores) membuka halaman hasil peserta dan menyorot materi yang memicu notifikasi.
+3. Klik notifikasi seluruh materi selesai (related_table exam_sessions) membuka halaman hasil peserta yang sama.
+4. Halaman menampilkan foto peserta, nama, NIS, nomor ujian, lembaga, jenis ujian, gelombang, rincian materi, nilai, batas minimal, status tiap materi, status keseluruhan, serta pesan/doa Islami.
+5. Rincian nilai remedial mengikuti urutan dan pemilihan nilai terbaru yang digunakan fungsi refresh_exam_result. Batas minimal dibaca dari aturan ujian berstatus ACTIVE pada periode dan jenis ujian peserta; snapshot aturan sesi tidak digunakan.
+6. Halaman hanya menampilkan data; tidak mengubah nilai, penilaian, finalisasi, penguncian, atau data peserta.
 
-MIGRASI SUPABASE YANG SUDAH TERCATAT
-- 20261112151343_add_named_exam_and_graduation_migration_notifications
-- 20261112151406_avoid_duplicate_graduation_migration_notifications
-- route_exam_migration_notifications_by_permission (routing migrasi ujian ke pengurus berizin modul Ujian)
+PERUBAHAN DATABASE
+- Migration: link_exam_completion_push_to_result_form
+- Notifikasi EXAM_MATERIAL_COMPLETE sekarang menunjuk langsung ke exam_sessions.id, sehingga klik push dapat membuka sesi/peserta yang tepat.
+- Judul notifikasi penyelesaian memuat nama peserta.
+- Pemicu notifikasi penyelesaian, penerima, deduplikasi, dan fungsi penyimpanan nilai tidak diubah.
 
-FILE PAKET
-- index.html: baseline V567 dengan metadata versi diperbarui menjadi V568. Tidak ada perubahan alur UI.
-- sw.js: dipertahankan sama dengan V567 (cache v6); tidak perlu perubahan Service Worker untuk format judul karena judul dibentuk di database.
+FILE
+- index.html: implementasi halaman hasil dan integrasi klik notifikasi.
+- sw.js: dipertahankan dari V568; format payload klik push yang ada sudah membawa related_table dan related_id.
 
-STATUS DAN BATASAN
-- Perubahan fungsi/trigger database sudah diterapkan pada proyek Supabase SIMFAQ.
-- Paket HTML/Service Worker ini belum diunggah ke hosting aplikasi. Metadata V568 akan tampil setelah index.html paket ini dipasang di hosting.
-- Belum dilakukan uji transaksi nilai atau migrasi nyata pada data peserta. Tidak ada data peserta/nilai yang diubah sebagai bagian revisi ini.
-- Uji berikutnya perlu memakai satu peserta uji yang disetujui, memastikan notifikasi aplikasi dan push diterima oleh penerima yang tepat, lalu memeriksa tidak ada duplikasi.
-- Tidak ada perubahan pada skema tabel, RLS, aturan kelulusan, nomor ujian, gelombang, riwayat nilai, atau data peserta.
+PEMERIKSAAN
+- 71 blok JavaScript inline lolos node --check.
+- sw.js lolos node --check.
+- Integritas ZIP diperiksa setelah paket dibuat.
+- Tidak ada transaksi nilai, migrasi peserta, atau penulisan data uji yang dijalankan.
+- Belum dilakukan uji klik push langsung pada perangkat Android.
+
+CATATAN PENGUJIAN
+Setelah paket V569 dipasang pada hosting, lakukan uji terkontrol untuk satu notifikasi nilai Pra Tashih, satu notifikasi nilai Tashih, dan satu notifikasi seluruh materi selesai. Pastikan akun penerima dapat membaca foto dan hasil peserta sesuai cakupan izinnya.
