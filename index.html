@@ -1566,7 +1566,7 @@ window.printExamCards=async function(){
      if(typeof decoded.close==='function')decoded.close();
      decoded=null;
      if(objectUrl){URL.revokeObjectURL(objectUrl);objectUrl=null}
-     const q=await sb.storage.from(bucket).upload(path,blob,{contentType:'image/jpeg',upsert:true,cacheControl:'31536000'});
+     const q=await sb.storage.from(bucket).upload(path,blob,{contentType:'image/jpeg',upsert:true,cacheControl:'0'});
      if(q.error)throw new Error('Supabase Storage menolak unggahan'+(q.error.statusCode?' (HTTP '+q.error.statusCode+')':'')+': '+(q.error.message||String(q.error)));
      const publicUrl=sb.storage.from(bucket).getPublicUrl(path).data?.publicUrl;
      if(!publicUrl)throw new Error('Foto terunggah, tetapi alamat foto publik tidak berhasil dibuat.');
@@ -1668,8 +1668,8 @@ body{background:var(--bg);color:var(--text)}.top{background:#078b61!important}.b
   const ext=preserveTransparency?'.png':'.jpg';
   const blob=await new Promise((resolve,reject)=>{const r=new FileReader();r.onerror=reject;r.onload=()=>{const im=new Image();im.onerror=reject;im.onload=()=>{const sc=Math.min(1,900/im.width,900/im.height),w=Math.max(1,Math.round(im.width*sc)),h=Math.max(1,Math.round(im.height*sc)),c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d');if(!preserveTransparency){x.fillStyle='#fff';x.fillRect(0,0,w,h)}x.drawImage(im,0,0,w,h);c.toBlob(b=>b?resolve(b):reject(new Error('Gagal memproses gambar.')),preserveTransparency?'image/png':'image/jpeg',preserveTransparency?undefined:.82)};im.src=r.result};r.readAsDataURL(file)});
   const base=path.replace(/\.(?:jpg|jpeg|png|webp)$/i,'');
-  const unique=base+'-'+Date.now()+ext;
-  const q=await sb.storage.from('bkfuspaq-media').upload(unique,blob,{contentType:preserveTransparency?'image/png':'image/jpeg',upsert:false,cacheControl:'31536000'});if(q.error)throw q.error;
+  const unique=base+'-'+Date.now()+'-'+(crypto.randomUUID?crypto.randomUUID().replace(/-/g,'').slice(0,12):Math.random().toString(36).slice(2,14))+ext;
+  const q=await sb.storage.from('bkfuspaq-media').upload(unique,blob,{contentType:preserveTransparency?'image/png':'image/jpeg',upsert:false,cacheControl:'0'});if(q.error)throw q.error;
   return sb.storage.from('bkfuspaq-media').getPublicUrl(unique).data.publicUrl;
  }
  window.v23UploadImage=putImage;
@@ -5067,13 +5067,15 @@ window.v126RenderPengurus=async function(){
   host.innerHTML='<div class="card"><div class="row"><div><h3>DATA PENGURUS</h3><div class="small muted">Semua pengurus aktif ditampilkan. Kepemilikan akun tidak menentukan apakah data ditampilkan.</div></div><div class="compact-actions"><button class="btn secondary" type="button" onclick="openMyProfileForm()">Profil Saya</button><button class="btn primary" onclick="openManagementAddForm()">+ Tambah Pengurus</button></div></div><div id="v126PeopleList" class="list" style="margin-top:10px">Memuat...</div></div>';
   const box=document.getElementById('v126PeopleList');
   try{
-    const q=await sb.from('management_people').select('id,full_name,email,phone,photo_url,role_code,task,start_date,end_date,status,auth_user_id').eq('status','ACTIVE').order('start_date',{ascending:true}).order('full_name');
+    const q=await sb.from('management_people').select('id,full_name,email,phone,photo_url,role_code,task,start_date,end_date,status,auth_user_id,updated_at').eq('status','ACTIVE').order('start_date',{ascending:true}).order('full_name');
     if(q.error)throw q.error;const rows=q.data||[];
     const currentRoles=Array.isArray(state?.roles)?state.roles:[];
     const currentUserId=state.profile?.id||state.user?.id||null;const canEditAll=currentRoles.includes('KETUA')||currentRoles.includes('SEKRETARIS');const isOwnEditableRole=currentRoles.includes('ANGGOTA')||currentRoles.includes('BENDAHARA');const isAnggota=isOwnEditableRole&&!canEditAll;
     box.innerHTML=rows.length?rows.map(x=>{
       const isSecretary=currentRoles.includes('SEKRETARIS');const isChairRecord=String(x.role_code||'').toUpperCase()==='KETUA';const showEdit=(canEditAll&&!(isSecretary&&isChairRecord))||(isAnggota&&x.auth_user_id===currentUserId);
-      return `<div class="list-item"><div class="row"><div class="v126-person" style="display:flex;gap:12px;align-items:center"><div class="photo" style="width:58px;height:58px;flex:0 0 58px;border-radius:12px;overflow:hidden">${x.photo_url?`<img src="${E(x.photo_url)}" alt="Foto ${E(x.full_name)}" style="width:100%;height:100%;object-fit:cover">`:'<div class="photo-placeholder" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center">Foto</div>'}</div><div><strong>${E(x.full_name)}</strong><div class="small muted">${E(roleLabel(x.role_code))}</div><div class="small">Email: ${E(x.email||'Belum diisi')}</div><div class="small">HP: ${E(x.phone||'Belum diisi')}</div><div class="small muted">${x.auth_user_id?'Akun tersedia':'Belum punya akun'}</div></div></div>${showEdit?`<div class="compact-actions"><button class="btn secondary" onclick="openManagementPersonEdit('${E(x.id)}')">Edit</button></div>`:''}</div></div>`;
+      const photoVersion=x.updated_at?new Date(x.updated_at).getTime():Date.now();
+      const photoSrc=x.photo_url?(x.photo_url+(x.photo_url.includes('?')?'&':'?')+'v='+encodeURIComponent(String(photoVersion))):'';
+      return `<div class="list-item"><div class="row"><div class="v126-person" style="display:flex;gap:12px;align-items:center"><div class="photo" style="width:58px;height:58px;flex:0 0 58px;border-radius:12px;overflow:hidden">${x.photo_url?`<img src="${E(photoSrc)}" alt="Foto ${E(x.full_name)}" style="width:100%;height:100%;object-fit:cover">`:'<div class="photo-placeholder" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center">Foto</div>'}</div><div><strong>${E(x.full_name)}</strong><div class="small muted">${E(roleLabel(x.role_code))}</div><div class="small">Email: ${E(x.email||'Belum diisi')}</div><div class="small">HP: ${E(x.phone||'Belum diisi')}</div><div class="small muted">${x.auth_user_id?'Akun tersedia':'Belum punya akun'}</div></div></div>${showEdit?`<div class="compact-actions"><button class="btn secondary" onclick="openManagementPersonEdit('${E(x.id)}')">Edit</button></div>`:''}</div></div>`;
     }).join(''):'<div class="empty">Belum ada data pengurus aktif.</div>';
   }catch(e){box.innerHTML=`<div class="error">${E(friendly(e))}</div>`}
 };
