@@ -1,3 +1,4 @@
+<!-- SIMFAQ V570: percepat startup; dashboard dan elemen kosmetik dimuat setelah shell tampil. Tanpa perubahan database. -->
 <!-- BK-FUSPAQ-NU V560: footer global disembunyikan khusus pada daftar peserta dan form penilaian; baseline V558; logika penilaian dan data tidak diubah. -->
 <!-- BK-FUSPAQ-NU V555: penyelesaian cakupan 3D Glossy untuk tombol Kembali dan toolbar preview dokumen; basis V554. -->
 <!-- BK-FUSPAQ-NU V554: penyelarasan sistem desain visual; basis V553. -->
@@ -309,7 +310,8 @@ window.requireActiveSession=requireActiveSession;window.hasPermission=hasPermiss
 
 /* ===== V257: lightweight startup splash ===== */
 (function(){
-  const SPLASH_MIN_MS=2400;
+  // Splash hanya memberi jeda visual singkat; tidak menunggu data dashboard.
+  const SPLASH_MIN_MS=900;
   let splashStarted=0;
   function splashMarkup(){return `<div id="bkfSplash" aria-label="Memuat BK FUSPAQ NU"><div class="bkf-splash-pattern"></div><div class="bkf-splash-content"><div class="bkf-splash-logo-wrap"><img id="bkfSplashLogo" class="bkf-splash-logo" alt="Logo BK FUSPAQ NU" hidden><div id="bkfSplashFallback" class="bkf-splash-fallback">BK</div></div><div class="bkf-splash-welcome">Selamat Datang di Aplikasi</div><div class="bkf-splash-title">SISTEM INFORMASI MANAGEMENT<br><strong>BK FUSPAQ NU</strong></div><div id="bkfSplashDistrict" class="bkf-splash-district">KECAMATAN ROWOSARI</div><div class="bkf-splash-loading"><span class="bkf-splash-spinner"></span><span id="bkfSplashStatus">Menyiapkan aplikasi...</span></div></div><div class="bkf-splash-branding"><div><strong>Development : Daneva.studio @2026</strong></div><div>Founder : Ahmad Fathunnur</div></div></div>`}
   function show(){splashStarted=Date.now();if(!document.getElementById('bkfSplash'))document.body.insertAdjacentHTML('afterbegin',splashMarkup());}
@@ -318,7 +320,6 @@ window.requireActiveSession=requireActiveSession;window.hasPermission=hasPermiss
   function setDistrict(v){const e=document.getElementById('bkfSplashDistrict');if(e&&v)e.textContent='KECAMATAN '+String(v).trim().toUpperCase();}
   async function hydrate(){
     try{
-      status('Menyiapkan identitas...');
       const oq=await sb.from('organizations').select('logo_url').eq('status','ACTIVE').limit(1).maybeSingle();
       if(!oq.error&&oq.data?.logo_url)setLogo(oq.data.logo_url);
     }catch(_){}
@@ -4353,19 +4354,23 @@ window.showHome=async function(){
  const quickHtml='<div class="module-card-grid">'+roleQuick.map(x=>'<button class="btn secondary menu-item quick-module module-card-btn" type="button" onclick="navigate(\''+x[1]+'\')"><strong>'+E(x[0])+'</strong></button>').join('')+'</div>';
  host.innerHTML='<div class="card hero v35-welcome"><div style="font-size:14px;color:#6b7c70;font-weight:700">Assalamu\'alaikum Wr. Wb.</div><h2 class="v41-user-name" style="margin:6px 0 2px">'+E(name)+'</h2><div class="row bkf-dashboard-profile-actions" style="justify-content:flex-start;align-items:center;gap:8px;margin:6px 0 0"><span class="status ok">'+E(role)+'</span><span class="status '+(status==='ACTIVE'?'ok':'bad')+'">'+E(status==='ACTIVE'?'Aktif':status)+'</span><button type="button" class="status ok bkf-update-app-link" id="bkfUpdateAppBtn" onclick="window.bkfPwaInstallOrUpdate?.()" aria-label="Instal atau perbarui aplikasi SIMFAQ">Update Aplikasi</button></div><div class="bkf-darus-center"><button type="button" class="darus-quran-link" onclick="openDarusQuranViewer()" aria-label="Buka Darus Al-Qur\'an di dalam aplikasi"><span class="darus-quran-icon" aria-hidden="true">☪</span><span>Darus Al-Qur\'an</span><span class="darus-quran-arrow" aria-hidden="true">↗</span></button></div><div class="bkf-adzan-center"><button type="button" class="bkf-adzan-dashboard-btn" onclick="window.bkfOpenAdzanReminder?.()" aria-label="Buka Pengingat Sholat"><span class="bkf-adzan-dashboard-icon" aria-hidden="true">🕌</span><span class="bkf-adzan-dashboard-content"><span class="bkf-adzan-dashboard-title">Pengingat Sholat</span><span id="bkfAdzanDashboardCountdown" class="bkf-adzan-dashboard-countdown" aria-live="polite">Memuat jadwal sholat…</span></span><span class="bkf-adzan-dashboard-arrow" aria-hidden="true">›</span></button></div><p class="v35-message" style="margin:8px 0 4px">Selamat datang di Sistem Informasi BK FUSPAQ NU.</p><p class="small muted" style="margin:0">'+E(dashboardGreeting())+'</p></div><div class="v75-dashboard-counters" id="dashboardAllCounters">'+counters+'<div id="dashboardExamParticipantCards" style="display:contents"></div></div>';
  const welcomeCard=host.querySelector('.v35-welcome');
- try{
+ host.querySelectorAll('[data-dashboard-detail]').forEach(card=>card.addEventListener('click',()=>card.dataset.dashboardDetail==='notifications'?window.navigate('notifications'):openDashboardDetail(card.dataset.dashboardDetail)));
+ // Data dashboard bukan prasyarat untuk membuka aplikasi. Jalankan setelah shell
+ // tampil; kegagalan satu komponen tidak menahan komponen lain atau splash screen.
+ const runDashboardTask=(label,task)=>setTimeout(()=>{
+   Promise.resolve().then(task).catch(error=>console.warn('[Dashboard '+label+']',error));
+ },0);
+ runDashboardTask('profile logo',async()=>{
    const orgIdsQ=await sb.rpc('current_organization_ids');
    const orgIds=orgIdsQ.error?[]:(Array.isArray(orgIdsQ.data)?orgIdsQ.data:(orgIdsQ.data?[orgIdsQ.data]:[]));
-   if(welcomeCard&&orgIds.length){
-     const logoQ=await sb.from('organizations').select('logo_url').in('id',orgIds).eq('status','ACTIVE').limit(1).maybeSingle();
-     const logoUrl=!logoQ.error?logoQ.data?.logo_url:'';
-     if(logoUrl){const layer=document.createElement('div');layer.className='v493-welcome-logo';layer.setAttribute('aria-hidden','true');const img=document.createElement('img');img.src=logoUrl;img.alt='';img.loading='eager';img.decoding='async';img.onerror=()=>layer.remove();layer.appendChild(img);welcomeCard.prepend(layer)}
-   }
- }catch(e){console.warn('[Dashboard profile logo]',e)}
- host.querySelectorAll('[data-dashboard-detail]').forEach(card=>card.addEventListener('click',()=>card.dataset.dashboardDetail==='notifications'?window.navigate('notifications'):openDashboardDetail(card.dataset.dashboardDetail)));
- await loadDashboardExamCards();
- try{if(typeof loadMetrics==='function')await loadMetrics()}catch(e){console.warn('[Dashboard metrics]',e)}
- try{await window.bkfRenderDashboardPrayerCountdown?.()}catch(e){console.warn('[Dashboard prayer countdown]',e)}
+   if(!welcomeCard?.isConnected||!orgIds.length)return;
+   const logoQ=await sb.from('organizations').select('logo_url').in('id',orgIds).eq('status','ACTIVE').limit(1).maybeSingle();
+   const logoUrl=!logoQ.error?logoQ.data?.logo_url:'';
+   if(logoUrl&&welcomeCard.isConnected){const layer=document.createElement('div');layer.className='v493-welcome-logo';layer.setAttribute('aria-hidden','true');const img=document.createElement('img');img.src=logoUrl;img.alt='';img.loading='lazy';img.decoding='async';img.onerror=()=>layer.remove();layer.appendChild(img);welcomeCard.prepend(layer)}
+ });
+ runDashboardTask('exam participant cards',()=>loadDashboardExamCards());
+ runDashboardTask('metrics',()=>typeof loadMetrics==='function'?loadMetrics():undefined);
+ // Countdown pengingat salat sudah dimulai sekali oleh renderShell() untuk header.
  try{window.bkfRenderDashboardPushPrompt?.()}catch(e){console.warn('[Dashboard push prompt]',e)}
 };
 })();
@@ -5714,7 +5719,10 @@ window.boot=async function(){
  if(!session){try{const r=await client.auth.getUser();if(r.error)throw r.error;state.user=r.data?.user||null}catch(e){state.user=null}if(explicitLogout()){clearAuthToken();await window.bkfSplash?.hide();return renderLogin()}if(!state.user){await window.bkfSplash?.hide();return renderLogin()}}else state.user=session.user;
  window.bkfSplash?.status('Memuat profil dan hak akses...');
  const identityOk=await window.loadIdentity();if(explicitLogout()){clearAuthToken();await window.bkfSplash?.hide();return renderLogin()}if(!identityOk){const why=window.__BK_IDENTITY_ERROR__;await window.bkfSplash?.hide();return renderLogin(why?'Login berhasil, tetapi pemeriksaan role gagal: '+why:'Pemeriksaan akun terlalu lama. Silakan coba lagi.')}
- await window.bkfSplash?.hydrate();if(explicitLogout()){clearAuthToken();await window.bkfSplash?.hide();return renderLogin()}window.bkfSplash?.status('Menyiapkan tampilan aplikasi...');renderShell();
+ // Logo dan label kecamatan bersifat kosmetik; jangan menahan autentikasi,
+ // render shell, atau penutupan splash screen untuk menunggunya.
+ try{Promise.resolve(window.bkfSplash?.hydrate()).catch(e=>console.warn('[BK SPLASH HYDRATE]',e))}catch(e){console.warn('[BK SPLASH HYDRATE]',e)}
+ if(explicitLogout()){clearAuthToken();await window.bkfSplash?.hide();return renderLogin()}window.bkfSplash?.status('Menyiapkan tampilan aplikasi...');renderShell();
  // Sinkronkan ulang subscription perangkat setelah identitas akun tersedia.
  try{const pushSync=window.bkfSyncPushSubscription?.();if(pushSync?.catch)pushSync.catch(e=>console.warn("[BK PUSH SYNC]",e))}catch(e){console.warn("[BK PUSH SYNC]",e)}
  // Jangan biarkan splash screen menutupi aplikasi tanpa batas jika pemuatan Beranda tersendat.
