@@ -28,7 +28,7 @@
 <!-- BK-FUSPAQ-NU V481: Tombol dan mode edit Aturan Ujian & Wisuda; revisi aturan tetap berversi, biaya tetap terkendali. Baseline V480. -->
 
 <html><head>
-<!-- BK-FUSPAQ-NU-V430: targeted registration save-state fix based on V429; no schema changes. --><!-- BK-FUSPAQ-NU V456: fokus keyboard berurutan pada form Penilaian dan Pendaftaran Ujian; baseline V455; hanya dua alur ini yang diubah. --><meta content="V568 - pemantauan kesehatan langganan Push dan konfirmasi showNotification; basis V566" name="bkf-version"/><meta charset="utf-8"><meta content="width=device-width,initial-scale=1" name="viewport"/><meta name="theme-color" content="#176b3a"><meta name="application-name" content="SIMFAQ - BK FUSPAQ NU"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" href="./icons/icon-512.png"><link rel="apple-touch-icon" href="./icons/icon-512.png"><title>SIMFAQ V568</title><style>
+<!-- BK-FUSPAQ-NU-V430: targeted registration save-state fix based on V429; no schema changes. --><!-- BK-FUSPAQ-NU V456: fokus keyboard berurutan pada form Penilaian dan Pendaftaran Ujian; baseline V455; hanya dua alur ini yang diubah. --><meta content="V569 - form hasil ujian terpadu untuk klik notifikasi; basis V568" name="bkf-version"/><meta charset="utf-8"><meta content="width=device-width,initial-scale=1" name="viewport"/><meta name="theme-color" content="#176b3a"><meta name="application-name" content="SIMFAQ - BK FUSPAQ NU"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" href="./icons/icon-512.png"><link rel="apple-touch-icon" href="./icons/icon-512.png"><title>SIMFAQ V569</title><style>
 :root{--green:#176b3a;--green2:#14532d;--gold:#b78a24;--bg:#f5f8f6;--card:#ffffff;--line:#dce7df;--muted:#64756b;--text:#18231d;--ok:#21834c;--danger:#c2413b;--warn:#a87912;--radius:16px;--shadow:0 6px 22px rgba(25,55,38,.07);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;--bkf-primary:#176b3a;--bkf-primary-dark:#14532d;--bkf-primary-soft:#eaf2ec;--bkf-accent:#b78a24;--bkf-surface:#ffffff;--bkf-page:#f5f8f6;--bkf-border:#dce7df;--bkf-text:#18231d;--bkf-muted:#64756b;--bkf-info:#2563eb;--bkf-success:#21834c;--bkf-warning:#d69e20;--bkf-danger:#c2413b;--bkf-shadow-soft:0 4px 14px rgba(20,83,45,.07);}*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text)}button,input,select,textarea{font:inherit}a{color:inherit}
 
 body{min-height:100vh}.shell{min-height:100vh;padding-top:76px;padding-bottom:20px}
@@ -6983,6 +6983,65 @@ window.showExamGovernance=async function(){const host=document.getElementById('p
     }catch(_){return null}
   }
   const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+  window.bkfShowExamResultForm=async function(sessionId,focusScoreId,returnRoute){
+    const host=document.getElementById('page');
+    if(!host)return false;
+    const safe=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const fmt=v=>v==null||v===''?'-':Number(v).toLocaleString('id-ID',{maximumFractionDigits:2});
+    host.innerHTML='<div class="card"><div class="muted">Memuat hasil ujian peserta...</div></div>';
+    try{
+      const sessionQ=await window.sb.from('exam_sessions').select(
+        'id,participant_id,exam_registration_id,participant:participant_id(id,name,nis,exam_number,status,media_id,participant_media:media_id(storage_path)),exam_registrations:exam_registration_id(exam_type,wave,management_period_id,institution_id,institutions:institution_id(name))'
+      ).eq('id',sessionId).maybeSingle();
+      if(sessionQ.error)throw sessionQ.error;
+      const session=sessionQ.data;
+      if(!session)throw new Error('Sesi ujian tidak ditemukan atau tidak dapat diakses.');
+      const p=session.participant||{},reg=session.exam_registrations||{};
+      const examType=String(reg.exam_type||'').toUpperCase();
+      if(!['PRA_TASHIH','TASHIH'].includes(examType))throw new Error('Jenis ujian peserta tidak dikenali.');
+      if(!reg.management_period_id)throw new Error('Periode kepengurusan pada pendaftaran ujian tidak ditemukan.');
+      const [ruleQ,resultQ,scoreQ,remedialQ]=await Promise.all([
+        window.sb.from('exam_rules').select('id,overall_minimum,version').eq('management_period_id',reg.management_period_id).eq('exam_type',examType).eq('status','ACTIVE').order('version',{ascending:false}).limit(1).maybeSingle(),
+        window.sb.from('exam_results').select('total_score,average_score,status,finalized_at,locked_at').eq('exam_session_id',sessionId).maybeSingle(),
+        window.sb.from('exam_scores').select('id,exam_material_id,score,attempt_number,status,submitted_at,created_at').eq('exam_session_id',sessionId).order('attempt_number',{ascending:false}).order('submitted_at',{ascending:false,nullsFirst:false}).order('created_at',{ascending:false}),
+        window.sb.from('exam_remedials').select('id,exam_material_id,score,attempt_number,status,submitted_at').eq('exam_session_id',sessionId).in('status',['SUBMITTED','FINAL','LOCKED']).order('attempt_number',{ascending:false}).order('submitted_at',{ascending:false,nullsFirst:false}).order('id',{ascending:false})
+      ]);
+      for(const q of [ruleQ,resultQ,scoreQ,remedialQ])if(q.error)throw q.error;
+      if(!ruleQ.data?.id)throw new Error('Aturan ujian aktif untuk periode dan jenis ujian ini belum tersedia.');
+      const detailQ=await window.sb.from('exam_rule_details').select('exam_material_id,minimum_score,exam_materials:exam_material_id(id,name,code,sequence)').eq('exam_rule_id',ruleQ.data.id);
+      if(detailQ.error)throw detailQ.error;
+      const details=(detailQ.data||[]).filter(d=>d.exam_materials).sort((a,b)=>Number(a.exam_materials.sequence||9999)-Number(b.exam_materials.sequence||9999));
+      if(!details.length)throw new Error('Daftar materi pada aturan ujian aktif belum tersedia.');
+      const scores=[...(scoreQ.data||[])].filter(x=>String(x.status||'').toUpperCase()!=='DRAFT').sort((a,b)=>Number(b.attempt_number||0)-Number(a.attempt_number||0)||new Date(b.submitted_at||b.created_at||0)-new Date(a.submitted_at||a.created_at||0));
+      const remedials=[...(remedialQ.data||[])];
+      const byMaterial=new Map();
+      for(const x of scores)if(!byMaterial.has(x.exam_material_id))byMaterial.set(x.exam_material_id,x);
+      const remedialByMaterial=new Map();
+      for(const x of remedials)if(!remedialByMaterial.has(x.exam_material_id))remedialByMaterial.set(x.exam_material_id,x);
+      const rows=details.map(d=>{
+        const m=d.exam_materials,base=byMaterial.get(d.exam_material_id),rem=remedialByMaterial.get(d.exam_material_id);
+        const score=rem?.score??base?.score??null,min=Number(d.minimum_score);
+        const status=score==null?'BELUM DINILAI':Number(score)>=min?'MEMENUHI BATAS MINIMAL':'PERLU PERBAIKAN';
+        return {id:d.exam_material_id,name:m.name||m.code||'Materi',score,minimum:min,status,remedial:!!rem,source:rem||base};
+      });
+      const complete=rows.filter(x=>x.score!=null).length===rows.length;
+      const result=resultQ.data||{};
+      const overallLabels={LULUS:'LULUS',LULUS_SETELAH_REMEDI:'LULUS SETELAH REMEDIAL',LULUS_SETELAH_REMIDI:'LULUS SETELAH REMEDIAL',REMEDIAL:'PERLU REMEDIAL',GAGAL:'BELUM LULUS',BELUM_LULUS:'BELUM LULUS',BELUM_DINILAI:'BELUM DINILAI'};
+      const overall=complete?(overallLabels[String(result.status||'').toUpperCase()]||String(result.status||'HASIL TERSEDIA').replaceAll('_',' ')):'PENILAIAN BERLANGSUNG';
+      const focused=scores.find(x=>x.id===focusScoreId)?.exam_material_id||'';
+      let photo=p.participant?.storage_path||'';
+      if(photo&&!/^https?:\/\//i.test(photo)){try{photo=window.sb.storage.from('bkfuspaq-media').getPublicUrl(photo).data?.publicUrl||''}catch(_){photo=''}}
+      const typeLabel=examType==='PRA_TASHIH'?'Pra Tashih':'Tashih';
+      let greeting='Alhamdulillah, satu tahapan penilaian telah tercatat. Tetap semangat mengikuti materi berikutnya. Semoga Allah memberikan kemudahan dan keberkahan dalam menuntut ilmu.';
+      if(complete&&/^LULUS/.test(overall))greeting='Alhamdulillah, seluruh materi ujian telah dilalui dengan hasil yang memenuhi ketentuan. بارك الله فيك. Semoga ilmu yang diperoleh menjadi ilmu yang bermanfaat.';
+      else if(complete)greeting='Jangan berputus asa. Teruslah belajar, berdoa, dan memperbaiki bacaan. Semoga Allah memudahkan setiap ikhtiar dan memberikan hasil terbaik.';
+      const photoHtml=photo?`<img src="${safe(photo)}" alt="Foto ${safe(p.name||'peserta')}" style="width:104px;height:124px;object-fit:cover;border-radius:14px;border:2px solid var(--line,#d8e3dc)">`:'<div style="width:104px;height:124px;border-radius:14px;background:var(--surface-2,#edf3ef);display:grid;place-items:center;color:var(--muted,#68756c);font-size:12px;text-align:center">Foto peserta<br>belum tersedia</div>';
+      host.innerHTML=`<div class="card" style="padding:16px"><div class="row" style="align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap"><div><div class="small muted">BK FUSPAQ NU</div><h2 style="margin:3px 0">Hasil Ujian</h2><div class="small muted">${safe(typeLabel)}${reg.wave?` · Gelombang ${safe(reg.wave)}`:''}</div></div><span class="status ${complete&&/^LULUS/.test(overall)?'ok':''}">${safe(overall)}</span></div><div style="display:flex;gap:14px;align-items:center;margin-top:16px;flex-wrap:wrap">${photoHtml}<div style="flex:1;min-width:170px"><h3 style="margin:0 0 8px">${safe(p.name||'-')}</h3><div class="small">NIS: <strong>${safe(p.nis||'-')}</strong></div><div class="small">Nomor Ujian: <strong>${safe(p.exam_number||'-')}</strong></div><div class="small">Lembaga: <strong>${safe(reg.institutions?.name||'-')}</strong></div><div class="small">Jenis Ujian: <strong>${safe(typeLabel)}</strong></div></div></div></div><div class="card" style="padding:16px"><div class="row" style="justify-content:space-between;align-items:center;gap:8px"><h3 style="margin:0">Rincian Nilai Materi</h3><span class="small muted">${complete?rows.length+' / '+rows.length+' materi selesai':rows.filter(x=>x.score!=null).length+' / '+rows.length+' materi dinilai'}</span></div><div style="overflow-x:auto;margin-top:10px"><table style="width:100%;border-collapse:collapse;min-width:420px"><thead><tr><th style="text-align:left;padding:9px;border-bottom:1px solid var(--line)">Materi Ujian</th><th style="text-align:center;padding:9px;border-bottom:1px solid var(--line)">Nilai</th><th style="text-align:center;padding:9px;border-bottom:1px solid var(--line)">Batas Minimal</th><th style="text-align:left;padding:9px;border-bottom:1px solid var(--line)">Status Nilai</th></tr></thead><tbody>${rows.map(x=>`<tr style="${x.id===focused?'background:rgba(35,130,78,.10);':''}"><td style="padding:10px 9px;border-bottom:1px solid var(--line)"><strong>${safe(x.name)}</strong>${x.remedial?'<div class="small muted">Nilai remedial</div>':''}</td><td style="text-align:center;padding:10px 9px;border-bottom:1px solid var(--line);font-weight:700">${safe(fmt(x.score))}</td><td style="text-align:center;padding:10px 9px;border-bottom:1px solid var(--line)">${safe(fmt(x.minimum))}</td><td style="padding:10px 9px;border-bottom:1px solid var(--line)"><span class="status ${x.status==='MEMENUHI BATAS MINIMAL'?'ok':''}">${safe(x.status)}</span></td></tr>`).join('')}</tbody></table></div><div class="notice" style="margin-top:14px"><strong>Hasil Keseluruhan: ${safe(overall)}</strong><div class="small" style="margin-top:5px">Rata-rata: ${complete?safe(fmt(result.average_score)):'Belum ditetapkan'} · Total nilai: ${complete?safe(fmt(result.total_score)):'Belum lengkap'}</div>${result.finalized_at?'<div class="small" style="margin-top:4px">Hasil telah difinalisasi.</div>':''}${result.locked_at?'<div class="small" style="margin-top:4px">Hasil telah dikunci.</div>':''}</div></div><div class="card" style="padding:16px;text-align:center"><div style="font-size:24px;margin-bottom:7px">🌿</div><strong>Pesan dan Doa</strong><p style="line-height:1.65;margin:8px 0 0">${safe(greeting)}</p><div class="small muted" style="margin-top:10px">رَبِّ زِدْنِي عِلْمًا · Ya Allah, tambahkanlah ilmu kepadaku.</div></div><div class="row" style="justify-content:flex-start"><button class="btn secondary" type="button" id="bkfExamResultBack">← Kembali</button></div>`;
+      document.getElementById('bkfExamResultBack')?.addEventListener('click',()=>{const r=/^(home|notifications|exams|pengujian|pengujian-pra|pengujian-tashih)$/.test(String(returnRoute||''))?returnRoute:'notifications';window.navigate(r)});
+      const img=host.querySelector('img[alt^="Foto "]');if(img)img.addEventListener('error',()=>{img.replaceWith(Object.assign(document.createElement('div'),{textContent:'Foto tidak dapat ditampilkan',className:'small muted'}))},{once:true});
+      return true;
+    }catch(error){console.warn('[BKF HASIL UJIAN]',error);host.innerHTML=`<div class="card"><h2>Hasil Ujian</h2><div class="notice">${safe(error?.message||'Hasil ujian belum dapat dimuat.')}</div><button class="btn secondary" id="bkfExamResultBack" type="button">← Kembali</button></div>`;document.getElementById('bkfExamResultBack')?.addEventListener('click',()=>window.navigate('notifications'));return false;}
+  };
   async function openRelatedTarget(data){
     const table=data.relatedTable,id=data.relatedId;
     if(!table||!id)return false;
@@ -7000,18 +7059,8 @@ window.showExamGovernance=async function(){const host=document.getElementById('p
           if(scoreOrResult.error)throw scoreOrResult.error;
           sessionId=scoreOrResult.data?.exam_session_id||'';
         }
-        if(sessionId){
-          const session=await window.sb.from('exam_sessions').select('id,participant_id,exam_registration_id').eq('id',sessionId).maybeSingle();
-          if(session.error)throw session.error;
-          const row=session.data;
-          if(row?.participant_id&&typeof window.openParticipantFromPengujian==='function'){
-            const registration=await window.sb.from('exam_registrations').select('exam_type,wave').eq('id',row.exam_registration_id).maybeSingle();
-            if(registration.error)throw registration.error;
-            const examType=String(registration.data?.exam_type||'PRA_TASHIH').toUpperCase();
-            const targetRoute=examType==='TASHIH'?'pengujian-tashih':'pengujian-pra';
-            await window.openParticipantFromPengujian(row.id,row.participant_id,targetRoute,Number(registration.data?.wave)===2?2:1);
-            return true;
-          }
+        if(sessionId&&typeof window.bkfShowExamResultForm==='function'){
+          return await window.bkfShowExamResultForm(sessionId,table==='exam_scores'?id:'',data.route);
         }
       }
       if(table==='activity_tasks'||table==='activity_publications'){
