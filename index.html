@@ -7029,7 +7029,7 @@ window.showExamGovernance=async function(){const host=document.getElementById('p
       const overallLabels={LULUS:'LULUS',LULUS_SETELAH_REMEDI:'LULUS SETELAH REMEDIAL',LULUS_SETELAH_REMIDI:'LULUS SETELAH REMEDIAL',REMEDIAL:'PERLU REMEDIAL',GAGAL:'BELUM LULUS',BELUM_LULUS:'BELUM LULUS',BELUM_DINILAI:'BELUM DINILAI'};
       const overall=complete?(overallLabels[String(result.status||'').toUpperCase()]||String(result.status||'HASIL TERSEDIA').replaceAll('_',' ')):'PENILAIAN BERLANGSUNG';
       const focused=scores.find(x=>x.id===focusScoreId)?.exam_material_id||'';
-      let photo=p.participant?.storage_path||'';
+      let photo=p.participant?.participant_media?.storage_path||'';
       if(photo&&!/^https?:\/\//i.test(photo)){try{photo=window.sb.storage.from('bkfuspaq-media').getPublicUrl(photo).data?.publicUrl||''}catch(_){photo=''}}
       const typeLabel=examType==='PRA_TASHIH'?'Pra Tashih':'Tashih';
       let greeting='Alhamdulillah, satu tahapan penilaian telah tercatat. Tetap semangat mengikuti materi berikutnya. Semoga Allah memberikan kemudahan dan keberkahan dalam menuntut ilmu.';
