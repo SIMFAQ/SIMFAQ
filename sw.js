@@ -80,7 +80,10 @@ self.addEventListener('push', event => {
     badge: new URL('icons/icon-192.png', APP_BASE).href,
     data: {url: payload.url || './', route: payload.route || 'notifications', eventType: payload.eventType || '', notificationId: payload.notificationId || '', relatedTable: payload.relatedTable || '', relatedId: payload.relatedId || '', activityId: payload.activityId || ''},
     lang: 'id-ID',
-    dir: 'auto'
+    dir: 'auto',
+    // Reuse one notification slot for retries of the same push event.
+    tag: String(payload.tag || payload.notificationId || ''),
+    renotify: false
   };
   // Keep the signed display-ack data with the notification so the SW can
   // report successful showNotification() completion even when no page is open.
@@ -101,7 +104,7 @@ self.addEventListener('push', event => {
       const ackUrl = new URL(ack.url);
       if (ackUrl.origin !== 'https://yhxetkdsuogbehxnarhk.supabase.co' ||
           ackUrl.pathname !== '/functions/v1/bkf-push') return;
-      await fetch(ackUrl.href, {
+      const response = await fetch(ackUrl.href, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -111,8 +114,12 @@ self.addEventListener('push', event => {
           token: ack.token
         }),
         cache: 'no-store',
-        credentials: 'omit'
+        credentials: 'omit',
+        keepalive: true
       });
+      if (!response.ok) {
+        console.warn('[SIMFAQ PUSH ACK] Server menolak konfirmasi:', response.status);
+      }
     } catch (error) {
       console.warn('[SIMFAQ PUSH ACK] Konfirmasi tampilan gagal dikirim:', error);
     }
