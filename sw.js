@@ -137,6 +137,20 @@ self.addEventListener('notificationclick', event => {
         return;
       }
     }
+    // Preserve notification context when the PWA has no open window. The page
+    // consumes these parameters after authentication/bootstrap and routes exam
+    // score notifications directly to the unified Hasil Ujian form.
+    const params = {
+      bkf_push_route: data.route || 'notifications',
+      bkf_push_notification_id: data.notificationId || '',
+      bkf_push_related_table: data.relatedTable || '',
+      bkf_push_related_id: data.relatedId || '',
+      bkf_push_activity_id: data.activityId || '',
+      bkf_push_event_type: data.eventType || ''
+    };
+    for (const [key, value] of Object.entries(params)) {
+      if (value) target.searchParams.set(key, String(value));
+    }
     return self.clients.openWindow(target.href);
   })());
 });
