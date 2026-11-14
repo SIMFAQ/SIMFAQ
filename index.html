@@ -1,5 +1,5 @@
 <!-- SIMFAQ V582: tombol WhatsApp penagihan per lembaga pada daftar tagihan; pesan merangkum seluruh sisa tagihan lembaga dan memakai nomor kontak institusi. Tanpa perubahan data/database. -->
-<!-- SIMFAQ V584: Profil Kepengurusan memakai sumber foto management_people dan cache-busting updated_at seperti Data Pengurus. Baseline V583. -->
+<!-- SIMFAQ V587: Foto pengurus disatukan ke sumber tampilan management_people untuk header, profil, kepengurusan, form pengurus, dan album. Baseline V586. -->
 <!-- SIMFAQ V581: ukuran foto pengurus/Ketua dan Kepala Lembaga 25 x 33,3 mm pada preview, PDF, dan form; ukuran halaman 165 x 215,9 mm serta foto peserta dipertahankan. -->
 <!-- SIMFAQ V575: perbaikan penggantian foto profil/pengurus memakai jalur Storage unik agar cache lama tidak menahan foto lama; pembersihan foto lama hanya setelah audit referensi. Tanpa perubahan database atau Service Worker. -->
 <!-- BK-FUSPAQ-NU V560: footer global disembunyikan khusus pada daftar peserta dan form penilaian; baseline V558; logika penilaian dan data tidak diubah. -->
@@ -619,15 +619,16 @@ async function refreshHeaderAvatar(){
   const host=document.getElementById('topAvatarContent');
   if(!host)return;
   const profile=state.profile||{};
-  const userId=profile.id||state.user?.id||null;
+  const authUserId=state.user?.id||null;
+  const profileId=profile.id||authUserId;
   const roles=Array.isArray(state.roles)?state.roles.map(r=>String(r||'').toUpperCase()):[];
   let photoUrl=profile.photo_url||null;
-  // Foto akun OPERATOR bersumber dari data lembaga yang terhubung,
-  // sedangkan foto akun pengurus tetap bersumber dari profiles.photo_url.
-  if(userId&&roles.includes('OPERATOR')){
+  // Operator memakai foto kepala lembaga. Untuk akun pengurus, sumber utama
+  // foto tampilan adalah management_people, sama dengan Data Pengurus/Album.
+  if(authUserId&&roles.includes('OPERATOR')){
     try{
       const roleQ=await sb.from('user_roles').select('institution_id')
-        .eq('user_id',userId).eq('status','ACTIVE')
+        .eq('user_id',profileId).eq('status','ACTIVE')
         .not('institution_id','is',null).limit(1).maybeSingle();
       if(roleQ.error)throw roleQ.error;
       const institutionId=roleQ.data?.institution_id||null;
@@ -640,10 +641,24 @@ async function refreshHeaderAvatar(){
     }catch(error){
       console.warn('[BKF HEADER AVATAR] Foto kepala lembaga belum dapat dimuat; menggunakan foto profil cadangan.',error);
     }
+  }else if(authUserId){
+    try{
+      const personQ=await sb.from('management_people').select('photo_url,updated_at')
+        .eq('auth_user_id',authUserId).eq('status','ACTIVE')
+        .order('updated_at',{ascending:false}).limit(1).maybeSingle();
+      if(personQ.error)throw personQ.error;
+      if(personQ.data){
+        const canonical=personQ.data.photo_url||null;
+        const version=personQ.data.updated_at?new Date(personQ.data.updated_at).getTime():Date.now();
+        photoUrl=canonical?(canonical+(canonical.includes('?')?'&':'?')+'v='+encodeURIComponent(String(version))):null;
+      }
+    }catch(error){
+      console.warn('[BKF HEADER AVATAR] Foto pengurus kanonis belum dapat dimuat; menggunakan foto profil cadangan.',error);
+    }
   }
   // Hindari memperbarui avatar milik sesi lain bila sesi berubah saat query berjalan.
-  const currentUserId=state.profile?.id||state.user?.id||null;
-  if(!document.getElementById('topAvatarContent')||userId!==currentUserId)return;
+  const currentUserId=state.user?.id||state.profile?.id||null;
+  if(!document.getElementById('topAvatarContent')||authUserId!==currentUserId)return;
   host.innerHTML=photoUrl
     ? `<img src="${esc(photoUrl)}" alt="Foto profil ${esc(profile.full_name||'Pengguna')}">`
     : `<span class="top-avatar-fallback">${icon('user')}</span>`;
@@ -1934,14 +1949,27 @@ window.v12TogglePassword=function(id,btn){const e=document.getElementById(id);if
   function closeButtonify(){document.querySelectorAll('button').forEach(b=>{const t=(b.textContent||'').trim();if(/^Tutup$|^×$|^✕$/.test(t)){b.classList.add('v32-x-close');b.setAttribute('aria-label','Tutup');b.title='Tutup'}})}
   const _oldOpen=window.openMyProfileForm;
   window.openMyProfileForm=async function(){
-    const p=state.profile||{}; document.getElementById('v32ProfileModal')?.remove();
+    const p={...(state.profile||{})};
+    let canonicalPhoto=p.photo_url||null;
+    try{
+      const personQ=await sb.from('management_people').select('photo_url,updated_at')
+        .eq('auth_user_id',state.user?.id).eq('status','ACTIVE')
+        .order('updated_at',{ascending:false}).limit(1).maybeSingle();
+      if(!personQ.error&&personQ.data){
+        canonicalPhoto=personQ.data.photo_url||null;
+        const version=personQ.data.updated_at?new Date(personQ.data.updated_at).getTime():Date.now();
+        p.photo_url=canonicalPhoto?(canonicalPhoto+(canonicalPhoto.includes('?')?'&':'?')+'v='+encodeURIComponent(String(version))):null;
+      }
+    }catch(error){console.warn('[BKF PROFILE FORM PHOTO]',error)}
+    document.getElementById('v32ProfileModal')?.remove();
     document.body.insertAdjacentHTML('beforeend',`<div class="backdrop" id="v32ProfileModal"><div class="modal-sheet"><div class="row"><div><h3>Edit Profil Saya</h3><div class="small muted">Nama, nomor telepon, foto, dan password akun.</div></div><button class="btn secondary" type="button" onclick="document.getElementById('v32ProfileModal')?.remove()">Tutup</button></div><form id="v32ProfileForm"><div class="field"><label>Nama lengkap</label><input name="full_name" required value="${_E(p.full_name||'')}"></div><div class="field"><label>Nomor telepon</label><input name="phone" inputmode="tel" value="${_E(p.phone||'')}"></div><div class="field"><label>Foto profil</label><input id="v32ProfilePhoto" type="file" accept="image/*"><div id="v32ProfilePreview">${typeof imgOr==='function'?imgOr(p.photo_url,'photo-lg'):'<div class="photo-lg photo-placeholder">Belum ada foto</div>'}</div></div><div class="field"><label>Password baru <span class="small muted">(opsional)</span></label><input name="password" type="password" minlength="6" autocomplete="new-password" placeholder="Minimal 6 karakter"></div><div class="field"><label>Konfirmasi password baru</label><input name="password_confirm" type="password" minlength="6" autocomplete="new-password" placeholder="Ulangi password baru"><div class="small muted">Kosongkan keduanya jika password tidak ingin diubah.</div></div><button class="btn primary" style="width:100%">Simpan perubahan</button><p id="v32ProfileMsg" class="small"></p></form></div></div>`);
     const form=document.getElementById('v32ProfileForm');
+    form._canonicalOldPhoto=canonicalPhoto;
     document.getElementById('v32ProfilePhoto').onchange=e=>{const f=e.target.files?.[0];if(!f)return;form._photoFile=f;document.getElementById('v32ProfilePreview').innerHTML='<span class="small muted">Foto baru siap disimpan.</span>'};
     form.onsubmit=async e=>{
       e.preventDefault();
       const f=new FormData(form),msg=document.getElementById('v32ProfileMsg');
-      const oldPhoto=state.profile?.photo_url||null;
+      const oldPhoto=form._canonicalOldPhoto||state.profile?.photo_url||null;
       let newPhoto=null;
       msg.textContent='Menyimpan...';
       try{
@@ -5064,11 +5092,11 @@ function managementModal(id,x){
   <div class="field"><label>Nomor HP</label><input name="phone" value="${E(x?.phone||'')}"></div>
   <div class="grid grid2"><div class="field"><label>Jabatan *</label><select name="role" required>${['KETUA','SEKRETARIS','BENDAHARA','ANGGOTA'].map(r=>`<option value="${r}" ${x?.role_code===r?'selected':''}>${roleLabel(r)}</option>`).join('')}</select></div><div class="field"><label>Tugas</label><input name="task" value="${E(x?.task||'')}"></div></div>
   <div class="grid grid2"><div class="field"><label>Tanggal mulai *</label><input name="start" type="date" required value="${E(x?.start_date||'')}"></div><div class="field"><label>Tanggal akhir</label><input name="end" type="date" value="${E(x?.end_date||'')}"></div></div>
-  <div class="field"><label>Foto Pengurus</label><input id="v126MgmtPhoto" name="photo" type="file" accept="image/*"><div id="v126MgmtPhotoPreview" style="margin-top:8px;width:25mm;height:33.3mm;box-sizing:border-box;border:1px solid var(--line);border-radius:2mm;overflow:hidden;background:#f7f7f7;display:flex;align-items:center;justify-content:center">${x?.photo_url?`<img src="${E(x.photo_url)}" alt="Foto Pengurus" style="width:100%;height:100%;object-fit:cover;display:block">`:'<span class="small muted">Foto</span>'}</div></div>
+  <div class="field"><label>Foto Pengurus</label><input id="v126MgmtPhoto" name="photo" type="file" accept="image/*"><div id="v126MgmtPhotoPreview" style="margin-top:8px;width:25mm;height:33.3mm;box-sizing:border-box;border:1px solid var(--line);border-radius:2mm;overflow:hidden;background:#f7f7f7;display:flex;align-items:center;justify-content:center">${x?.photo_url?`<img src="${E(x.photo_url+(x.photo_url.includes('?')?'&':'?')+'v='+encodeURIComponent(String(x.updated_at?new Date(x.updated_at).getTime():Date.now())))}" alt="Foto Pengurus" style="width:100%;height:100%;object-fit:cover;display:block">`:'<span class="small muted">Foto</span>'}</div></div>
   <button class="btn primary" style="width:100%">${edit?'Simpan Perubahan':'Daftar Pengurus & Buat Akun'}</button><p id="v126MgmtMsg" class="small"></p>
   </form></div></div>`);
   const mgmtPhotoInput=document.getElementById('v126MgmtPhoto');
-  mgmtPhotoInput.onchange=e=>{const f=e.target.files?.[0],preview=document.getElementById('v126MgmtPhotoPreview');if(!preview)return;if(!f){preview.innerHTML=x?.photo_url?`<img src="${E(x.photo_url)}" alt="Foto Pengurus" style="width:100%;height:100%;object-fit:cover;display:block">`:'<span class="small muted">Foto</span>';return}const url=URL.createObjectURL(f);preview.innerHTML=`<img src="${url}" alt="Preview Foto Pengurus" style="width:100%;height:100%;object-fit:cover;display:block">`;};
+  mgmtPhotoInput.onchange=e=>{const f=e.target.files?.[0],preview=document.getElementById('v126MgmtPhotoPreview');if(!preview)return;if(!f){const old=x?.photo_url?(x.photo_url+(x.photo_url.includes('?')?'&':'?')+'v='+encodeURIComponent(String(x.updated_at?new Date(x.updated_at).getTime():Date.now()))):'';preview.innerHTML=old?`<img src="${E(old)}" alt="Foto Pengurus" style="width:100%;height:100%;object-fit:cover;display:block">`:'<span class="small muted">Foto</span>';return}const url=URL.createObjectURL(f);preview.innerHTML=`<img src="${url}" alt="Preview Foto Pengurus" style="width:100%;height:100%;object-fit:cover;display:block">`;};
   document.getElementById('v126MgmtForm').onsubmit=async e=>{
     e.preventDefault();const f=new FormData(e.target),msg=document.getElementById('v126MgmtMsg');msg.textContent='Menyimpan...';
     try{
