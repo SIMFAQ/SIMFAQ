@@ -1952,13 +1952,17 @@ window.v12TogglePassword=function(id,btn){const e=document.getElementById(id);if
           photo=await window.v23UploadImage(form._photoFile,'profiles/'+(state.profile?.id||state.user.id)+'.jpg');
           newPhoto=photo;
         }
+        const password=String(f.get('password')||'').trim();
+        const passwordConfirm=String(f.get('password_confirm')||'').trim();
+        if(password && password.length<6)throw new Error('Password baru minimal 6 karakter.');
+        if(password!==passwordConfirm)throw new Error('Konfirmasi password tidak sama.');
         const r=await sb.functions.invoke('user-management',{body:{
-          action:'self_update_profile',
+          action:'update_profile',
+          user_id:state.user?.id,
           full_name:String(f.get('full_name')||'').trim(),
           phone:String(f.get('phone')||'').trim()||null,
-          photo_url:photo,
-          password:String(f.get('password')||'').trim()||null,
-          password_confirm:String(f.get('password_confirm')||'').trim()||null
+          photo_url:photo||oldPhoto,
+          password:password||null
         }});
         if(r.error||r.data?.error)throw new Error(r.data?.error||r.error?.message||'Profil belum berhasil disimpan.');
         await loadIdentity();
