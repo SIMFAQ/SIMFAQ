@@ -32,7 +32,7 @@
 <!-- BK-FUSPAQ-NU V481: Tombol dan mode edit Aturan Ujian & Wisuda; revisi aturan tetap berversi, biaya tetap terkendali. Baseline V480. -->
 
 <html><head>
-<!-- BK-FUSPAQ-NU-V430: targeted registration save-state fix based on V429; no schema changes. --><!-- BK-FUSPAQ-NU V456: fokus keyboard berurutan pada form Penilaian dan Pendaftaran Ujian; baseline V455; hanya dua alur ini yang diubah. --><meta content="V569 - form hasil ujian terpadu untuk klik notifikasi; basis V568" name="bkf-version"/><meta charset="utf-8"><meta content="width=device-width,initial-scale=1" name="viewport"/><meta name="theme-color" content="#176b3a"><meta name="application-name" content="SIMFAQ - BK FUSPAQ NU"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" href="./icons/icon-512.png"><link rel="apple-touch-icon" href="./icons/icon-512.png"><title>SIMFAQ V569</title><style>
+<!-- BK-FUSPAQ-NU-V430: targeted registration save-state fix based on V429; no schema changes. --><!-- BK-FUSPAQ-NU V456: fokus keyboard berurutan pada form Penilaian dan Pendaftaran Ujian; baseline V455; hanya dua alur ini yang diubah. --><meta content="V569 - form hasil ujian terpadu untuk klik notifikasi; basis V568" name="bkf-version"/><meta charset="utf-8"><meta content="width=device-width,initial-scale=1" name="viewport"/><meta name="theme-color" content="#176b3a"><meta name="application-name" content="SIMFAQ - BK FUSPAQ NU"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" href="./icons/icon-512.png"><link rel="apple-touch-icon" href="./icons/icon-512.png"><title>SIMFAQ V588</title><style>
 :root{--green:#176b3a;--green2:#14532d;--gold:#b78a24;--bg:#f5f8f6;--card:#ffffff;--line:#dce7df;--muted:#64756b;--text:#18231d;--ok:#21834c;--danger:#c2413b;--warn:#a87912;--radius:16px;--shadow:0 6px 22px rgba(25,55,38,.07);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;--bkf-primary:#176b3a;--bkf-primary-dark:#14532d;--bkf-primary-soft:#eaf2ec;--bkf-accent:#b78a24;--bkf-surface:#ffffff;--bkf-page:#f5f8f6;--bkf-border:#dce7df;--bkf-text:#18231d;--bkf-muted:#64756b;--bkf-info:#2563eb;--bkf-success:#21834c;--bkf-warning:#d69e20;--bkf-danger:#c2413b;--bkf-shadow-soft:0 4px 14px rgba(20,83,45,.07);}*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text)}button,input,select,textarea{font:inherit}a{color:inherit}
 
 body{min-height:100vh}.shell{min-height:100vh;padding-top:76px;padding-bottom:20px}
@@ -246,6 +246,68 @@ button[aria-label*="hapus" i] svg,button[title*="hapus" i] svg,button[aria-label
 .v542-bill-table .v542-money{font-weight:700;white-space:nowrap}
 @media(max-width:600px){.v542-bill-summary{grid-template-columns:1fr 1fr}.v542-bill-summary>div:first-child{grid-column:1/-1}.v542-bill-group>summary{padding:12px 10px;gap:8px}.v542-group-total{font-size:.92rem}}
 </style>
+
+
+
+<style id="bkf-theme-customization-v588">
+/* V588: theme tokens and restrained overrides for the main SIMFAQ shell. */
+:root{
+  --bkf-theme-accent:#176b3a;
+  --bkf-theme-accent-dark:#14532d;
+  --bkf-theme-accent-soft:#e8f4eb;
+}
+html[data-bkf-theme-mode="dark"]{
+  color-scheme:dark;
+  --bg:#111a15!important;
+  --card:#1b2820!important;
+  --line:#34483a!important;
+  --muted:#b2c2b7!important;
+  --text:#edf5ef!important;
+  --shadow:0 7px 22px rgba(0,0,0,.22)!important;
+  --bkf-primary-soft:#243d2d!important;
+}
+html[data-bkf-theme-mode="dark"] body{background:var(--bg)!important;color:var(--text)!important}
+html[data-bkf-theme-mode="dark"] .card,
+html[data-bkf-theme-mode="dark"] .modal-sheet,
+html[data-bkf-theme-mode="dark"] .drawer-panel,
+html[data-bkf-theme-mode="dark"] .form-section{background:var(--card)!important;color:var(--text)!important;border-color:var(--line)!important}
+html[data-bkf-theme-mode="dark"] input,
+html[data-bkf-theme-mode="dark"] select,
+html[data-bkf-theme-mode="dark"] textarea{background:#142019!important;color:var(--text)!important;border-color:var(--line)!important}
+html[data-bkf-theme-mode="dark"] .muted,
+html[data-bkf-theme-mode="dark"] .small.muted{color:var(--muted)!important}
+html[data-bkf-theme-mode="dark"] table{color:var(--text)}
+html[data-bkf-theme-mode="dark"] th{background:#26392d!important;color:var(--text)!important}
+html[data-bkf-theme-mode="dark"] td{border-color:var(--line)!important}
+html[data-bkf-theme-mode="dark"] .secondary{background:#26392d!important;color:#dcefe2!important;border-color:var(--line)!important}
+html[data-bkf-theme-mode="dark"] .bottom{background:#17231b!important;border-color:var(--line)!important}
+html[data-bkf-theme-mode="dark"] .bottom button{color:var(--muted)!important}
+html[data-bkf-theme-mode="dark"] .drawer-panel .menu-item .menu-label{color:var(--text)!important}
+html[data-bkf-theme-mode="dark"] .bkf-global-footer,
+html[data-bkf-theme-mode="dark"] #bkfGlobalFooter{background:#17231b!important;border-color:var(--line)!important;color:var(--text)!important}
+html[data-bkf-theme-mode="dark"] .bkf-footer-link{background:#202f25!important;color:var(--text)!important;border-color:var(--line)!important}
+html[data-bkf-theme-mode="dark"] .bkf-footer-link.active{background:#294a35!important;color:#fff!important}
+html[data-bkf-theme-mode="dark"] .hero{background:linear-gradient(135deg,var(--bkf-theme-accent),var(--bkf-theme-accent-dark))!important}
+html[data-bkf-theme-mode="dark"] .top{background:var(--bkf-theme-accent-dark)!important}
+html[data-bkf-theme-mode="dark"] .primary,
+html[data-bkf-theme-mode="dark"] .btn.primary{background:var(--bkf-theme-accent)!important;color:#fff!important}
+html[data-bkf-theme-mode="light"] .top{background:var(--bkf-theme-accent)!important}
+html[data-bkf-theme-mode="light"] .primary,
+html[data-bkf-theme-mode="light"] .btn.primary{background:var(--bkf-theme-accent)!important}
+html[data-bkf-theme-mode="light"] .bottom button.active{color:var(--bkf-theme-accent)!important}
+html[data-bkf-theme-mode="light"] #bkfGlobalFooterNav .bkf-footer-link.active{border-color:var(--bkf-theme-accent)!important;color:var(--bkf-theme-accent-dark)!important}
+html[data-bkf-theme-mode="light"] .secondary{color:var(--bkf-theme-accent-dark)!important}
+.bkf-theme-panel{display:grid;gap:14px}
+.bkf-theme-presets{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+.bkf-theme-preset{display:flex;align-items:center;gap:8px;min-height:48px;padding:8px;border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--text);font-weight:700;text-align:left}
+.bkf-theme-swatch{width:23px;height:23px;flex:0 0 23px;border-radius:50%;border:2px solid #ffffffaa;box-shadow:0 0 0 1px #0002}
+.bkf-theme-preset[aria-pressed="true"]{outline:2px solid var(--bkf-theme-accent);outline-offset:1px}
+.bkf-theme-color-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.bkf-theme-color-row input[type="color"]{width:48px;height:42px;padding:3px;border:1px solid var(--line);border-radius:10px;background:var(--card)}
+.bkf-theme-code{flex:1;min-width:125px}
+.bkf-theme-preview{padding:14px;border-radius:13px;background:var(--bkf-theme-accent);color:#fff}
+@media(max-width:420px){.bkf-theme-presets{grid-template-columns:repeat(2,minmax(0,1fr))}}
+</style>
 </head><body><div id="app"></div><!-- V238: Loader aturan ujian memuat rincian rule sekali, bukan query detail per tahap. -->
 <script id="bk-supabase-loader">
 window.BKF_CONFIG={supabaseUrl:'https://yhxetkdsuogbehxnarhk.supabase.co',supabasePublishableKey:'sb_publishable_ZnikYPnzJtTD_H8wUq2aiw_4hecYQW_'};
@@ -343,6 +405,7 @@ window.requireActiveSession=requireActiveSession;window.hasPermission=hasPermiss
   window.bkfSplash={show,status,setLogo,setDistrict,hydrate,hide};
 })();
 const fmt=n=>new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(Number(n||0));
+const examComponentLabel=code=>({GERAKAN:'Gerakan',BACAAN:'Bacaan',ADAB:'Adab',NILAI_1:'Nilai 1',NILAI_2:'Nilai 2',NILAI_3:'Nilai 3',NILAI_4:'Nilai 4'})[String(code||'').toUpperCase()]||String(code||'-');
 const date=v=>v?new Date(v).toLocaleDateString('id-ID',{dateStyle:'medium',timeZone:'Asia/Jakarta'}):'-';
 const can=p=>{const r=state.roles||[];if(r.includes('KETUA'))return true;const m={'activity.view':['KETUA','SEKRETARIS','BENDAHARA','ANGGOTA','OPERATOR'],'exam.view':['KETUA','SEKRETARIS','ANGGOTA','OPERATOR'],'graduation.view':['KETUA','SEKRETARIS','ANGGOTA','OPERATOR'],'finance.view':['KETUA','BENDAHARA','OPERATOR'],'secretariat.view':['KETUA','SEKRETARIS','ANGGOTA'],'distribution.view':['KETUA','SEKRETARIS','BENDAHARA','ANGGOTA','OPERATOR'],'report.view':['KETUA','SEKRETARIS','BENDAHARA','ANGGOTA','OPERATOR'],'management.view':['KETUA','SEKRETARIS','BENDAHARA','ANGGOTA'],'institution.view':['KETUA','SEKRETARIS','BENDAHARA','ANGGOTA','OPERATOR'],'org.view':['KETUA','SEKRETARIS','BENDAHARA','ANGGOTA','OPERATOR'],'settings.manage':['KETUA'],'dashboard.view':['KETUA','SEKRETARIS','BENDAHARA','ANGGOTA','OPERATOR']};return (m[p]||[]).some(x=>r.includes(x));};
 const roleLabel=r=>({KETUA:'Ketua Pengurus',SEKRETARIS:'Sekretaris Pengurus',BENDAHARA:'Bendahara Pengurus',ANGGOTA:'Anggota Pengurus',OPERATOR:'Kepala/Operator Lembaga'})[r]||r;
@@ -397,14 +460,18 @@ function openParticipant(p){
  </div>`;
  const ms=document.getElementById('materials');
  ms.innerHTML=(p.assigned_materials||[]).map(m=>{
-   const sh=String(m.code).toUpperCase()==='SHOLAT';
+   const code=String(m.code||'').toUpperCase();
+   const sh=code==='SHOLAT';
+   const sumMaterial=code==='SURAT_PENDEK'||code==='DOA_HARIAN';
+   const components=sh?[['GERAKAN','Gerakan'],['BACAAN','Bacaan']]:sumMaterial?[['ADAB','Adab'],['NILAI_1','Nilai 1'],['NILAI_2','Nilai 2'],['NILAI_3','Nilai 3'],['NILAI_4','Nilai 4']]:[];
    const min=m.minimum_score!=null?Number(m.minimum_score):null;
    const existing=m.score!=null?Number(m.score):null;
    const passed=existing!=null&&min!=null&&existing>=min;
-   return `<div class="material" data-minimum="${min??''}" data-score-status="${esc(m.score_status||'BELUM_DINILAI')}">
+   const componentInputs=components.length?`<div class="component-grid">${components.map(([key,label])=>`<div class="field"><label>${label}</label><input class="score comp" data-material="${esc(m.material_id)}" data-code="${key}" type="number" min="1" max="100" step="0.01" value="${m.components?.[key]??''}" ${locked||window.bkfIsFinishedScore(m.score_status)?'disabled':''}></div>`).join('')}</div>`:'';
+   return `<div class="material" data-code="${esc(code)}" data-minimum="${min??''}" data-score-status="${esc(m.score_status||'BELUM_DINILAI')}">
      <div class="row"><div><strong>${esc(m.name)}</strong><div class="small muted">Batas minimal: <strong>${min!=null?min:'-'}</strong></div></div><span class="status ${passed?'ok':''} material-status">${existing!=null?(passed?'MEMENUHI':'BELUM MEMENUHI'):'BELUM DINILAI'}</span></div>
-     ${sh?`<div class="component-grid"><div class="field"><label>Gerakan</label><input class="score comp" data-material="${esc(m.material_id)}" data-code="GERAKAN" type="number" min="1" max="100" step="0.01" value="${m.components?.GERAKAN??''}" ${locked||window.bkfIsFinishedScore(m.score_status)?'disabled':''}></div><div class="field"><label>Bacaan</label><input class="score comp" data-material="${esc(m.material_id)}" data-code="BACAAN" type="number" min="1" max="100" step="0.01" value="${m.components?.BACAAN??''}" ${locked||window.bkfIsFinishedScore(m.score_status)?'disabled':''}></div></div>`:''}
-     <div class="field"><label>${sh?'Nilai Akhir Sholat':'Nilai'}</label><input class="score final-score" data-material="${esc(m.material_id)}" type="number" min="1" max="100" step="0.01" value="${m.score??''}" ${sh||locked||window.bkfIsFinishedScore(m.score_status)?'readonly':''}></div>
+     ${componentInputs}
+     <div class="field"><label>${sh?'Nilai Akhir Sholat':sumMaterial?'Total Nilai (Penjumlahan 5 Komponen)':'Nilai'}</label><input class="score final-score" data-material="${esc(m.material_id)}" type="number" min="1" max="100" step="0.01" value="${m.score??''}" ${components.length||locked||window.bkfIsFinishedScore(m.score_status)?'readonly':''}></div>
    </div>`;
  }).join('')||'<div class="empty">Tidak ada materi yang menjadi penugasan Anda pada peserta ini.</div>';
  const updateSummary=()=>{
@@ -426,7 +493,7 @@ function openParticipant(p){
    ms.querySelectorAll('.material').forEach(el=>{const v=Number(String(el.querySelector('.final-score')?.value??'').trim()),mn=Number(el.dataset.minimum),sp=el.querySelector('.material-status');if(!sp)return;const valid=Number.isFinite(v)&&v>=1&&v<=100;sp.className='status material-status '+(valid&&Number.isFinite(mn)&&v>=mn?'ok':'');sp.textContent=valid?(Number.isFinite(mn)&&v>=mn?'MEMENUHI':'BELUM MEMENUHI'):'BELUM DINILAI'});
  };
  if(locked)return;
- ms.querySelectorAll('.comp').forEach(x=>x.oninput=()=>{const mat=x.closest('.material');const vals=[...mat.querySelectorAll('.comp')].map(a=>Number(a.value));if(vals.length===2&&vals.every(Number.isFinite))mat.querySelector('.final-score').value=((vals[0]+vals[1])/2).toFixed(2);updateSummary()});
+ ms.querySelectorAll('.comp').forEach(x=>x.oninput=()=>{const mat=x.closest('.material');const fields=[...mat.querySelectorAll('.comp')];const vals=fields.map(a=>String(a.value??'').trim()===''?NaN:Number(a.value));const final=mat.querySelector('.final-score');if(mat.dataset.code==='SHOLAT'&&vals.length===2&&vals.every(Number.isFinite))final.value=((vals[0]+vals[1])/2).toFixed(2);else if((mat.dataset.code==='SURAT_PENDEK'||mat.dataset.code==='DOA_HARIAN')&&vals.length===5&&vals.every(Number.isFinite))final.value=vals.reduce((a,b)=>a+b,0).toFixed(2);else if(final)final.value='';updateSummary()});
  ms.querySelectorAll('.final-score').forEach(x=>x.oninput=updateSummary);
  // V456: Enter membawa fokus ke kolom penilaian berikutnya; dari kolom terakhir ke Simpan Nilai.
  const scoreFields=()=>[...ms.querySelectorAll('.score:not([disabled]):not([readonly])')].filter(x=>x.getClientRects().length>0);
@@ -460,7 +527,14 @@ async function saveScores(){
      const s=raw===''?NaN:Number(raw);
      if(!id||!Number.isFinite(s)||s<1||s>100)throw new Error('Semua nilai yang belum selesai wajib diisi 1–100. Nilai 0 atau kosong tidak diperbolehkan.');
      const comps=[...el.querySelectorAll('.comp')].map(x=>{const raw=String(x.value??'').trim();return {component_code:x.dataset.code,score:raw===''?NaN:Number(raw)}});
-     if(comps.length&&(comps.length!==2||comps.some(c=>!Number.isFinite(c.score)||c.score<1||c.score>100)))throw new Error('Gerakan dan Bacaan Sholat wajib diisi 1–100.');
+     const materialCode=String(el.dataset.code||'').toUpperCase();
+     if(materialCode==='SHOLAT'&&(comps.length!==2||comps.some(c=>!Number.isFinite(c.score)||c.score<1||c.score>100)))throw new Error('Komponen Gerakan dan Bacaan Sholat wajib diisi dengan nilai 1–100.');
+     if(materialCode==='SURAT_PENDEK'||materialCode==='DOA_HARIAN'){
+       if(comps.length!==5||comps.some(c=>!Number.isFinite(c.score)||c.score<1||c.score>100))throw new Error('Adab dan seluruh empat komponen nilai wajib diisi dengan angka 1–100.');
+       const sum=comps.reduce((a,c)=>a+c.score,0);
+       if(sum>100)throw new Error('Jumlah lima komponen tidak boleh melebihi 100 karena nilai akhir materi menggunakan skala 1–100.');
+       if(Math.abs(sum-s)>0.000001)throw new Error('Total nilai harus sama dengan hasil penjumlahan langsung kelima komponen.');
+     }
      items.push(comps.length?{exam_material_id:id,score:s,components:comps}:{exam_material_id:id,score:s});
    }
    if(!items.length){
@@ -521,7 +595,10 @@ window.bkfDistributionHistoryDocumentV536=function(){
   th:nth-child(7){width:14%}th:nth-child(8){width:10%}th:nth-child(9){width:8%}
   th:nth-child(10){width:8%}th:nth-child(11){width:8%}
   @media print{html,body{width:100%!important;height:auto!important;min-height:0!important;overflow:visible!important;margin:0!important;padding:0!important;background:#fff!important}h2{margin:0 0 2mm!important}table{width:100%!important;max-width:100%!important;page-break-inside:auto;break-inside:auto;border-collapse:collapse!important}thead{display:table-header-group!important}tfoot{display:table-footer-group!important}tr{page-break-inside:avoid!important;break-inside:avoid!important}th,td{padding:2.5px 2px!important;line-height:1.08!important;font-size:7.5px!important}p{orphans:2;widows:2}}
-  </style></head><body><h2>RIWAYAT DISTRIBUSI</h2><p class="distribution-print-meta">Diurutkan berdasarkan nama lembaga, tanggal, lalu barang.</p>${tableHtml}${note}</body></html>`;
+  </style></head><body><h2>RIWAYAT DISTRIBUSI</h2><p class="distribution-print-meta">Diurutkan berdasarkan nama lembaga, tanggal, lalu barang.</p>${tableHtml}${note}
+
+
+</body></html>`;
   return {html,title,options:{pdfSize:[297,210],pdfOrientation:'landscape',pdfMarginMm:8}};
 };
 window.bkfPreviewDistributionHistoryV536=function(){
@@ -2215,7 +2292,7 @@ window.v12TogglePassword=function(id,btn){const e=document.getElementById(id);if
           {key:'BTA',label:'BTA',match:m=>String(m.code||'').toUpperCase()==='BTA'||String(m.name||'').toLowerCase().includes('bta')}
         ];
         const usedMaterialIds=new Set();
-        const scoreCell=spec=>{const entry=materialRows.find(x=>!usedMaterialIds.has(x.detail.exam_material_id)&&spec.match({...x.material,code:x.material.code||x.detail.exam_materials?.code,name:x.material.name||x.detail.exam_materials?.name}));if(!entry)return '<td class="bkf-exam-score-cell"><span class="small muted">—</span></td>';usedMaterialIds.add(entry.detail.exam_material_id);const sc=entry.score,scoreSubmitted=!!sc&&sc.score!=null&&String(sc.status||'').toUpperCase()!=='DRAFT',canEdit=editable&&scoreSubmitted;const value=!sc?'<span class="small muted">—</span>':!scoreSubmitted?`<span class="small muted">${_E(sc.score??'—')} · DRAFT</span>`:canEdit?`<input class="exam-list-score" data-score-id="${_E(sc.id)}" aria-label="Nilai ${spec.label}" type="number" min="0" max="100" step="0.01" value="${sc.score??''}" style="width:76px;max-width:100%;text-align:center">`:`<strong>${_E(sc.score??'—')}</strong>`;const comps=(sc?.exam_score_components||[]).map(c=>canEdit?`<label class="small muted" style="display:block;margin-top:4px">${_E(c.component_code)} <input class="exam-list-component" data-score-id="${_E(sc.id)}" data-component="${_E(c.component_code)}" aria-label="${_E(spec.label)} ${_E(c.component_code)}" type="number" min="0" max="100" step="0.01" value="${c.score??''}" style="width:64px;text-align:center"></label>`:`<div class="small muted" style="margin-top:3px">${_E(c.component_code)}: ${_E(c.score??'—')}</div>`).join('');return `<td class="bkf-exam-score-cell"><div>${value}</div>${comps}</td>`};
+        const scoreCell=spec=>{const entry=materialRows.find(x=>!usedMaterialIds.has(x.detail.exam_material_id)&&spec.match({...x.material,code:x.material.code||x.detail.exam_materials?.code,name:x.material.name||x.detail.exam_materials?.name}));if(!entry)return '<td class="bkf-exam-score-cell"><span class="small muted">—</span></td>';usedMaterialIds.add(entry.detail.exam_material_id);const sc=entry.score,scoreSubmitted=!!sc&&sc.score!=null&&String(sc.status||'').toUpperCase()!=='DRAFT',canEdit=editable&&scoreSubmitted;const value=!sc?'<span class="small muted">—</span>':!scoreSubmitted?`<span class="small muted">${_E(sc.score??'—')} · DRAFT</span>`:canEdit?`<input class="exam-list-score" data-score-id="${_E(sc.id)}" aria-label="Nilai ${spec.label}" type="number" min="0" max="100" step="0.01" value="${sc.score??''}" style="width:76px;max-width:100%;text-align:center">`:`<strong>${_E(sc.score??'—')}</strong>`;const comps=(sc?.exam_score_components||[]).map(c=>canEdit?`<label class="small muted" style="display:block;margin-top:4px">${_E(examComponentLabel(c.component_code))} <input class="exam-list-component" data-score-id="${_E(sc.id)}" data-component="${_E(c.component_code)}" aria-label="${_E(spec.label)} ${_E(c.component_code)}" type="number" min="0" max="100" step="0.01" value="${c.score??''}" style="width:64px;text-align:center"></label>`:`<div class="small muted" style="margin-top:3px">${_E(examComponentLabel(c.component_code))}: ${_E(c.score??'—')}</div>`).join('');return `<td class="bkf-exam-score-cell"><div>${value}</div>${comps}</td>`};
         const extraMaterials=materialRows.filter(x=>!usedMaterialIds.has(x.detail.exam_material_id));
         const extraNote=extraMaterials.length?`<div class="small muted">Materi lain: ${extraMaterials.map(x=>`${_E(x.material.name||x.material.code||'Materi')} ${_E(x.score?.score??'—')}`).join(' · ')}</div>`:'';
         return `<tr class="exam-result-item" data-search="${_E(searchText)}" data-session-id="${_E(session?.id||'')}"><td class="bkf-exam-identity"><strong>${index+1}. ${_E(participant.name||'Peserta ujian')}</strong><div class="small muted">NIS ${_E(participant.nis||'-')} · No. ${_E(participant.exam_number||'-')}</div><div class="small muted">${_E(institution)}</div><div class="small muted">${_E(participantWave?'Gel. '+participantWave:'Gel. —')}</div></td>${canonicalMaterials.map(scoreCell).join('')}<td class="bkf-exam-summary"><strong>${_E(result?.total_score??'—')}</strong><div class="small muted">Total</div><strong>${result?.average_score==null?'—':Number(result.average_score).toFixed(2)}</strong><div class="small muted">Rata-rata</div></td><td><span class="status ${statusClass}">${_E(statusText)}</span><div class="small muted" style="margin-top:5px">Materi ${completedCount}/${requiredCount}</div>${legacyIncomplete?'<div class="small" style="color:var(--danger,#b91c1c)">Materi belum lengkap</div>':''}${extraNote}</td><td class="no-print"><div class="compact-actions" style="min-width:145px">${actions||'<span class="small muted">—</span>'}</div></td></tr>`;
@@ -2490,10 +2567,12 @@ window.v12TogglePassword=function(id,btn){const e=document.getElementById(id);if
     const editable=canReview&&!readOnly&&!locked&&!finalized;
     const p=sessionQ.data.exam_participants||{};
     const rows=(scoreQ.data||[]).map(x=>{
-      const comps=(x.exam_score_components||[]).map(c=>editable?`<div class="small" style="margin-top:4px"><label>${_E(c.component_code)} <input class="exam-correction-component" data-score-id="${x.id}" data-component="${_E(c.component_code)}" type="number" min="0" max="100" step="0.01" value="${c.score??''}" style="max-width:110px"></label></div>`:`<div class="small muted">${_E(c.component_code)}: ${_E(c.score??'-')}</div>`).join('');
-      return `<div class="list-item"><div class="row"><strong>${_E(x.exam_materials?.name||'-')}</strong><span class="small muted">${_E(x.status||'-')}</span></div>${editable?`<input class="exam-correction-score" data-score-id="${x.id}" type="number" min="0" max="100" step="0.01" value="${x.score??''}" style="max-width:140px">`:`<div class="metric" style="font-size:22px">${_E(x.score??'-')}</div>`}${comps}</div>`;
+      const comps=(x.exam_score_components||[]).map(c=>editable?`<div class="small" style="margin-top:4px"><label>${_E(examComponentLabel(c.component_code))} <input class="exam-correction-component" data-score-id="${x.id}" data-component="${_E(c.component_code)}" type="number" min="0" max="100" step="0.01" value="${c.score??''}" style="max-width:110px"></label></div>`:`<div class="small muted">${_E(examComponentLabel(c.component_code))}: ${_E(c.score??'-')}</div>`).join('');
+      return `<div class="list-item" data-material-code="${_E(x.exam_materials?.code||'')}"><div class="row"><strong>${_E(x.exam_materials?.name||'-')}</strong><span class="small muted">${_E(x.status||'-')}</span></div>${editable?`<input class="exam-correction-score" data-score-id="${x.id}" type="number" min="0" max="100" step="0.01" value="${x.score??''}" style="max-width:140px">`:`<div class="metric" style="font-size:22px">${_E(x.score??'-')}</div>`}${comps}</div>`;
     }).join('')||'<div class="empty">Belum ada rincian nilai.</div>';
     document.body.insertAdjacentHTML('beforeend',`<div class="backdrop" id="examReviewModal"><div class="modal-sheet" style="max-width:760px"><div class="row"><div><h3>${editable?'Pemeriksaan & Koreksi Nilai':isOperator?'Nilai Resmi Peserta':'Hasil Ujian'}</h3><div class="small muted">${_E(p.name||'-')} · NIS ${_E(p.nis||'-')} · No. ujian ${_E(p.exam_number||'-')}</div></div><button class="btn secondary" onclick="document.getElementById('examReviewModal')?.remove()">Tutup</button></div><div class="small muted" style="margin:10px 0">Status: ${locked?'🔒 Terkunci':finalized?'Sudah difinalisasi':'Belum difinalisasi'}</div><div class="list">${rows}</div><div id="examReviewMsg"></div>${editable?`<div class="compact-actions" style="margin-top:12px"><button class="btn primary" onclick="window.bkfSaveExamReview('${sessionId}')">Simpan Koreksi</button><button class="btn secondary" onclick="window.bkfFinalizeFromReview('${sessionId}')">Finalisasi Nilai</button></div>`:''}</div></div>`);
+    const reviewModal=document.getElementById('examReviewModal');
+    reviewModal?.querySelectorAll('.exam-correction-component').forEach(input=>input.addEventListener('input',()=>{const row=input.closest('.list-item');const code=String(row?.dataset.materialCode||'').toUpperCase();if(!['SURAT_PENDEK','DOA_HARIAN','SHOLAT'].includes(code))return;const vals=[...row.querySelectorAll('.exam-correction-component')].map(el=>String(el.value??'').trim()===''?NaN:Number(el.value));if(vals.some(v=>!Number.isFinite(v)))return;const score=row.querySelector('.exam-correction-score');if(score)score.value=(code==='SHOLAT'?vals.reduce((a,b)=>a+b,0)/2:vals.reduce((a,b)=>a+b,0)).toFixed(2)}));
   };
 
   window.bkfSaveExamReview=async function(sessionId){
@@ -7398,6 +7477,113 @@ window.showExamGovernance=async function(){const host=document.getElementById('p
   try{window.sb?.auth?.onAuthStateChange?.(event=>{if(event==='SIGNED_OUT')window.__BKF_BOOT_READY__=false})}catch(_){}
 })();
 </script>
+<script id="bkf-theme-customization-runtime-v588">
+(function(){
+  'use strict';
+  const STORAGE_KEY='bkf_simfaq_theme_v1';
+  const presets=[
+    {id:'hijau',name:'Hijau FUSPAQ',accent:'#176b3a',dark:'#14532d'},
+    {id:'biru',name:'Biru',accent:'#2563a6',dark:'#194879'},
+    {id:'ungu',name:'Ungu',accent:'#7046a8',dark:'#4e2f7c'},
+    {id:'merah',name:'Merah',accent:'#b83b43',dark:'#842b32'},
+    {id:'toska',name:'Toska',accent:'#087f83',dark:'#075c60'},
+    {id:'jingga',name:'Jingga',accent:'#bd641e',dark:'#874313'}
+  ];
+  const validHex=v=>/^#[0-9a-fA-F]{6}$/.test(String(v||''));
+  const safeRead=()=>{try{const v=JSON.parse(localStorage.getItem(STORAGE_KEY)||'null');return v&&typeof v==='object'?v:null}catch(_){return null}};
+  const defaults={preset:'hijau',accent:'#176b3a',mode:'light'};
+  function normalize(raw){
+    const v=raw||defaults;
+    return {
+      preset:presets.some(p=>p.id===v.preset)?v.preset:'custom',
+      accent:validHex(v.accent)?v.accent:defaults.accent,
+      mode:['light','dark','system'].includes(v.mode)?v.mode:'light'
+    };
+  }
+  function apply(raw){
+    const v=normalize(raw),p=presets.find(x=>x.id===v.preset);
+    const accent=v.accent,dark=p?.dark||shade(accent,.72);
+    const root=document.documentElement;
+    root.style.setProperty('--green',accent);
+    root.style.setProperty('--green2',dark);
+    root.style.setProperty('--bkf-primary',accent);
+    root.style.setProperty('--bkf-primary-dark',dark);
+    root.style.setProperty('--bkf-theme-accent',accent);
+    root.style.setProperty('--bkf-theme-accent-dark',dark);
+    root.style.setProperty('--bkf-theme-accent-soft',tint(accent));
+    const mode=v.mode==='system'?(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'):v.mode;
+    root.setAttribute('data-bkf-theme-mode',mode);
+    root.setAttribute('data-bkf-theme-choice',v.preset);
+    return v;
+  }
+  function shade(hex,f){
+    const n=parseInt(hex.slice(1),16),r=Math.round((n>>16)*f),g=Math.round(((n>>8)&255)*f),b=Math.round((n&255)*f);
+    return '#'+[r,g,b].map(x=>x.toString(16).padStart(2,'0')).join('');
+  }
+  function tint(hex){
+    const n=parseInt(hex.slice(1),16),mix=x=>Math.round(x+(255-x)*.88);
+    return '#'+[mix(n>>16),mix((n>>8)&255),mix(n&255)].map(x=>x.toString(16).padStart(2,'0')).join('');
+  }
+  let current=apply(safeRead());
+  function save(v){
+    current=normalize(v);
+    try{localStorage.setItem(STORAGE_KEY,JSON.stringify(current))}catch(_){if(typeof toast==='function')toast('Tema diterapkan, tetapi penyimpanan perangkat tidak tersedia.','error')}
+    apply(current);
+    return current;
+  }
+  function openSettings(){
+    const host=document.getElementById('page');if(!host)return;
+    const selected=current.preset;
+    host.innerHTML=`<div class="card"><div class="module-head"><div><h2>Tampilan & Warna Aplikasi</h2><div class="small muted">Atur tampilan SIMFAQ pada perangkat ini. Pilihan tidak mengubah tampilan pengguna lain.</div></div><button class="btn secondary" type="button" id="bkfThemeBack">Kembali</button></div>
+      <div class="bkf-theme-panel" style="margin-top:14px">
+        <section><strong>Tema siap pakai</strong><div class="small muted">Pilih warna utama yang tersedia.</div><div class="bkf-theme-presets" id="bkfThemePresets" style="margin-top:9px">
+          ${presets.map(p=>`<button type="button" class="bkf-theme-preset" data-theme-preset="${p.id}" aria-pressed="${selected===p.id?'true':'false'}"><span class="bkf-theme-swatch" style="background:${p.accent}"></span><span>${p.name}</span></button>`).join('')}
+        </div></section>
+        <section><strong>Warna pilihan sendiri</strong><div class="small muted">Gunakan pemilih warna atau masukkan kode HEX.</div>
+          <div class="bkf-theme-color-row" style="margin-top:8px"><input id="bkfThemePicker" type="color" value="${current.accent}" aria-label="Pilih warna utama"><input id="bkfThemeHex" class="bkf-theme-code" type="text" value="${current.accent}" maxlength="7" placeholder="#176B3A" aria-label="Kode warna HEX"></div>
+        </section>
+        <section><strong>Mode tampilan</strong><div class="small muted">Terang, gelap, atau mengikuti pengaturan perangkat.</div>
+          <div class="field"><select id="bkfThemeMode"><option value="light">Terang</option><option value="dark">Gelap</option><option value="system">Mengikuti perangkat</option></select></div>
+        </section>
+        <div class="bkf-theme-preview" id="bkfThemePreview"><strong>Pratinjau warna SIMFAQ</strong><div class="small" style="opacity:.9;margin-top:4px">Warna utama akan diterapkan pada elemen navigasi dan tombol utama.</div></div>
+        <div class="row" style="flex-wrap:wrap"><button type="button" class="btn secondary" id="bkfThemeReset">Kembalikan bawaan</button><button type="button" class="btn primary" id="bkfThemeSave">Simpan tampilan</button></div>
+        <div class="small muted">Pengaturan tersimpan di penyimpanan lokal browser/PWA pada perangkat ini.</div>
+      </div></div>`;
+    const picker=document.getElementById('bkfThemePicker'),hex=document.getElementById('bkfThemeHex'),mode=document.getElementById('bkfThemeMode');
+    let draft={...current};mode.value=draft.mode;
+    function preview(){
+      const c=validHex(draft.accent)?draft.accent:'#176b3a';
+      document.getElementById('bkfThemePreview').style.background=c;
+      picker.value=c;hex.value=c;
+      document.querySelectorAll('[data-theme-preset]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.themePreset===draft.preset?'true':'false'));
+    }
+    document.getElementById('bkfThemeBack').onclick=()=>window.showSettings?.();
+    document.querySelectorAll('[data-theme-preset]').forEach(b=>b.addEventListener('click',()=>{
+      const p=presets.find(x=>x.id===b.dataset.themePreset);draft={preset:p.id,accent:p.accent,mode:draft.mode};preview();
+    }));
+    picker.addEventListener('input',()=>{draft={preset:'custom',accent:picker.value,mode:draft.mode};preview()});
+    hex.addEventListener('input',()=>{const v=hex.value.trim();if(validHex(v)){draft={preset:'custom',accent:v,mode:draft.mode};preview()}});
+    mode.addEventListener('change',()=>{draft.mode=mode.value});
+    document.getElementById('bkfThemeReset').onclick=()=>{draft={...defaults};mode.value='light';preview()};
+    document.getElementById('bkfThemeSave').onclick=()=>{
+      const raw=hex.value.trim();if(!validHex(raw)){if(typeof toast==='function')toast('Kode warna harus berupa HEX, contoh #176B3A.','error');return}
+      draft.accent=raw;draft.mode=mode.value;
+      const result=save(draft);
+      if(typeof toast==='function')toast('Tampilan SIMFAQ berhasil disimpan pada perangkat ini.','success');
+      openSettings();
+    };
+    preview();
+  }
+  window.bkfOpenThemeSettings=openSettings;
+  try{
+    if(current.mode==='system'){
+      const mq=matchMedia('(prefers-color-scheme: dark)');
+      mq.addEventListener?.('change',()=>apply(current));
+    }
+  }catch(_){}
+  apply(current);
+})();
+</script>
 </body><script id="bkf-audit-v128-e2e-action-guards">
 (function(){
   'use strict';
@@ -7547,11 +7733,13 @@ window.showExamGovernance=async function(){const host=document.getElementById('p
     if(!Array.isArray(state.roles)||!state.roles.includes('KETUA')){toast('Pengaturan ini hanya dapat dibuka oleh Ketua.','error');return;}
     const host=document.getElementById('page');if(!host)return;
     host.innerHTML=`<div class="card"><div class="module-head"><div><h2>Pengaturan</h2><div class="small muted">Pengaturan administrasi dan pemeliharaan aplikasi.</div></div></div><div class="menu-grid" style="margin-top:12px">
+      <button class="btn secondary menu-item" type="button" id="bkfOpenThemeSettings"><strong>Tampilan & Warna Aplikasi</strong><span class="small">Pilih tema siap pakai atau atur warna sendiri.</span></button>
       <button class="btn secondary menu-item" type="button" id="v471FinanceCategories"><strong>Kategori Kas Masuk dan Kas Keluar</strong><span class="small">Kelola kategori transaksi kas.</span></button>
       <button class="btn secondary menu-item" type="button" id="v471AuditBackup"><strong>Audit & Backup</strong><span class="small">Jejak perubahan, ekspor, dan pemulihan cadangan.</span></button>
       <button class="btn secondary menu-item" type="button" id="v471LoginHistory"><strong>Riwayat Login</strong><span class="small">Lihat akun yang berhasil masuk dan waktu login.</span></button>
       <button class="btn danger menu-item" type="button" id="v528OrphanPhotos"><strong>Penghapus Foto Yatim</strong><span class="small">Pindai foto Storage yang tidak lagi dirujuk data, lalu pilih yang akan dihapus.</span></button>
     </div></div>`;
+    document.getElementById('bkfOpenThemeSettings')?.addEventListener('click',()=>window.bkfOpenThemeSettings?.());
     document.getElementById('v471FinanceCategories')?.addEventListener('click',()=>window.openSettingsFinanceCategories?.());
     document.getElementById('v471AuditBackup')?.addEventListener('click',()=>window.showAuditBackup?.());
     document.getElementById('v471LoginHistory')?.addEventListener('click',()=>window.showLoginHistory?.());
