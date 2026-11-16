@@ -32,7 +32,8 @@
 <!-- BK-FUSPAQ-NU V481: Tombol dan mode edit Aturan Ujian & Wisuda; revisi aturan tetap berversi, biaya tetap terkendali. Baseline V480. -->
 
 <html><head>
-<!-- BK-FUSPAQ-NU-V430: targeted registration save-state fix based on V429; no schema changes. --><!-- BK-FUSPAQ-NU V456: fokus keyboard berurutan pada form Penilaian dan Pendaftaran Ujian; baseline V455; hanya dua alur ini yang diubah. --><meta content="V569 - form hasil ujian terpadu untuk klik notifikasi; basis V568" name="bkf-version"/><meta charset="utf-8"><meta content="width=device-width,initial-scale=1" name="viewport"/><meta name="theme-color" content="#176b3a"><meta name="application-name" content="SIMFAQ - BK FUSPAQ NU"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" href="./icons/icon-512.png"><link rel="apple-touch-icon" href="./icons/icon-512.png"><title>SIMFAQ V588</title><style>
+<!-- BK-FUSPAQ-NU V593: selaraskan validasi dan hitung otomatis nilai komponen pada dua form koreksi nilai; baseline V592; tanpa perubahan database. -->
+<!-- BK-FUSPAQ-NU-V430: targeted registration save-state fix based on V429; no schema changes. --><!-- BK-FUSPAQ-NU V456: fokus keyboard berurutan pada form Penilaian dan Pendaftaran Ujian; baseline V455; hanya dua alur ini yang diubah. --><meta content="V569 - form hasil ujian terpadu untuk klik notifikasi; basis V568" name="bkf-version"/><meta charset="utf-8"><meta content="width=device-width,initial-scale=1" name="viewport"/><meta name="theme-color" content="#176b3a"><meta name="application-name" content="SIMFAQ - BK FUSPAQ NU"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" href="./icons/icon-512.png"><link rel="apple-touch-icon" href="./icons/icon-512.png"><title>SIMFAQ V593</title><style>
 :root{--green:#176b3a;--green2:#14532d;--gold:#b78a24;--bg:#f5f8f6;--card:#ffffff;--line:#dce7df;--muted:#64756b;--text:#18231d;--ok:#21834c;--danger:#c2413b;--warn:#a87912;--radius:16px;--shadow:0 6px 22px rgba(25,55,38,.07);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;--bkf-primary:#176b3a;--bkf-primary-dark:#14532d;--bkf-primary-soft:#eaf2ec;--bkf-accent:#b78a24;--bkf-surface:#ffffff;--bkf-page:#f5f8f6;--bkf-border:#dce7df;--bkf-text:#18231d;--bkf-muted:#64756b;--bkf-info:#2563eb;--bkf-success:#21834c;--bkf-warning:#d69e20;--bkf-danger:#c2413b;--bkf-shadow-soft:0 4px 14px rgba(20,83,45,.07);}*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text)}button,input,select,textarea{font:inherit}a{color:inherit}
 
 body{min-height:100vh}.shell{min-height:100vh;padding-top:76px;padding-bottom:20px}
@@ -2312,11 +2313,13 @@ window.v12TogglePassword=function(id,btn){const e=document.getElementById(id);if
           {key:'BTA',label:'BTA',match:m=>String(m.code||'').toUpperCase()==='BTA'||String(m.name||'').toLowerCase().includes('bta')}
         ];
         const usedMaterialIds=new Set();
-        const scoreCell=spec=>{const entry=materialRows.find(x=>!usedMaterialIds.has(x.detail.exam_material_id)&&spec.match({...x.material,code:x.material.code||x.detail.exam_materials?.code,name:x.material.name||x.detail.exam_materials?.name}));if(!entry)return '<td class="bkf-exam-score-cell"><span class="small muted">—</span></td>';usedMaterialIds.add(entry.detail.exam_material_id);const sc=entry.score,scoreSubmitted=!!sc&&sc.score!=null&&String(sc.status||'').toUpperCase()!=='DRAFT',canEdit=editable&&scoreSubmitted;const value=!sc?'<span class="small muted">—</span>':!scoreSubmitted?`<span class="small muted">${_E(sc.score??'—')} · DRAFT</span>`:canEdit?`<input class="exam-list-score" data-score-id="${_E(sc.id)}" aria-label="Nilai ${spec.label}" type="number" min="0" max="100" step="0.01" value="${sc.score??''}" style="width:76px;max-width:100%;text-align:center">`:`<strong>${_E(sc.score??'—')}</strong>`;const comps=(sc?.exam_score_components||[]).map(c=>canEdit?`<label class="small muted" style="display:block;margin-top:4px">${_E(examComponentLabel(c.component_code))} <input class="exam-list-component" data-score-id="${_E(sc.id)}" data-component="${_E(c.component_code)}" aria-label="${_E(spec.label)} ${_E(c.component_code)}" type="number" min="0" max="100" step="0.01" value="${c.score??''}" style="width:64px;text-align:center"></label>`:`<div class="small muted" style="margin-top:3px">${_E(examComponentLabel(c.component_code))}: ${_E(c.score??'—')}</div>`).join('');return `<td class="bkf-exam-score-cell"><div>${value}</div>${comps}</td>`};
+        const scoreCell=spec=>{const entry=materialRows.find(x=>!usedMaterialIds.has(x.detail.exam_material_id)&&spec.match({...x.material,code:x.material.code||x.detail.exam_materials?.code,name:x.material.name||x.detail.exam_materials?.name}));if(!entry)return '<td class="bkf-exam-score-cell"><span class="small muted">—</span></td>';usedMaterialIds.add(entry.detail.exam_material_id);const sc=entry.score,scoreSubmitted=!!sc&&sc.score!=null&&String(sc.status||'').toUpperCase()!=='DRAFT',canEdit=editable&&scoreSubmitted;const value=!sc?'<span class="small muted">—</span>':!scoreSubmitted?`<span class="small muted">${_E(sc.score??'—')} · DRAFT</span>`:canEdit?`<input class="exam-list-score" data-score-id="${_E(sc.id)}" aria-label="Nilai ${spec.label}" type="number" min="0" max="100" step="0.01" value="${sc.score??''}" ${window.bkfReviewComponentCodes(entry.material.code||entry.detail.exam_materials?.code).length?'readonly':''} style="width:76px;max-width:100%;text-align:center">`:`<strong>${_E(sc.score??'—')}</strong>`;const required=window.bkfReviewComponentCodes(entry.material.code||entry.detail.exam_materials?.code);const stored=sc?.exam_score_components||[];const componentRows=required.length?required.map(k=>({component_code:k,score:stored.find(c=>String(c.component_code).toUpperCase()===k)?.score??''})):stored;const comps=componentRows.map(c=>canEdit?`<label class="small muted" style="display:block;margin-top:4px">${_E(examComponentLabel(c.component_code))} <input class="exam-list-component" data-score-id="${_E(sc.id)}" data-component="${_E(c.component_code)}" aria-label="${_E(spec.label)} ${_E(c.component_code)}" type="number" min="${required.length?1:0}" max="100" step="0.01" value="${c.score??''}" style="width:64px;text-align:center"></label>`:`<div class="small muted" style="margin-top:3px">${_E(examComponentLabel(c.component_code))}: ${_E(c.score??'—')}</div>`).join('');return `<td class="bkf-exam-score-cell" data-material-code="${_E(entry.material.code||entry.detail.exam_materials?.code||'')}"><div>${value}</div>${comps}</td>`};
         const extraMaterials=materialRows.filter(x=>!usedMaterialIds.has(x.detail.exam_material_id));
         const extraNote=extraMaterials.length?`<div class="small muted">Materi lain: ${extraMaterials.map(x=>`${_E(x.material.name||x.material.code||'Materi')} ${_E(x.score?.score??'—')}`).join(' · ')}</div>`:'';
         return `<tr class="exam-result-item" data-search="${_E(searchText)}" data-session-id="${_E(session?.id||'')}"><td class="bkf-exam-identity"><strong>${index+1}. ${_E(participant.name||'Peserta ujian')}</strong><div class="small muted">NIS ${_E(participant.nis||'-')} · No. ${_E(participant.exam_number||'-')}</div><div class="small muted">${_E(institution)}</div><div class="small muted">${_E(participantWave?'Gel. '+participantWave:'Gel. —')}</div></td>${canonicalMaterials.map(scoreCell).join('')}<td class="bkf-exam-summary"><strong>${_E(result?.total_score??'—')}</strong><div class="small muted">Total</div><strong>${result?.average_score==null?'—':Number(result.average_score).toFixed(2)}</strong><div class="small muted">Rata-rata</div></td><td><span class="status ${statusClass}">${_E(statusText)}</span><div class="small muted" style="margin-top:5px">Materi ${completedCount}/${requiredCount}</div>${legacyIncomplete?'<div class="small" style="color:var(--danger,#b91c1c)">Materi belum lengkap</div>':''}${extraNote}</td><td class="no-print"><div class="compact-actions" style="min-width:145px">${actions||'<span class="small muted">—</span>'}</div></td></tr>`;
       }).join('')+'</tbody></table>';
+      const reportTable=reportEl()?.querySelector('.bkf-exam-table');
+      reportTable?.querySelectorAll('.exam-list-component').forEach(input=>input.addEventListener('input',()=>{const row=input.closest('td');const code=String(input.closest('td')?.dataset.materialCode||'').toUpperCase();const score=reportTable.querySelector('.exam-list-score[data-score-id="'+input.dataset.scoreId+'"]');const required=window.bkfReviewComponentCodes(code);if(!required.length){const cellInputs=[...row.querySelectorAll('.exam-list-component')];return;}const all=[...reportTable.querySelectorAll('.exam-list-component[data-score-id="'+input.dataset.scoreId+'"]')];const vals=required.map(k=>{const el=all.find(x=>String(x.dataset.component).toUpperCase()===k);return !el||String(el.value??'').trim()===''?NaN:Number(el.value)});if(vals.every(Number.isFinite)&&score)score.value=(code==='SHOLAT'?vals.reduce((a,b)=>a+b,0)/2:vals.reduce((a,b)=>a+b,0)).toFixed(2);}));
       const mobileTable=reportEl()?.querySelector('.bkf-exam-table');
       if(mobileTable){
         const labels=[...mobileTable.querySelectorAll('thead th')].map(th=>th.textContent.trim());
@@ -2563,20 +2566,62 @@ window.v12TogglePassword=function(id,btn){const e=document.getElementById(id);if
     });
   };
 
+  // V593: satu aturan koreksi untuk tabel rekap dan modal koreksi.
+  window.bkfReviewComponentCodes=function(materialCode){
+    const code=String(materialCode||'').toUpperCase();
+    if(code==='SURAT_PENDEK'||code==='DOA_HARIAN')return ['ADAB','NILAI_1','NILAI_2','NILAI_3','NILAI_4'];
+    if(code==='SHOLAT')return ['GERAKAN','BACAAN'];
+    return [];
+  };
+  window.bkfSyncReviewTotal=function(row,scoreSelector,componentSelector){
+    if(!row)return;
+    const code=String(row.dataset.materialCode||'').toUpperCase();
+    const required=window.bkfReviewComponentCodes(code);
+    if(!required.length)return;
+    const inputs=[...row.querySelectorAll(componentSelector)];
+    const byCode=new Map(inputs.map(el=>[String(el.dataset.component||'').toUpperCase(),el]));
+    if(required.some(k=>!byCode.has(k)))return;
+    const values=required.map(k=>{const el=byCode.get(k);return String(el.value??'').trim()===''?NaN:Number(el.value)});
+    if(values.some(v=>!Number.isFinite(v)))return;
+    const score=row.querySelector(scoreSelector);
+    if(score)score.value=(code==='SHOLAT'?values.reduce((a,b)=>a+b,0)/2:values.reduce((a,b)=>a+b,0)).toFixed(2);
+  };
+  window.bkfReviewErrorMessage=function(error){const raw=String(error?.message||error||'');if(raw.includes('INVALID_FIVE_COMPONENT_TOTAL')||raw.includes('FIVE_COMPONENTS_REQUIRED'))return 'Koreksi ditolak: Do’a Harian/Surat Pendek harus memiliki 5 komponen lengkap, masing-masing 1–100, total tidak lebih dari 100, dan jumlahnya harus sama dengan nilai utama.';if(raw.includes('INVALID_SHOLAT_COMPONENT')||raw.includes('SHOLAT_COMPONENTS_REQUIRED'))return 'Koreksi ditolak: nilai Sholat harus memiliki komponen Gerakan dan Bacaan, masing-masing 1–100, dan nilai utama harus sama dengan rata-rata keduanya.';if(raw.includes('COMPONENTS_NOT_ALLOWED_FOR_THIS_MATERIAL'))return 'Materi ini tidak menerima rincian komponen nilai.';return v10Err(error)||raw||'Penyimpanan koreksi belum berhasil.';};
+  window.bkfValidateReviewItems=function(items,root,scoreSelector,componentSelector){
+    for(const item of items){
+      const scoreInput=root.querySelector(`${scoreSelector}[data-score-id="${item.exam_score_id}"]`);
+      if(!scoreInput||String(scoreInput.value??'').trim()===''||!Number.isFinite(item.score)||item.score<0||item.score>100)return 'Nilai utama wajib diisi dengan angka 0–100.';
+      const row=scoreInput.closest('[data-material-code]');
+      const code=String(row?.dataset.materialCode||'').toUpperCase();
+      const required=window.bkfReviewComponentCodes(code);
+      if(required.length){
+        const actual=item.components.map(c=>String(c.component_code||'').toUpperCase());
+        if(actual.length!==required.length||new Set(actual).size!==required.length||required.some(k=>!actual.includes(k)))return `${code==='SHOLAT'?'Sholat':'Do’a Harian/Surat Pendek'} wajib memiliki komponen lengkap dan berbeda: ${required.join(', ')}.`;
+        if(item.components.some(c=>!Number.isFinite(c.score)||c.score<1||c.score>100))return 'Setiap komponen wajib bernilai 1–100. Angka 0 atau nilai kosong tidak diperbolehkan.';
+        const total=item.components.reduce((a,c)=>a+c.score,0);
+        const expected=code==='SHOLAT'?total/2:total;
+        if(code!=='SHOLAT'&&total>100)return 'Jumlah lima komponen tidak boleh melebihi 100.';
+        if(Math.abs(expected-item.score)>0.000001)return `Nilai utama belum sesuai. Nilai yang benar berdasarkan komponen adalah ${expected.toFixed(2)}.`;
+      }else if(item.components.length){
+        if(item.components.some(c=>!Number.isFinite(c.score)||c.score<0||c.score>100))return 'Komponen nilai harus berada pada rentang 0–100.';
+      }
+    }
+    return '';
+  };
   window.bkfSaveExamList=async function(sessionId){
     const card=document.querySelector('#examReport .exam-result-item[data-session-id="'+sessionId+'"]');
     if(!card)return window.bkAlert('Panel peserta atau sesi ujian tidak ditemukan. Muat ulang rekap lalu coba lagi.');
-    const items=[...card.querySelectorAll('.exam-list-score')].map(i=>({exam_score_id:i.dataset.scoreId,score:Number(i.value),components:[...card.querySelectorAll('.exam-list-component[data-score-id="'+i.dataset.scoreId+'"]')].map(c=>({component_code:c.dataset.component,score:Number(c.value)}))}));
+    const items=[...card.querySelectorAll('.exam-list-score')].map(i=>({exam_score_id:i.dataset.scoreId,score:Number(i.value),components:[...card.querySelectorAll('.exam-list-component[data-score-id="'+i.dataset.scoreId+'"]')].map(c=>({component_code:c.dataset.component,score:String(c.value??'').trim()===''?NaN:Number(c.value)}))}));
     if(!items.length)return window.bkAlert('Tidak ada nilai yang dapat disimpan pada peserta ini.');
-    if(items.some(x=>{const input=card.querySelector('.exam-list-score[data-score-id="'+x.exam_score_id+'"]');return !input||input.value.trim()===''||!Number.isFinite(x.score)||x.score<0||x.score>100||x.components.some(c=>{const el=card.querySelector('.exam-list-component[data-score-id="'+x.exam_score_id+'"][data-component="'+c.component_code+'"]');return !el||el.value.trim()===''||!Number.isFinite(c.score)||c.score<0||c.score>100})}))return window.bkAlert('Semua nilai utama dan komponen yang dikoreksi harus terisi dengan angka 0–100. Nilai kosong tidak otomatis dianggap nol.');
+    const validation=window.bkfValidateReviewItems(items,card,'.exam-list-score','.exam-list-component');if(validation)return window.bkAlert(validation);
     try{
       const {error}=await sb.rpc('review_exam_scores',{p_exam_session_id:sessionId,p_scores:items});
-      if(error)return window.bkAlert(v10Err(error));
+      if(error)return window.bkAlert(window.bkfReviewErrorMessage(error));
       window.bkAlert('Koreksi nilai tersimpan. Hasil ujian dihitung ulang oleh sistem.');
       await showExamReportsV32(window._bkfExamReportType||'',window._bkfExamReportWave);
     }catch(e){
       console.error('[BK KOREKSI NILAI]',e);
-      window.bkAlert(v10Err(e)||'Koreksi nilai belum berhasil disimpan. Periksa koneksi lalu coba lagi.');
+      window.bkAlert(window.bkfReviewErrorMessage(e));
     }
   };
 
@@ -2594,19 +2639,19 @@ window.v12TogglePassword=function(id,btn){const e=document.getElementById(id);if
     const editable=canReview&&!readOnly&&!locked&&!finalized;
     const p=sessionQ.data.exam_participants||{};
     const rows=(scoreQ.data||[]).map(x=>{
-      const comps=(x.exam_score_components||[]).map(c=>editable?`<div class="small" style="margin-top:4px"><label>${_E(examComponentLabel(c.component_code))} <input class="exam-correction-component" data-score-id="${x.id}" data-component="${_E(c.component_code)}" type="number" min="0" max="100" step="0.01" value="${c.score??''}" style="max-width:110px"></label></div>`:`<div class="small muted">${_E(examComponentLabel(c.component_code))}: ${_E(c.score??'-')}</div>`).join('');
-      return `<div class="list-item" data-material-code="${_E(x.exam_materials?.code||'')}"><div class="row"><strong>${_E(x.exam_materials?.name||'-')}</strong><span class="small muted">${_E(x.status||'-')}</span></div>${editable?`<input class="exam-correction-score" data-score-id="${x.id}" type="number" min="0" max="100" step="0.01" value="${x.score??''}" style="max-width:140px">`:`<div class="metric" style="font-size:22px">${_E(x.score??'-')}</div>`}${comps}</div>`;
+      const code=String(x.exam_materials?.code||'').toUpperCase();const required=window.bkfReviewComponentCodes(code);const stored=x.exam_score_components||[];const componentRows=required.length?required.map(k=>({component_code:k,score:stored.find(c=>String(c.component_code).toUpperCase()===k)?.score??''})):stored;const comps=componentRows.map(c=>editable?`<div class="small" style="margin-top:4px"><label>${_E(examComponentLabel(c.component_code))} <input class="exam-correction-component" data-score-id="${x.id}" data-component="${_E(c.component_code)}" type="number" min="${required.length?1:0}" max="100" step="0.01" value="${c.score??''}" style="max-width:110px"></label></div>`:`<div class="small muted">${_E(examComponentLabel(c.component_code))}: ${_E(c.score??'-')}</div>`).join('');
+      return `<div class="list-item" data-material-code="${_E(code)}"><div class="row"><strong>${_E(x.exam_materials?.name||'-')}</strong><span class="small muted">${_E(x.status||'-')}</span></div>${editable?`<input class="exam-correction-score" data-score-id="${x.id}" type="number" min="0" max="100" step="0.01" value="${x.score??''}" ${required.length?'readonly':''} style="max-width:140px">`:`<div class="metric" style="font-size:22px">${_E(x.score??'-')}</div>`}${comps}</div>`;
     }).join('')||'<div class="empty">Belum ada rincian nilai.</div>';
     document.body.insertAdjacentHTML('beforeend',`<div class="backdrop" id="examReviewModal"><div class="modal-sheet" style="max-width:760px"><div class="row"><div><h3>${editable?'Pemeriksaan & Koreksi Nilai':isOperator?'Nilai Resmi Peserta':'Hasil Ujian'}</h3><div class="small muted">${_E(p.name||'-')} · NIS ${_E(p.nis||'-')} · No. ujian ${_E(p.exam_number||'-')}</div></div><button class="btn secondary" onclick="document.getElementById('examReviewModal')?.remove()">Tutup</button></div><div class="small muted" style="margin:10px 0">Status: ${locked?'🔒 Terkunci':finalized?'Sudah difinalisasi':'Belum difinalisasi'}</div><div class="list">${rows}</div><div id="examReviewMsg"></div>${editable?`<div class="compact-actions" style="margin-top:12px"><button class="btn primary" onclick="window.bkfSaveExamReview('${sessionId}')">Simpan Koreksi</button><button class="btn secondary" onclick="window.bkfFinalizeFromReview('${sessionId}')">Finalisasi Nilai</button></div>`:''}</div></div>`);
     const reviewModal=document.getElementById('examReviewModal');
-    reviewModal?.querySelectorAll('.exam-correction-component').forEach(input=>input.addEventListener('input',()=>{const row=input.closest('.list-item');const code=String(row?.dataset.materialCode||'').toUpperCase();if(!['SURAT_PENDEK','DOA_HARIAN','SHOLAT'].includes(code))return;const vals=[...row.querySelectorAll('.exam-correction-component')].map(el=>String(el.value??'').trim()===''?NaN:Number(el.value));if(vals.some(v=>!Number.isFinite(v)))return;const score=row.querySelector('.exam-correction-score');if(score)score.value=(code==='SHOLAT'?vals.reduce((a,b)=>a+b,0)/2:vals.reduce((a,b)=>a+b,0)).toFixed(2)}));
+    reviewModal?.querySelectorAll('.exam-correction-component').forEach(input=>input.addEventListener('input',()=>window.bkfSyncReviewTotal(input.closest('.list-item'),'.exam-correction-score','.exam-correction-component')));
   };
 
   window.bkfSaveExamReview=async function(sessionId){
-    const items=[...document.querySelectorAll('#examReviewModal .exam-correction-score')].map(i=>({exam_score_id:i.dataset.scoreId,score:Number(i.value),components:[...document.querySelectorAll('#examReviewModal .exam-correction-component[data-score-id="'+i.dataset.scoreId+'"]')].map(c=>({component_code:c.dataset.component,score:Number(c.value)}))}));
-    if(items.some(x=>!Number.isFinite(x.score)||x.score<0||x.score>100))return window.bkAlert('Nilai harus 0–100.');
-    const {error}=await sb.rpc('review_exam_scores',{p_exam_session_id:sessionId,p_scores:items});
-    if(error)return window.bkAlert(v10Err(error));
+    const root=document.getElementById('examReviewModal');const items=[...root.querySelectorAll('.exam-correction-score')].map(i=>({exam_score_id:i.dataset.scoreId,score:Number(i.value),components:[...root.querySelectorAll('.exam-correction-component[data-score-id="'+i.dataset.scoreId+'"]')].map(c=>({component_code:c.dataset.component,score:String(c.value??'').trim()===''?NaN:Number(c.value)}))}));
+    const validation=window.bkfValidateReviewItems(items,root,'.exam-correction-score','.exam-correction-component');if(validation)return window.bkAlert(validation);
+    try{const {error}=await sb.rpc('review_exam_scores',{p_exam_session_id:sessionId,p_scores:items});
+    if(error)return window.bkAlert(window.bkfReviewErrorMessage(error));}catch(e){console.error('[BK KOREKSI NILAI MODAL]',e);return window.bkAlert(window.bkfReviewErrorMessage(e));}
     window.bkAlert('Koreksi nilai tersimpan. Hasil ujian dihitung ulang.');
     document.getElementById('examReviewModal')?.remove();
     showExamReportsV32();
