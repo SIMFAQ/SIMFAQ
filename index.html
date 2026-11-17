@@ -8541,6 +8541,7 @@ select:focus,textarea:focus{
 })();
 </script>
 
+<!-- SIMFAQ V609: hilangkan teks keterangan pada tombol submenu Profil & Data Lembaga; label dan ikon tetap. Basis V608. -->
 <script id="simfaq-institution-profile-data-v1">
 (function(){
 'use strict';
@@ -8565,7 +8566,7 @@ async function loadInstitutions(){
  if(isOp){const own=await window.bkfOperatorInstitutionId();if(!own)throw new Error('Akun Operator belum terhubung dengan lembaga.');q=q.eq('id',own)}
  const r=await q;if(r.error)throw r.error;return r.data||[];
 }
-function cardGrid(){return `<div class="grid grid2">${sections.map(([id,label,ic,desc])=>`<button type="button" class="card" style="text-align:left;cursor:pointer;min-height:110px" onclick="window.openInstitutionSection('${id}')"><div class="row" style="gap:10px;align-items:center"><div style="font-size:25px">${({profile:'🏫',management:'👥',teachers:'📚',students:'🎓',facilities:'🏢',documents:'📁',accounts:'🔐'})[id]}</div><strong>${E(label)}</strong></div><div class="small muted" style="margin-top:8px">${E(desc)}</div></button>`).join('')}</div>`}
+function cardGrid(){return `<div class="grid grid2">${sections.map(([id,label,ic])=>`<button type="button" class="card" style="text-align:left;cursor:pointer;min-height:76px;display:flex;align-items:center" onclick="window.openInstitutionSection('${id}')"><div class="row" style="gap:10px;align-items:center"><div style="font-size:25px">${({profile:'🏫',management:'👥',teachers:'📚',students:'🎓',facilities:'🏢',documents:'📁',accounts:'🔐'})[id]}</div><strong>${E(label)}</strong></div></button>`).join('')}</div>`}
 window.showUsers=async function(){
  listPage('Profil & Data Lembaga','Pusat pengelolaan profil, pengurus, guru, santri, sarana, dokumen, dan petugas lembaga.',`<div id="simfaqInstitutionRoot"><div class="muted small">Memuat data lembaga...</div></div>`);
  const root=document.getElementById('simfaqInstitutionRoot');if(!root)return;
