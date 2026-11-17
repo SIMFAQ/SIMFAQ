@@ -1,3 +1,4 @@
+<!-- SIMFAQ V604: menampilkan pintasan Monitoring PWA & Notifikasi langsung di Dashboard Ketua/Sekretaris; mempertahankan fitur V603 untuk Ketua/Sekretaris, pencatatan penggunaan standalone PWA per akun Operator, dan ringkasan status push. Perubahan database dibatasi pada tabel telemetry pwa_usage_monitor dan RLS terkait. Baseline V602. -->
 <!-- SIMFAQ V582: tombol WhatsApp penagihan per lembaga pada daftar tagihan; pesan merangkum seluruh sisa tagihan lembaga dan memakai nomor kontak institusi. Tanpa perubahan data/database. -->
 <!-- SIMFAQ V587: Foto pengurus disatukan ke sumber tampilan management_people untuk header, profil, kepengurusan, form pengurus, dan album. Baseline V586. -->
 <!-- SIMFAQ V581: ukuran foto pengurus/Ketua dan Kepala Lembaga 25 x 33,3 mm pada preview, PDF, dan form; ukuran halaman 165 x 215,9 mm serta foto peserta dipertahankan. -->
@@ -34,7 +35,7 @@
 
 <html><head>
 <!-- BK-FUSPAQ-NU V593: selaraskan validasi dan hitung otomatis nilai komponen pada dua form koreksi nilai; baseline V592; tanpa perubahan database. -->
-<!-- BK-FUSPAQ-NU-V430: targeted registration save-state fix based on V429; no schema changes. --><!-- BK-FUSPAQ-NU V456: fokus keyboard berurutan pada form Penilaian dan Pendaftaran Ujian; baseline V455; hanya dua alur ini yang diubah. --><meta content="V569 - form hasil ujian terpadu untuk klik notifikasi; basis V568" name="bkf-version"/><meta charset="utf-8"><meta content="width=device-width,initial-scale=1" name="viewport"/><meta name="theme-color" content="#176b3a"><meta name="application-name" content="SIMFAQ - BK FUSPAQ NU"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" href="./icons/icon-512.png"><link rel="apple-touch-icon" href="./icons/icon-512.png"><title>SIMFAQ V602</title><style>
+<!-- BK-FUSPAQ-NU-V430: targeted registration save-state fix based on V429; no schema changes. --><!-- BK-FUSPAQ-NU V456: fokus keyboard berurutan pada form Penilaian dan Pendaftaran Ujian; baseline V455; hanya dua alur ini yang diubah. --><meta content="V569 - form hasil ujian terpadu untuk klik notifikasi; basis V568" name="bkf-version"/><meta charset="utf-8"><meta content="width=device-width,initial-scale=1" name="viewport"/><meta name="theme-color" content="#176b3a"><meta name="application-name" content="SIMFAQ - BK FUSPAQ NU"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" href="./icons/icon-512.png"><link rel="apple-touch-icon" href="./icons/icon-512.png"><title>SIMFAQ V603</title><style>
 :root{--green:#176b3a;--green2:#14532d;--gold:#b78a24;--bg:#f5f8f6;--card:#ffffff;--line:#dce7df;--muted:#64756b;--text:#18231d;--ok:#21834c;--danger:#c2413b;--warn:#a87912;--radius:16px;--shadow:0 6px 22px rgba(25,55,38,.07);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;--bkf-primary:#176b3a;--bkf-primary-dark:#14532d;--bkf-primary-soft:#eaf2ec;--bkf-accent:#b78a24;--bkf-surface:#ffffff;--bkf-page:#f5f8f6;--bkf-border:#dce7df;--bkf-text:#18231d;--bkf-muted:#64756b;--bkf-info:#2563eb;--bkf-success:#21834c;--bkf-warning:#d69e20;--bkf-danger:#c2413b;--bkf-shadow-soft:0 4px 14px rgba(20,83,45,.07);}*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text)}button,input,select,textarea{font:inherit}a{color:inherit}
 
 body{min-height:100vh}.shell{min-height:100vh;padding-top:76px;padding-bottom:20px}
@@ -411,7 +412,7 @@ const examComponentLabel=code=>({GERAKAN:'Gerakan',BACAAN:'Bacaan',ADAB:'Adab',N
 const date=v=>v?new Date(v).toLocaleDateString('id-ID',{dateStyle:'medium',timeZone:'Asia/Jakarta'}):'-';
 const can=p=>{const r=state.roles||[];if(r.includes('KETUA'))return true;const m={'activity.view':['KETUA','SEKRETARIS','BENDAHARA','ANGGOTA','OPERATOR'],'exam.view':['KETUA','SEKRETARIS','ANGGOTA','OPERATOR'],'graduation.view':['KETUA','SEKRETARIS','ANGGOTA','OPERATOR'],'finance.view':['KETUA','BENDAHARA','OPERATOR'],'secretariat.view':['KETUA','SEKRETARIS','ANGGOTA'],'distribution.view':['KETUA','SEKRETARIS','BENDAHARA','ANGGOTA','OPERATOR'],'report.view':['KETUA','SEKRETARIS','BENDAHARA','ANGGOTA','OPERATOR'],'management.view':['KETUA','SEKRETARIS','BENDAHARA','ANGGOTA'],'institution.view':['KETUA','SEKRETARIS','BENDAHARA','ANGGOTA','OPERATOR'],'org.view':['KETUA','SEKRETARIS','BENDAHARA','ANGGOTA','OPERATOR'],'settings.manage':['KETUA'],'dashboard.view':['KETUA','SEKRETARIS','BENDAHARA','ANGGOTA','OPERATOR']};return (m[p]||[]).some(x=>r.includes(x));};
 const roleLabel=r=>({KETUA:'Ketua Pengurus',SEKRETARIS:'Sekretaris Pengurus',BENDAHARA:'Bendahara Pengurus',ANGGOTA:'Anggota Pengurus',OPERATOR:'Kepala/Operator Lembaga'})[r]||r;
-const menu=[['home','Beranda'],['activities','Kegiatan'],['exams','Ujian'],['pengujian','Pengujian'],['graduation','Wisuda'],['payments','Pembayaran'],['finance','Keuangan'],['secretariat','Sekretariat'],['distribution','Distribusi'],['reports','Laporan'],['notifications','Notifikasi'],['management','Pengurus'],['institutions','Lembaga'],['organization','Profil Kepengurusan'],['settings','Pengaturan'],['governance','Aturan Ujian & Wisuda']];
+const menu=[['home','Beranda'],['activities','Kegiatan'],['exams','Ujian'],['pengujian','Pengujian'],['graduation','Wisuda'],['payments','Pembayaran'],['finance','Keuangan'],['secretariat','Sekretariat'],['distribution','Distribusi'],['reports','Laporan'],['notifications','Notifikasi'],['management','Pengurus'],['institutions','Lembaga'],['organization','Profil Kepengurusan'],['settings','Pengaturan'],['governance','Aturan Ujian & Wisuda'],['pwa-monitoring','Monitoring PWA & Notifikasi']];
 function bkAuthRedirectUrl(){const u=new URL(window.location.href);u.hash='';u.search='';return /^https?:$/.test(u.protocol)?u.toString():null}
 function renderLogin(msg='',notice=''){document.body.classList.add('bkf-ready');app.style.visibility='visible';app.innerHTML=`<main class="login-v2"><section class="login-card"><div class="login-brand"><div class="login-mark">BK</div><div><div class="login-title">BK FUSPAQ NU</div><div class="login-subtitle">Sistem Informasi Badan Khusus FUSPAQ Nahdlatul Ulama</div></div></div><div class="login-welcome"><h1>Selamat datang</h1><p>Masuk untuk melanjutkan ke sistem informasi BK FUSPAQ NU.</p></div>${msg?`<div class="login-message error">${esc(msg)}</div>`:''}${notice?`<div class="login-message success">${esc(notice)}</div>`:''}<form id="login" novalidate><div class="field"><label for="loginEmail">Email</label><div class="login-input"><span>✉</span><input id="loginEmail" name="email" type="email" required autocomplete="username" placeholder="nama@email.com"></div></div><div class="field"><label for="loginPassword">Kata sandi</label><div class="login-input"><span>●</span><input id="loginPassword" name="password" type="password" required autocomplete="current-password" placeholder="Masukkan kata sandi"><button type="button" class="password-toggle" aria-label="Lihat kata sandi" onclick="v12TogglePassword('loginPassword',this)">👁</button></div></div><button id="loginSubmit" class="btn primary login-submit" type="submit">Masuk ke Sistem</button></form><button id="forgotPasswordBtn" class="login-link" type="button">Lupa kata sandi?</button><div class="login-divider"><span>BK FUSPAQ NU</span></div><div class="login-footer"><strong>Deplovemen: Daneva. Studio</strong><span>Founder: Ahmad Fathunnur</span></div></section></main>`;document.getElementById('login').onsubmit=login;document.getElementById('forgotPasswordBtn').onclick=forgotPassword}
 function renderRecovery(msg='',ok=''){app.innerHTML=`<main class="login-v2"><section class="login-card"><div class="login-brand"><div class="login-mark">BK</div><div><div class="login-title">BK FUSPAQ NU</div><div class="login-subtitle">Pemulihan akun</div></div></div><div class="login-welcome"><h1>Buat kata sandi baru</h1><p>Masukkan kata sandi baru untuk akun Anda. Gunakan minimal 8 karakter.</p></div>${msg?`<div class="login-message error">${esc(msg)}</div>`:''}${ok?`<div class="login-message success">${esc(ok)}</div>`:''}<form id="recoveryForm"><div class="field"><label for="newPassword">Kata sandi baru</label><div class="login-input"><span>●</span><input id="newPassword" type="password" minlength="8" required autocomplete="new-password" placeholder="Minimal 8 karakter"><button type="button" class="password-toggle" onclick="v12TogglePassword('newPassword',this)">👁</button></div></div><div class="field"><label for="confirmPassword">Ulangi kata sandi</label><div class="login-input"><span>●</span><input id="confirmPassword" type="password" minlength="8" required autocomplete="new-password" placeholder="Ulangi kata sandi baru"><button type="button" class="password-toggle" onclick="v12TogglePassword('confirmPassword',this)">👁</button></div></div><button id="recoverySubmit" class="btn primary login-submit" type="submit">Simpan Kata Sandi Baru</button></form><button class="login-link" type="button" onclick="renderLogin()">Kembali ke Login</button><div class="login-footer"><strong>Deplovemen: Daneva. Studio</strong><span>Founder: Ahmad Fathunnur</span></div></section></main>`;document.getElementById('recoveryForm').onsubmit=completeRecovery}
@@ -4728,7 +4729,8 @@ window.showHome=async function(){
  const counters=visibleCounters.map(x=>`<button type="button" class="card v75-dashboard-counter" data-dashboard-detail="${E(x[1])}" aria-label="${x[1]==='notifications'?'Buka menu Notifikasi':'Lihat detail '+E(x[0])}"><div class="v173-counter-title">${E(x[0])}</div>${x[1]==='notifications'?'<span class="bkf-notification-new-badge" id="metric-notifications-badge" hidden></span>':''}<div class="metric v173-counter-number" id="metric-${E(x[1])}"${x[1]==='bills'?' style="font-size:clamp(13px,3.6vw,20px);overflow-wrap:anywhere"':''}>…</div><div class="v173-counter-help">${x[1]==='bills'?'Total sisa nominal tagihan':'Ringkasan data saat ini'}</div><div class="v173-counter-detail">${x[1]==='notifications'?'Buka menu Notifikasi':'Ketuk untuk detail'}</div></button>`).join('');
  const roleQuick=quickByRole[dashboardPrimaryRole()]||quickByRole.ANGGOTA||[];
  const quickHtml='<div class="module-card-grid">'+roleQuick.map(x=>'<button class="btn secondary menu-item quick-module module-card-btn" type="button" onclick="navigate(\''+x[1]+'\')"><strong>'+E(x[0])+'</strong></button>').join('')+'</div>';
- host.innerHTML='<div class="card hero v35-welcome"><div style="font-size:14px;color:#6b7c70;font-weight:700">Assalamu\'alaikum Wr. Wb.</div><h2 class="v41-user-name" style="margin:6px 0 2px">'+E(name)+'</h2><div class="row bkf-dashboard-profile-actions" style="justify-content:flex-start;align-items:center;gap:8px;margin:6px 0 0"><span class="status ok">'+E(role)+'</span><span class="status '+(status==='ACTIVE'?'ok':'bad')+'">'+E(status==='ACTIVE'?'Aktif':status)+'</span><button type="button" class="status ok bkf-update-app-link" id="bkfUpdateAppBtn" onclick="window.bkfPwaInstallOrUpdate?.()" aria-label="Instal atau perbarui aplikasi SIMFAQ">Update Aplikasi</button></div><div class="bkf-darus-center"><button type="button" class="darus-quran-link" onclick="openDarusQuranViewer()" aria-label="Buka Darus Al-Qur\'an di dalam aplikasi"><span class="darus-quran-icon" aria-hidden="true">☪</span><span>Darus Al-Qur\'an</span><span class="darus-quran-arrow" aria-hidden="true">↗</span></button></div><div class="bkf-adzan-center"><button type="button" class="bkf-adzan-dashboard-btn" onclick="window.bkfOpenAdzanReminder?.()" aria-label="Buka Pengingat Sholat"><span class="bkf-adzan-dashboard-icon" aria-hidden="true">🕌</span><span class="bkf-adzan-dashboard-content"><span class="bkf-adzan-dashboard-title">Pengingat Sholat</span><span id="bkfAdzanDashboardCountdown" class="bkf-adzan-dashboard-countdown" aria-live="polite">Memuat jadwal sholat…</span></span><span class="bkf-adzan-dashboard-arrow" aria-hidden="true">›</span></button></div><p class="v35-message" style="margin:8px 0 4px">Selamat datang di Sistem Informasi BK FUSPAQ NU.</p><p class="small muted" style="margin:0">'+E(dashboardGreeting())+'</p></div><div class="v75-dashboard-counters" id="dashboardAllCounters">'+counters+'<div id="dashboardExamParticipantCards" style="display:contents"></div></div>';
+ const pwaMonitoringShortcut=Array.isArray(state?.roles)&&state.roles.some(r=>['KETUA','SEKRETARIS'].includes(String(r).toUpperCase()))?'<div class="card" style="margin-top:12px"><div class="row" style="align-items:center;gap:12px"><div style="flex:1;min-width:0"><strong>Monitoring PWA & Notifikasi</strong><div class="small muted" style="margin-top:4px">Pantau penggunaan PWA dan status langganan notifikasi seluruh lembaga.</div></div><button class="btn primary" type="button" onclick="navigate(\'pwa-monitoring\')">Buka Monitoring</button></div></div>':'';
+ host.innerHTML='<div class="card hero v35-welcome"><div style="font-size:14px;color:#6b7c70;font-weight:700">Assalamu\'alaikum Wr. Wb.</div><h2 class="v41-user-name" style="margin:6px 0 2px">'+E(name)+'</h2><div class="row bkf-dashboard-profile-actions" style="justify-content:flex-start;align-items:center;gap:8px;margin:6px 0 0"><span class="status ok">'+E(role)+'</span><span class="status '+(status==='ACTIVE'?'ok':'bad')+'">'+E(status==='ACTIVE'?'Aktif':status)+'</span><button type="button" class="status ok bkf-update-app-link" id="bkfUpdateAppBtn" onclick="window.bkfPwaInstallOrUpdate?.()" aria-label="Instal atau perbarui aplikasi SIMFAQ">Update Aplikasi</button></div><div class="bkf-darus-center"><button type="button" class="darus-quran-link" onclick="openDarusQuranViewer()" aria-label="Buka Darus Al-Qur\'an di dalam aplikasi"><span class="darus-quran-icon" aria-hidden="true">☪</span><span>Darus Al-Qur\'an</span><span class="darus-quran-arrow" aria-hidden="true">↗</span></button></div><div class="bkf-adzan-center"><button type="button" class="bkf-adzan-dashboard-btn" onclick="window.bkfOpenAdzanReminder?.()" aria-label="Buka Pengingat Sholat"><span class="bkf-adzan-dashboard-icon" aria-hidden="true">🕌</span><span class="bkf-adzan-dashboard-content"><span class="bkf-adzan-dashboard-title">Pengingat Sholat</span><span id="bkfAdzanDashboardCountdown" class="bkf-adzan-dashboard-countdown" aria-live="polite">Memuat jadwal sholat…</span></span><span class="bkf-adzan-dashboard-arrow" aria-hidden="true">›</span></button></div><p class="v35-message" style="margin:8px 0 4px">Selamat datang di Sistem Informasi BK FUSPAQ NU.</p><p class="small muted" style="margin:0">'+E(dashboardGreeting())+'</p></div><div class="v75-dashboard-counters" id="dashboardAllCounters">'+counters+'<div id="dashboardExamParticipantCards" style="display:contents"></div></div>'+pwaMonitoringShortcut;
  const welcomeCard=host.querySelector('.v35-welcome');
  try{
    const orgIdsQ=await sb.rpc('current_organization_ids');
@@ -6025,7 +6027,7 @@ const toast=(m,t='success')=>window.v12Toast?window.v12Toast(m,t):window.bkAlert
 /* Single source of truth for role → route access. Home is explicitly public to every authenticated role. Activity management is separately restricted to Ketua/Sekretaris. */
 const roleMenus={
  KETUA:new Set(menu.map(x=>x[0])),
- SEKRETARIS:new Set(['home','activities','exams','pengujian','graduation','secretariat','distribution','reports','notifications','management','institutions','organization','album','governance']),
+ SEKRETARIS:new Set(['home','activities','exams','pengujian','graduation','secretariat','distribution','reports','notifications','management','institutions','organization','album','governance','pwa-monitoring']),
  BENDAHARA:new Set(['home','payments','finance','distribution','reports','notifications','management','institutions','organization','album','governance']),
  ANGGOTA:new Set(['home','exams','graduation','reports','notifications','management','institutions','organization','album','governance']),
  OPERATOR:new Set(['home','activities','exams','graduation','finance','distribution','reports','notifications','institutions','organization','album','governance'])
@@ -6093,7 +6095,7 @@ window.openDrawer=async function(){
 };
 
 const routeHandlers={
- home:()=>window.showHome?.(),activities:()=>window.showActivities?.(),payments:()=>window.showPayments?.(),exams:()=>window.showExams?.(),pengujian:()=>window.showPengujian?.(),'pengujian-pra':()=>window.showPengujianPra?.(),'pengujian-tashih':()=>window.showPengujianTashih?.(),graduation:()=>window.showGraduation?.(),finance:()=>window.showFinance?.(),secretariat:()=>window.showSecretariat?.(),distribution:()=>window.showDistribution?.(),reports:()=>window.showReports?.(),notifications:()=>window.showNotifications?.(),management:()=>window.showManagement?.(),institutions:()=>window.showUsers?.(),album:()=>window.showMemoryAlbum?.(),organization:()=>window.showOrganization?.(),auditbackup:()=>window.showAuditBackup?.(),settings:()=>window.showSettings?.(),governance:()=>window.showExamGovernance?.()
+ home:()=>window.showHome?.(),activities:()=>window.showActivities?.(),payments:()=>window.showPayments?.(),exams:()=>window.showExams?.(),pengujian:()=>window.showPengujian?.(),'pengujian-pra':()=>window.showPengujianPra?.(),'pengujian-tashih':()=>window.showPengujianTashih?.(),graduation:()=>window.showGraduation?.(),finance:()=>window.showFinance?.(),secretariat:()=>window.showSecretariat?.(),distribution:()=>window.showDistribution?.(),reports:()=>window.showReports?.(),notifications:()=>window.showNotifications?.(),management:()=>window.showManagement?.(),institutions:()=>window.showUsers?.(),album:()=>window.showMemoryAlbum?.(),organization:()=>window.showOrganization?.(),auditbackup:()=>window.showAuditBackup?.(),settings:()=>window.showSettings?.(),governance:()=>window.showExamGovernance?.(),'pwa-monitoring':()=>window.showPwaMonitoring?.()
 };
 window.navigate=async function(route){
  const requested=String(route||'home').trim().toLowerCase();
@@ -6155,6 +6157,8 @@ window.boot=async function(){
  window.bkfSplash?.status('Memuat profil dan hak akses...');
  const identityOk=await window.loadIdentity();if(explicitLogout()){clearAuthToken();await window.bkfSplash?.hide();return renderLogin()}if(!identityOk){const why=window.__BK_IDENTITY_ERROR__;await window.bkfSplash?.hide();return renderLogin(why?'Login berhasil, tetapi pemeriksaan role gagal: '+why:'Pemeriksaan akun terlalu lama. Silakan coba lagi.')}
  await window.bkfSplash?.hydrate();if(explicitLogout()){clearAuthToken();await window.bkfSplash?.hide();return renderLogin()}window.bkfSplash?.status('Menyiapkan tampilan aplikasi...');renderShell();
+ // Catat penggunaan PWA hanya ketika aplikasi benar-benar dibuka dalam mode standalone.
+ try{const pwaTrack=window.bkfRecordPwaUsage?.();if(pwaTrack?.catch)pwaTrack.catch(e=>console.warn('[BK PWA MONITOR]',e))}catch(e){console.warn('[BK PWA MONITOR]',e)}
  // Sinkronkan ulang subscription perangkat setelah identitas akun tersedia.
  try{const pushSync=window.bkfSyncPushSubscription?.();if(pushSync?.catch)pushSync.catch(e=>console.warn("[BK PUSH SYNC]",e))}catch(e){console.warn("[BK PUSH SYNC]",e)}
  // Jangan biarkan splash screen menutupi aplikasi tanpa batas jika pemuatan Beranda tersendat.
@@ -8429,6 +8433,108 @@ select:focus,textarea:focus{
   window.bkfAdzanEnsureActive=async function(){try{if(notifyPermission()!=='granted'||!(typeof state!=='undefined'&&state.profile?.id))return null;const r=await invoke({action:'activate'});if(!settings)await load();if(settings?.latitude==null||settings?.longitude==null)await detectAndSaveGps(true);await ensureAudioAssets();startPrayerAudioWatcher();return r}catch(e){console.warn('[BKF ADZAN ACTIVATION]',e);return null}};
   window.bkfOpenAdzanReminder=async function(){ensureModal();try{if(notifyPermission()==='granted')await window.bkfAdzanEnsureActive();await load();if(settings?.latitude==null||settings?.longitude==null)await detectAndSaveGps(true);try{await ensureAudioAssets();startPrayerAudioWatcher()}catch(audioError){console.warn('[BKF ADZAN AUDIO]',audioError)}render()}catch(e){status('Jadwal belum tersedia',true);console.warn('[BKF ADZAN LOAD]',e)}};
   window.addEventListener('focus',()=>{if(document.getElementById('bkfAdzanReminder')&&notifyPermission()!=='granted')status('Notifikasi SIMFAQ belum aktif',true)});
+})();
+</script>
+
+
+<script id="simfaq-v603-pwa-monitoring">
+(function(){
+ 'use strict';
+ const db=()=>window.sb||sb;
+ const safe=v=>typeof esc==='function'?esc(v):String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ const isStandalone=()=>{try{return !!(window.matchMedia&&window.matchMedia('(display-mode: standalone)').matches)||window.navigator.standalone===true}catch(_){return false}};
+ const fmtTime=v=>{if(!v)return 'Belum pernah terdeteksi';const d=new Date(v);if(Number.isNaN(d.getTime()))return '—';return d.toLocaleString('id-ID',{dateStyle:'medium',timeStyle:'short',timeZone:'Asia/Jakarta'})+' WIB'};
+ window.bkfRecordPwaUsage=async function(){
+  if(!isStandalone())return {skipped:'browser-mode'};
+  const rolesNow=Array.isArray(state?.roles)?state.roles.map(x=>String(x).toUpperCase()):[];
+  if(!rolesNow.includes('OPERATOR'))return {skipped:'not-operator'};
+  const userId=state?.profile?.id;if(!userId)return {skipped:'profile-not-ready'};
+  const client=db();if(!client)return {skipped:'database-not-ready'};
+  const orgQ=await client.rpc('current_organization_ids');if(orgQ.error)throw orgQ.error;
+  const orgIds=Array.isArray(orgQ.data)?orgQ.data.filter(Boolean):[];
+  if(!orgIds.length)return {skipped:'organization-not-found'};
+  const ur=await client.from('user_roles').select('organization_id,institution_id,role_id').eq('user_id',userId).eq('status','ACTIVE').in('organization_id',orgIds).not('institution_id','is',null);
+  if(ur.error)throw ur.error;
+  const roleIds=[...new Set((ur.data||[]).map(x=>x.role_id).filter(Boolean))];
+  if(!roleIds.length)return {skipped:'operator-assignment-not-found'};
+  const rq=await client.from('roles').select('id,code,status').in('id',roleIds).eq('status','ACTIVE');
+  if(rq.error)throw rq.error;
+  const operatorRoleIds=new Set((rq.data||[]).filter(x=>String(x.code||'').toUpperCase()==='OPERATOR').map(x=>x.id));
+  const assignments=[...new Map((ur.data||[]).filter(x=>operatorRoleIds.has(x.role_id)&&x.institution_id).map(x=>[x.organization_id+':'+x.institution_id,x])).values()];
+  if(!assignments.length)return {skipped:'operator-institution-not-found'};
+  const now=new Date().toISOString(),ua=String(navigator.userAgent||'').slice(0,500);
+  for(const a of assignments){
+   const q=await client.from('pwa_usage_monitor').upsert({
+    user_id:userId,organization_id:a.organization_id,institution_id:a.institution_id,
+    last_pwa_seen_at:now,user_agent:ua,updated_at:now
+   },{onConflict:'user_id,organization_id,institution_id'});
+   if(q.error)throw q.error;
+  }
+  return {recorded:assignments.length};
+ };
+ window.showPwaMonitoring=async function(){
+  const host=document.getElementById('page');
+  const rolesNow=Array.isArray(state?.roles)?state.roles.map(x=>String(x).toUpperCase()):[];
+  if(!rolesNow.some(x=>x==='KETUA'||x==='SEKRETARIS')){if(typeof toast==='function')toast('Monitoring PWA hanya dapat dibuka oleh Ketua atau Sekretaris.','error');return}
+  if(!host)return;
+  host.innerHTML='<div class="card"><h2>Monitoring PWA & Notifikasi</h2><p class="small muted">Memuat data penggunaan PWA dan langganan notifikasi lembaga…</p></div>';
+  try{
+   const client=db();if(!client)throw new Error('Koneksi database belum tersedia.');
+   const orgQ=await client.rpc('current_organization_ids');if(orgQ.error)throw orgQ.error;
+   const orgIds=Array.isArray(orgQ.data)?orgQ.data.filter(Boolean):[];
+   if(!orgIds.length)throw new Error('Organisasi aktif akun ini belum ditemukan.');
+   const ur=await client.from('user_roles').select('user_id,organization_id,institution_id,role_id').eq('status','ACTIVE').in('organization_id',orgIds).not('institution_id','is',null);
+   if(ur.error)throw ur.error;
+   const roleIds=[...new Set((ur.data||[]).map(x=>x.role_id).filter(Boolean))];
+   const userIds=[...new Set((ur.data||[]).map(x=>x.user_id).filter(Boolean))];
+   const instIds=[...new Set((ur.data||[]).map(x=>x.institution_id).filter(Boolean))];
+   const [rolesQ,profilesQ,instQ]=await Promise.all([
+    roleIds.length?client.from('roles').select('id,code,status').in('id',roleIds).eq('status','ACTIVE'):Promise.resolve({data:[],error:null}),
+    userIds.length?client.from('profiles').select('id,full_name').in('id',userIds):Promise.resolve({data:[],error:null}),
+    instIds.length?client.from('institutions').select('id,name,status').in('id',instIds):Promise.resolve({data:[],error:null})
+   ]);
+   if(rolesQ.error)throw rolesQ.error;if(profilesQ.error)throw profilesQ.error;if(instQ.error)throw instQ.error;
+   const opRoleIds=new Set((rolesQ.data||[]).filter(x=>String(x.code||'').toUpperCase()==='OPERATOR').map(x=>x.id));
+   const assignments=[...new Map((ur.data||[]).filter(x=>opRoleIds.has(x.role_id)&&x.institution_id).map(x=>[x.user_id+':'+x.institution_id,{...x}])).values()];
+   const validInstIds=[...new Set(assignments.map(x=>x.institution_id))],validUserIds=[...new Set(assignments.map(x=>x.user_id))];
+   const [usageQ,pushQ]=await Promise.all([
+    validUserIds.length?client.from('pwa_usage_monitor').select('user_id,organization_id,institution_id,last_pwa_seen_at').in('organization_id',orgIds).in('user_id',validUserIds):Promise.resolve({data:[],error:null}),
+    validUserIds.length?client.from('push_subscriptions').select('user_id,id,updated_at').in('user_id',validUserIds):Promise.resolve({data:[],error:null})
+   ]);
+   if(usageQ.error)throw usageQ.error;if(pushQ.error)throw pushQ.error;
+   const profileMap=new Map((profilesQ.data||[]).map(x=>[x.id,x]));
+   const instMap=new Map((instQ.data||[]).map(x=>[x.id,x]));
+   const usageMap=new Map((usageQ.data||[]).map(x=>[x.user_id+':'+x.institution_id,x]));
+   const pushMap=new Map();for(const x of pushQ.data||[])pushMap.set(x.user_id,(pushMap.get(x.user_id)||0)+1);
+   const rows=assignments.map(a=>({userId:a.user_id,institutionId:a.institution_id,orgId:a.organization_id,name:profileMap.get(a.user_id)?.full_name||'Nama akun belum tersedia',institution:instMap.get(a.institution_id)?.name||'Lembaga tidak ditemukan',pwa:usageMap.get(a.user_id+':'+a.institution_id)||null,pushCount:pushMap.get(a.user_id)||0})).sort((a,b)=>a.institution.localeCompare(b.institution,'id')||a.name.localeCompare(b.name,'id'));
+   const pwaInst=new Set(rows.filter(x=>x.pwa).map(x=>x.institutionId));
+   const pushInst=new Set(rows.filter(x=>x.pushCount>0).map(x=>x.institutionId));
+   const escv=safe;
+   host.innerHTML=`
+    <div class="card">
+     <div class="row" style="align-items:flex-start;gap:10px;flex-wrap:wrap"><div><h2 style="margin:0">Monitoring PWA & Notifikasi</h2><p class="small muted" style="margin:5px 0 0">Pemantauan akun Operator berdasarkan aktivitas PWA yang benar-benar terdeteksi dan data langganan push.</p></div><button class="btn secondary" id="bkfPwaRefresh" type="button">↻ Perbarui</button></div>
+     <div class="grid grid3" style="margin-top:14px">
+      <div class="metric"><div class="small muted">Lembaga terpantau</div><strong>${new Set(rows.map(x=>x.institutionId)).size}</strong></div>
+      <div class="metric"><div class="small muted">PWA terdeteksi</div><strong>${pwaInst.size}</strong></div>
+      <div class="metric"><div class="small muted">Push terdaftar</div><strong>${pushInst.size}</strong></div>
+     </div>
+     <div class="notice" style="margin-top:12px">Catatan: “Belum terdeteksi” berarti akun belum tercatat membuka SIMFAQ melalui ikon PWA. Ini bukan bukti bahwa PWA belum pernah diinstal. Push terdaftar menunjukkan perangkat memiliki data subscription di sistem, bukan jaminan notifikasi sudah tampil di perangkat.</div>
+    </div>
+    <div class="card">
+     <div class="field"><label for="bkfPwaSearch">Cari lembaga atau nama operator</label><input id="bkfPwaSearch" type="search" placeholder="Ketik nama lembaga atau operator…"></div>
+     <div id="bkfPwaRows">${rows.length?rows.map(x=>`<div class="list-item bkf-pwa-row" data-search="${escv((x.institution+' '+x.name).toLowerCase())}" style="display:block">
+       <div class="row" style="align-items:flex-start"><div style="min-width:0;flex:1"><strong>${escv(x.institution)}</strong><div class="small muted">${escv(x.name)}</div></div><div style="text-align:right"><span class="status" style="background:${x.pwa?'#e8f7ee':'#fff4df'};color:${x.pwa?'#176b3a':'#8a5a12'}">${x.pwa?'PWA terdeteksi':'Belum terdeteksi'}</span><div class="small muted" style="margin-top:5px">${x.pushCount?'Push terdaftar ('+x.pushCount+')':'Push belum terdaftar'}</div></div></div>
+       <div class="small muted" style="margin-top:7px">Terakhir dibuka melalui PWA: ${fmtTime(x.pwa?.last_pwa_seen_at)}</div>
+      </div>`).join(''):'<div class="empty">Belum ada akun Operator lembaga yang ditemukan.</div>'}</div>
+     <div class="small muted" style="margin-top:10px">Data menampilkan ${rows.length} akun Operator aktif dari ${validInstIds.length} lembaga yang memiliki penugasan Operator.</div>
+    </div>`;
+   document.getElementById('bkfPwaRefresh')?.addEventListener('click',()=>window.showPwaMonitoring());
+   document.getElementById('bkfPwaSearch')?.addEventListener('input',e=>{const q=String(e.target.value||'').trim().toLowerCase();document.querySelectorAll('.bkf-pwa-row').forEach(el=>el.style.display=(!q||String(el.dataset.search||'').includes(q))?'block':'none')});
+  }catch(e){
+   console.error('[BK PWA MONITOR PAGE]',e);
+   host.innerHTML=`<div class="card"><div class="row"><div><h2>Monitoring PWA & Notifikasi</h2><p class="error">${safe(e?.message||e||'Data monitoring gagal dimuat.')}</p></div><button class="btn secondary" type="button" onclick="window.showPwaMonitoring()">Coba lagi</button></div></div>`;
+  }
+ };
 })();
 </script>
 
