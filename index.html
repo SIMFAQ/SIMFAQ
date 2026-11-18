@@ -6179,6 +6179,7 @@ window.boot=async function(){
  let homeLoaded=false;
  try{await Promise.race([Promise.resolve(window.navigate('home')).then(()=>{homeLoaded=true}),new Promise(resolve=>setTimeout(resolve,15000))]);}catch(e){console.error('[BK HOME STARTUP]',e)}
  if(!homeLoaded){const host=document.getElementById('page');if(host)host.innerHTML=`<div class="card"><h2>Beranda belum selesai dimuat</h2><p>Koneksi atau permintaan data mungkin sedang lambat. Aplikasi tetap terbuka; coba muat ulang Beranda.</p><button class="btn primary" type="button" onclick="window.navigate('home')">Coba lagi</button><p class="small muted">Jika pesan ini terus muncul, periksa koneksi internet dan layanan database.</p></div>`;console.warn('[BK HOME STARTUP] Beranda tidak selesai dalam 15 detik.')}
+ try{await window.bkfCheckInstitutionCompliance?.()}catch(complianceError){console.warn('[SIMFAQ COMPLIANCE ALERT]',complianceError)}
  window.__BKF_BOOT_READY__=true;try{await window.bkfConsumePendingPushNavigation?.()}catch(pushNavError){console.warn('[SIMFAQ PUSH STARTUP]',pushNavError)}
  try{window.bkfAppBridge?.send('APP_READY')}catch(_){}await window.bkfSplash?.hide();
 };
@@ -8861,6 +8862,66 @@ window.openInstitutionDocument=async function(id){try{const q=await sb.from('ins
   #simfaqInstitutionRoot:before { content:none !important; }
   #simfaqInstitutionRoot .simfaq-print-meta { display:block !important; color:#000 !important; }
 }
+</style>
+<script id="simfaq-institution-compliance-alert-v616">
+(function(){
+'use strict';
+function isStandalone(){try{return window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone===true}catch(_){return false}}
+function isMobileOrTablet(){var ua=String(navigator.userAgent||'');return /Android|iPhone|iPad|iPod|Mobile|Tablet/i.test(ua)||(/Macintosh/i.test(ua)&&Number(navigator.maxTouchPoints||0)>1)}
+function escapeHtml(v){return String(v??'').replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function removeAlert(){var old=document.getElementById('simfaqInstitutionComplianceAlert');if(old)old.remove()}
+function renderAlert(items){
+ removeAlert();if(!items.length)return;
+ var el=document.createElement('section');el.id='simfaqInstitutionComplianceAlert';el.setAttribute('role','alert');el.setAttribute('aria-live','assertive');
+ el.innerHTML='<div class="simfaq-compliance-head"><span class="simfaq-compliance-alarm" aria-hidden="true">🚨</span><strong>PERINGATAN KELENGKAPAN LEMBAGA</strong><button type="button" class="simfaq-compliance-close" aria-label="Tutup peringatan">×</button></div><div class="simfaq-compliance-body"><b>Mohon segera ditindaklanjuti:</b><ul>'+items.map(function(x){return '<li>'+escapeHtml(x)+'</li>'}).join('')+'</ul><div class="simfaq-compliance-foot">Peringatan ini akan muncul kembali saat SIMFAQ dibuka berikutnya selama masih ada yang belum dilengkapi.</div></div>';
+ document.body.appendChild(el);
+ el.querySelector('.simfaq-compliance-close').addEventListener('click',removeAlert);
+ window.setTimeout(function(){if(el.isConnected)el.classList.add('simfaq-compliance-hide')},18000);
+ window.setTimeout(function(){if(el.isConnected)el.remove()},18500);
+}
+async function checkAndShow(){
+ try{
+  if(!Array.isArray(state?.roles)||!state.roles.includes('OPERATOR'))return;
+  var institutionId=state.profile?.institution_id||state.profile?.lembaga_id||null;if(!institutionId&&typeof window.bkfOperatorInstitutionId==='function')institutionId=await window.bkfOperatorInstitutionId();if(!institutionId)return;
+  var q=await sb.from('institutions').select('id,name,phone,head_photo_url').eq('id',institutionId).maybeSingle();
+  if(q.error||!q.data){console.warn('[SIMFAQ KELENGKAPAN LEMBAGA]',q.error||'Profil lembaga tidak ditemukan');return}
+  var inst=q.data,items=[];
+  if(!String(inst.head_photo_url||'').trim())items.push('Foto Kepala Lembaga belum dilengkapi pada Profil Lembaga.');
+  if(!String(inst.phone||'').replace(/\D/g,'').trim())items.push('Nomor telepon lembaga belum diisi pada Profil Lembaga.');
+  var pushReady=false;
+  try{
+   var supported=!!(window.isSecureContext&&('Notification' in window)&&('serviceWorker' in navigator)&&('PushManager' in window));
+   if(supported&&Notification.permission==='granted'){
+    try{if(typeof window.bkfSyncPushSubscription==='function')await window.bkfSyncPushSubscription()}catch(_){}
+    var reg=await navigator.serviceWorker.getRegistration();
+    var sub=reg&&reg.pushManager?await reg.pushManager.getSubscription():null;
+    if(sub){var check=await sb.from('push_subscriptions').select('id').eq('user_id',state.profile.id).eq('endpoint',sub.endpoint).limit(1);if(!check.error)pushReady=!!(check.data&&check.data.length)}
+   }
+  }catch(pushError){console.warn('[SIMFAQ CEK PUSH]',pushError)}
+  if(!pushReady)items.push('Notifikasi Push pada perangkat ini belum aktif atau belum terdaftar. Silakan aktifkan melalui menu Notifikasi.');
+  if(isMobileOrTablet()&&!isStandalone())items.push('SIMFAQ masih dibuka melalui browser HP/tablet. Silakan instal aplikasi melalui menu “Instal aplikasi”, lalu buka kembali dari ikon FUSPAQ. Peringatan ini tidak berlaku untuk PC/laptop.');
+  renderAlert(items);
+ }catch(e){console.warn('[SIMFAQ PERINGATAN LEMBAGA]',e)}
+}
+window.bkfCheckInstitutionCompliance=checkAndShow;
+var lastCheckAt=0;
+async function recheckOnActivation(){if(!window.__BKF_BOOT_READY__||document.visibilityState==='hidden')return;var now=Date.now();if(now-lastCheckAt<8000)return;lastCheckAt=now;await checkAndShow()}
+document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible')recheckOnActivation()});
+window.addEventListener('pageshow',function(){recheckOnActivation()});
+})();
+</script>
+<style id="simfaq-institution-compliance-alert-style-v616">
+#simfaqInstitutionComplianceAlert{position:fixed;z-index:25000;top:max(12px,env(safe-area-inset-top));left:50%;transform:translateX(-50%);width:min(620px,calc(100% - 22px));max-height:min(70vh,560px);overflow:auto;border:2px solid #991b1b;border-radius:15px;background:#fff7f7;color:#7f1d1d;box-shadow:0 12px 38px rgba(80,0,0,.35);font-family:inherit;animation:simfaqComplianceBlink 1.05s steps(2,start) infinite}
+#simfaqInstitutionComplianceAlert .simfaq-compliance-head{display:flex;align-items:center;gap:9px;padding:11px 13px;background:#b91c1c;color:#fff;font-size:14px;letter-spacing:.2px}
+#simfaqInstitutionComplianceAlert .simfaq-compliance-alarm{font-size:22px;line-height:1}
+#simfaqInstitutionComplianceAlert .simfaq-compliance-close{margin-left:auto;border:1px solid rgba(255,255,255,.65);border-radius:8px;background:rgba(255,255,255,.14);color:#fff;font-size:23px;line-height:25px;width:32px;height:32px;cursor:pointer}
+#simfaqInstitutionComplianceAlert .simfaq-compliance-body{padding:12px 15px;font-size:13px;line-height:1.55}
+#simfaqInstitutionComplianceAlert ul{margin:7px 0 0;padding-left:20px}
+#simfaqInstitutionComplianceAlert li{margin:5px 0;font-weight:700}
+#simfaqInstitutionComplianceAlert .simfaq-compliance-foot{margin-top:9px;padding-top:8px;border-top:1px solid #fecaca;font-size:11px;color:#991b1b}
+#simfaqInstitutionComplianceAlert.simfaq-compliance-hide{opacity:0;transition:opacity .45s ease}
+@keyframes simfaqComplianceBlink{0%,100%{opacity:1;box-shadow:0 12px 38px rgba(80,0,0,.35)}50%{opacity:.68;box-shadow:0 0 0 5px rgba(220,38,38,.18),0 12px 38px rgba(80,0,0,.35)}}
+@media(prefers-reduced-motion:reduce){#simfaqInstitutionComplianceAlert{animation:none}}
 </style>
 </body>
 </html>
