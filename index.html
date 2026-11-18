@@ -412,7 +412,7 @@ const examComponentLabel=code=>({GERAKAN:'Gerakan',BACAAN:'Bacaan',ADAB:'Adab',N
 const date=v=>v?new Date(v).toLocaleDateString('id-ID',{dateStyle:'medium',timeZone:'Asia/Jakarta'}):'-';
 const can=p=>{const r=state.roles||[];if(r.includes('KETUA'))return true;const m={'activity.view':['KETUA','SEKRETARIS','BENDAHARA','ANGGOTA','OPERATOR'],'exam.view':['KETUA','SEKRETARIS','ANGGOTA','OPERATOR'],'graduation.view':['KETUA','SEKRETARIS','ANGGOTA','OPERATOR'],'finance.view':['KETUA','BENDAHARA','OPERATOR'],'secretariat.view':['KETUA','SEKRETARIS','ANGGOTA'],'distribution.view':['KETUA','SEKRETARIS','BENDAHARA','ANGGOTA','OPERATOR'],'report.view':['KETUA','SEKRETARIS','BENDAHARA','ANGGOTA','OPERATOR'],'management.view':['KETUA','SEKRETARIS','BENDAHARA','ANGGOTA'],'institution.view':['KETUA','SEKRETARIS','BENDAHARA','ANGGOTA','OPERATOR'],'org.view':['KETUA','SEKRETARIS','BENDAHARA','ANGGOTA','OPERATOR'],'settings.manage':['KETUA'],'dashboard.view':['KETUA','SEKRETARIS','BENDAHARA','ANGGOTA','OPERATOR']};return (m[p]||[]).some(x=>r.includes(x));};
 const roleLabel=r=>({KETUA:'Ketua Pengurus',SEKRETARIS:'Sekretaris Pengurus',BENDAHARA:'Bendahara Pengurus',ANGGOTA:'Anggota Pengurus',OPERATOR:'Kepala/Operator Lembaga'})[r]||r;
-const menu=[['home','Beranda'],['activities','Kegiatan'],['exams','Ujian'],['pengujian','Pengujian'],['graduation','Wisuda'],['payments','Pembayaran'],['finance','Keuangan'],['secretariat','Sekretariat'],['distribution','Distribusi'],['reports','Laporan'],['notifications','Notifikasi'],['management','Pengurus'],['institutions','Profil & Data Lembaga'],['organization','Profil Kepengurusan'],['settings','Pengaturan'],['governance','Aturan Ujian & Wisuda'],['pwa-monitoring','Monitoring PWA & Notifikasi']];
+const menu=[['home','Beranda'],['activities','Kegiatan'],['exams','Ujian'],['pengujian','Pengujian'],['graduation','Wisuda'],['payments','Pembayaran'],['finance','Keuangan'],['secretariat','Sekretariat'],['distribution','Distribusi'],['reports','Laporan'],['notifications','Notifikasi'],['management','Pengurus'],['institutions','Profil & Data Lembaga'],['organization','Profil Kepengurusan'],['settings','Pengaturan'],['governance','Aturan Ujian & Wisuda'],['pwa-monitoring','Monitoring PWA & Notifikasi'],['about','Tentang SIMFAQ']];
 function bkAuthRedirectUrl(){const u=new URL(window.location.href);u.hash='';u.search='';return /^https?:$/.test(u.protocol)?u.toString():null}
 function renderLogin(msg='',notice=''){document.body.classList.add('bkf-ready');app.style.visibility='visible';app.innerHTML=`<main class="login-v2"><section class="login-card"><div class="login-brand"><div class="login-mark">BK</div><div><div class="login-title">BK FUSPAQ NU</div><div class="login-subtitle">Sistem Informasi Badan Khusus FUSPAQ Nahdlatul Ulama</div></div></div><div class="login-welcome"><h1>Selamat datang</h1><p>Masuk untuk melanjutkan ke sistem informasi BK FUSPAQ NU.</p></div>${msg?`<div class="login-message error">${esc(msg)}</div>`:''}${notice?`<div class="login-message success">${esc(notice)}</div>`:''}<form id="login" novalidate><div class="field"><label for="loginEmail">Email</label><div class="login-input"><span>✉</span><input id="loginEmail" name="email" type="email" required autocomplete="username" placeholder="nama@email.com"></div></div><div class="field"><label for="loginPassword">Kata sandi</label><div class="login-input"><span>●</span><input id="loginPassword" name="password" type="password" required autocomplete="current-password" placeholder="Masukkan kata sandi"><button type="button" class="password-toggle" aria-label="Lihat kata sandi" onclick="v12TogglePassword('loginPassword',this)">👁</button></div></div><button id="loginSubmit" class="btn primary login-submit" type="submit">Masuk ke Sistem</button></form><button id="forgotPasswordBtn" class="login-link" type="button">Lupa kata sandi?</button><div class="login-divider"><span>BK FUSPAQ NU</span></div><div class="login-footer"><strong>Deplovemen: Daneva. Studio</strong><span>Founder: Ahmad Fathunnur</span></div></section></main>`;document.getElementById('login').onsubmit=login;document.getElementById('forgotPasswordBtn').onclick=forgotPassword}
 function renderRecovery(msg='',ok=''){app.innerHTML=`<main class="login-v2"><section class="login-card"><div class="login-brand"><div class="login-mark">BK</div><div><div class="login-title">BK FUSPAQ NU</div><div class="login-subtitle">Pemulihan akun</div></div></div><div class="login-welcome"><h1>Buat kata sandi baru</h1><p>Masukkan kata sandi baru untuk akun Anda. Gunakan minimal 8 karakter.</p></div>${msg?`<div class="login-message error">${esc(msg)}</div>`:''}${ok?`<div class="login-message success">${esc(ok)}</div>`:''}<form id="recoveryForm"><div class="field"><label for="newPassword">Kata sandi baru</label><div class="login-input"><span>●</span><input id="newPassword" type="password" minlength="8" required autocomplete="new-password" placeholder="Minimal 8 karakter"><button type="button" class="password-toggle" onclick="v12TogglePassword('newPassword',this)">👁</button></div></div><div class="field"><label for="confirmPassword">Ulangi kata sandi</label><div class="login-input"><span>●</span><input id="confirmPassword" type="password" minlength="8" required autocomplete="new-password" placeholder="Ulangi kata sandi baru"><button type="button" class="password-toggle" onclick="v12TogglePassword('confirmPassword',this)">👁</button></div></div><button id="recoverySubmit" class="btn primary login-submit" type="submit">Simpan Kata Sandi Baru</button></form><button class="login-link" type="button" onclick="renderLogin()">Kembali ke Login</button><div class="login-footer"><strong>Deplovemen: Daneva. Studio</strong><span>Founder: Ahmad Fathunnur</span></div></section></main>`;document.getElementById('recoveryForm').onsubmit=completeRecovery}
@@ -603,6 +603,9 @@ window.bkfDistributionHistoryDocumentV536=function(){
 
 <!-- SIMFAQ V608: profile refresh, document upload rollback, archive workflow, and contextual print header. -->
 <!-- SIMFAQ V615: penguatan pencocokan identitas santri/guru, indeks unik NIK/NIS/nomor pegawai, ekspor Pengurus dan metadata Dokumen. -->
+
+
+
 </body>
 
 </html>`;
@@ -6076,7 +6079,7 @@ async function refreshExaminerAssignmentAccess(force=false){
 function allowed(route){
  const id=String(route||'home').trim().toLowerCase();
  const menuId=id.startsWith('pengujian-')?'pengujian':id;
- if(menuId==='home'||menuId==='notifications')return true;
+ if(menuId==='home'||menuId==='notifications'||menuId==='about')return true;
  const roles=normalizedRoles();
  // Anggota hanya melihat/membuka modul penilaian jika benar-benar memiliki
  // penugasan penguji aktif; role keanggotaan saja tidak memberi akses.
@@ -6109,7 +6112,7 @@ window.openDrawer=async function(){
 };
 
 const routeHandlers={
- home:()=>window.showHome?.(),activities:()=>window.showActivities?.(),payments:()=>window.showPayments?.(),exams:()=>window.showExams?.(),pengujian:()=>window.showPengujian?.(),'pengujian-pra':()=>window.showPengujianPra?.(),'pengujian-tashih':()=>window.showPengujianTashih?.(),graduation:()=>window.showGraduation?.(),finance:()=>window.showFinance?.(),secretariat:()=>window.showSecretariat?.(),distribution:()=>window.showDistribution?.(),reports:()=>window.showReports?.(),notifications:()=>window.showNotifications?.(),management:()=>window.showManagement?.(),institutions:()=>window.showUsers?.(),album:()=>window.showMemoryAlbum?.(),organization:()=>window.showOrganization?.(),auditbackup:()=>window.showAuditBackup?.(),settings:()=>window.showSettings?.(),governance:()=>window.showExamGovernance?.(),'pwa-monitoring':()=>window.showPwaMonitoring?.()
+ home:()=>window.showHome?.(),activities:()=>window.showActivities?.(),payments:()=>window.showPayments?.(),exams:()=>window.showExams?.(),pengujian:()=>window.showPengujian?.(),'pengujian-pra':()=>window.showPengujianPra?.(),'pengujian-tashih':()=>window.showPengujianTashih?.(),graduation:()=>window.showGraduation?.(),finance:()=>window.showFinance?.(),secretariat:()=>window.showSecretariat?.(),distribution:()=>window.showDistribution?.(),reports:()=>window.showReports?.(),notifications:()=>window.showNotifications?.(),management:()=>window.showManagement?.(),institutions:()=>window.showUsers?.(),album:()=>window.showMemoryAlbum?.(),organization:()=>window.showOrganization?.(),auditbackup:()=>window.showAuditBackup?.(),settings:()=>window.showSettings?.(),governance:()=>window.showExamGovernance?.(),'pwa-monitoring':()=>window.showPwaMonitoring?.(),about:()=>window.showAboutSimfaq?.()
 };
 window.navigate=async function(route){
  const requested=String(route||'home').trim().toLowerCase();
@@ -6181,7 +6184,7 @@ window.boot=async function(){
  if(!homeLoaded){const host=document.getElementById('page');if(host)host.innerHTML=`<div class="card"><h2>Beranda belum selesai dimuat</h2><p>Koneksi atau permintaan data mungkin sedang lambat. Aplikasi tetap terbuka; coba muat ulang Beranda.</p><button class="btn primary" type="button" onclick="window.navigate('home')">Coba lagi</button><p class="small muted">Jika pesan ini terus muncul, periksa koneksi internet dan layanan database.</p></div>`;console.warn('[BK HOME STARTUP] Beranda tidak selesai dalam 15 detik.')}
  try{await window.bkfCheckInstitutionCompliance?.()}catch(complianceError){console.warn('[SIMFAQ COMPLIANCE ALERT]',complianceError)}
  window.__BKF_BOOT_READY__=true;try{await window.bkfConsumePendingPushNavigation?.()}catch(pushNavError){console.warn('[SIMFAQ PUSH STARTUP]',pushNavError)}
- try{window.bkfAppBridge?.send('APP_READY')}catch(_){}await window.bkfSplash?.hide();
+ try{window.bkfAppBridge?.send('APP_READY')}catch(_){}await window.bkfSplash?.hide();try{window.bkfShowMonthlyDuaToast?.()}catch(duaToastError){console.warn('[SIMFAQ DOA TOAST]',duaToastError)}
 };
 try{sb?.auth?.onAuthStateChange?.((event,session)=>{if(event==='SIGNED_OUT')renderLogin();else if(session)state.user=session.user})}catch(_){}
 window.bkfSplash?.show();
@@ -8923,6 +8926,31 @@ window.addEventListener('pageshow',function(){recheckOnActivation()});
 @keyframes simfaqComplianceBlink{0%,100%{opacity:1;box-shadow:0 12px 38px rgba(80,0,0,.35)}50%{opacity:.68;box-shadow:0 0 0 5px rgba(220,38,38,.18),0 12px 38px rgba(80,0,0,.35)}}
 @media(prefers-reduced-motion:reduce){#simfaqInstitutionComplianceAlert{animation:none}}
 </style>
+<script id="simfaq-monthly-doa-and-about-v617">
+(function(){
+ 'use strict';
+ const duaTitle='Mohon Doa dan Keberkahan';
+ const duaText='Semoga setiap aktivitas dan kebaikan melalui SIMFAQ menjadi amal jariyah, membawa manfaat bagi umat, serta mendapatkan ridha Allah SWT. Mohon doa untuk para penggagas, pengembang, pengurus, ustadz-ustadzah, santri, dan seluruh pihak yang berkhidmah melalui BK FUSPAQ NU Kecamatan Rowosari. Semoga senantiasa diberi kesehatan, keikhlasan, kekuatan, umur yang berkah, dan kemudahan dalam mengabdi. Aamiin ya Rabbal ‘alamin.';
+ const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ window.showAboutSimfaq=function(){
+  const host=document.getElementById('page');if(!host)return;
+  host.innerHTML=`<section class="card" style="max-width:760px;margin:0 auto;border:1px solid #d8e8dc;background:linear-gradient(145deg,#fff,#f2f8f3)"><div style="text-align:center;font-size:30px;margin-bottom:6px">☪</div><h2 style="text-align:center;color:#176b3a;margin:0 0 6px">Tentang SIMFAQ</h2><p style="text-align:center;color:#607568;margin:0 0 18px">Sistem Informasi BK FUSPAQ NU Kecamatan Rowosari</p><div style="border:1px solid #dce9df;border-radius:15px;padding:16px;background:#fff"><div style="text-align:center;font-size:21px;margin-bottom:10px">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div><h3 style="text-align:center;color:#176b3a;margin:0 0 12px">${duaTitle}</h3><p style="line-height:1.75;text-align:justify;margin:0;color:#344b3b">${duaText}</p><div style="text-align:center;font-size:18px;color:#176b3a;margin-top:14px">آمِيْنَ يَا رَبَّ الْعَالَمِيْنَ</div></div><p class="small muted" style="text-align:center;margin:16px 0 0">Semoga SIMFAQ menjadi sarana pelayanan, silaturahmi, dan khidmah yang membawa keberkahan.</p></section>`;
+ };
+ window.bkfShowMonthlyDuaToast=function(){
+  try{
+   const uid=String(state?.profile?.id||state?.user?.id||'');if(!uid)return false;
+   const key='simfaq_dua_toast_last_v617_'+uid;const last=Number(localStorage.getItem(key)||0);
+   if(last&&Date.now()-last<30*86400000)return false;
+   if(document.getElementById('simfaqMonthlyDuaToast'))return false;
+   localStorage.setItem(key,String(Date.now()));
+   const el=document.createElement('section');el.id='simfaqMonthlyDuaToast';el.setAttribute('role','status');el.setAttribute('aria-live','polite');
+   el.style.cssText='position:fixed;z-index:2147483000;left:12px;right:12px;top:calc(env(safe-area-inset-top,0px) + 12px);width:min(520px,calc(100% - 24px));margin:0 auto;padding:15px 16px;border:1px solid #cfe2d2;border-left:5px solid #28764a;border-radius:16px;background:linear-gradient(145deg,#fff,#f0f8f1);box-shadow:0 12px 34px rgba(16,54,31,.22);color:#234532;font:13px/1.55 system-ui,sans-serif';
+   el.innerHTML=`<div style="display:flex;align-items:flex-start;gap:10px"><div style="font-size:24px;line-height:1">🤲</div><div style="flex:1;min-width:0"><strong style="display:block;color:#176b3a;font-size:14px;margin-bottom:4px">${duaTitle}</strong><div>${esc(duaText)}</div><div style="font-weight:800;color:#176b3a;margin-top:7px">Aamiin ya Rabbal ‘alamin.</div></div><button type="button" aria-label="Tutup pesan doa" style="border:0;background:#e6f1e8;color:#315c3d;border-radius:9px;padding:5px 9px;font-size:18px;line-height:1">×</button></div>`;
+   const close=()=>{el.remove()};el.querySelector('button').addEventListener('click',close);document.body.appendChild(el);setTimeout(close,18000);return true;
+  }catch(e){console.warn('[SIMFAQ MONTHLY DUA TOAST]',e);return false}
+ };
+})();
+</script>
 </body>
 </html>
 
