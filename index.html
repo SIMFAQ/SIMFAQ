@@ -8193,13 +8193,40 @@ body.bkf-pengujian-no-footer .shell{padding-bottom:20px!important}
     overlay.style.cssText='position:fixed;inset:0;z-index:2147482500;display:flex;align-items:center;justify-content:center;padding:18px;background:rgba(10,35,22,.62);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px)';
     var panel=document.createElement('section');panel.setAttribute('role','dialog');panel.setAttribute('aria-modal','true');panel.setAttribute('aria-labelledby','bkfPwaInstallOfferTitle');
     panel.style.cssText='width:min(420px,100%);box-sizing:border-box;background:linear-gradient(150deg,#fff 0%,#eff8f1 100%);border:1px solid #cfe3d4;border-radius:22px;padding:22px 20px 18px;box-shadow:inset 0 2px 0 #fff,0 20px 55px rgba(0,0,0,.25);color:#193d29;text-align:center';
-    var title=ios?'Tambahkan SIMFAQ ke Layar Utama':'Pasang Aplikasi SIMFAQ?',desc=ios?'Agar SIMFAQ mudah dibuka seperti aplikasi, tambahkan pintasannya ke Layar Utama iPhone.':'Pasang SIMFAQ di perangkat agar lebih mudah dibuka langsung dari layar utama.';
+    var title=ios?'Tambahkan SIMFAQ ke Layar Utama':'Pasang Aplikasi SIMFAQ?',desc=ios?'Agar SIMFAQ mudah dibuka seperti aplikasi, tambahkan pintasannya ke Layar Utama iPhone. Setelah dipasang, aktifkan notifikasi dari SIMFAQ.':'Pasang SIMFAQ di perangkat agar lebih mudah dibuka langsung dari layar utama. Sebelum melanjutkan pemasangan, aktifkan notifikasi agar informasi penting tidak terlewat.';
     var instructions=ios?'<ol style="text-align:left;margin:12px 0 0;padding-left:22px;line-height:1.7;font-size:13px"><li>Tekan tombol <b>Bagikan</b> di Safari.</li><li>Gulir menu, lalu pilih <b>Tambahkan ke Layar Utama</b>.</li><li>Tekan <b>Tambah</b> untuk menyelesaikan pemasangan.</li></ol>':'';
     panel.innerHTML='<div aria-hidden="true" style="font-size:34px;line-height:1;margin:2px 0 12px">☪</div><h3 id="bkfPwaInstallOfferTitle" style="margin:0 0 9px;font-size:19px;color:#176b3a">'+title+'</h3><p style="font-size:13px;line-height:1.55;margin:0">'+desc+'</p>'+instructions+'<div style="font-size:10px;color:#718276;margin-top:15px">Daneva.Studio</div>';
-    var primary=document.createElement('button');primary.type='button';primary.textContent=ios?'Mengerti':'Instal SIMFAQ';primary.style.cssText='display:block;width:100%;min-height:44px;margin-top:15px;border:0;border-radius:12px;background:linear-gradient(135deg,#176b3a,#2d8d58);color:#fff;font-weight:800;font-size:14px';
+    var primary=document.createElement('button');primary.type='button';primary.textContent=ios?'Mengerti':'Aktifkan Notifikasi & Instal';primary.style.cssText='display:block;width:100%;min-height:44px;margin-top:15px;border:0;border-radius:12px;background:linear-gradient(135deg,#176b3a,#2d8d58);color:#fff;font-weight:800;font-size:14px';
     var later=document.createElement('button');later.type='button';later.textContent='Nanti saja';later.style.cssText='display:block;width:100%;min-height:40px;margin-top:8px;border:1px solid #d5e4d8;border-radius:11px;background:#fff;color:#42634c;font-weight:700;font-size:13px';
+    async function activateNotificationBeforeInstall(){
+      var permissionResult='unavailable';
+      try{
+        if(!('Notification' in window)||!('serviceWorker' in navigator)||!window.isSecureContext){
+          if(typeof window.v12Toast==='function')window.v12Toast('Browser/perangkat belum mendukung notifikasi push. Instalasi tetap dilanjutkan.','warning');
+          return;
+        }
+        if(Notification.permission==='denied'){
+          if(typeof window.v12Toast==='function')window.v12Toast('Izin notifikasi diblokir. Anda dapat mengubahnya melalui pengaturan browser. Instalasi tetap dilanjutkan.','warning');
+          return;
+        }
+        permissionResult=Notification.permission;
+        if(permissionResult==='default')permissionResult=await Notification.requestPermission();
+        if(permissionResult==='granted'){
+          try{
+            var reg=await window.bkfPwaRegistration||navigator.serviceWorker.register(new URL('./sw.js',document.baseURI).href,{scope:new URL('./',document.baseURI).pathname,updateViaCache:'none'});
+            var sub=await reg.pushManager.getSubscription();
+            if(!sub)sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:(function(base64){var padding='='.repeat((4-base64.length%4)%4),raw=atob((base64+padding).replace(/-/g,'+').replace(/_/g,'/')),out=new Uint8Array(raw.length);for(var i=0;i<raw.length;i++)out[i]=raw.charCodeAt(i);return out})('BEohZSGPhl8OEeDVrV13CtW9l--A0MSqB9ogRuT8zfPHM2oq4vT28hgSFuwXo5Lv7q7WklhC_NIj3LE0AMixky0')});
+            try{localStorage.setItem('bkf_push_reminder_v179',JSON.stringify({status:'granted',at:Date.now()}))}catch(_){}
+          }catch(pushErr){console.warn('[SIMFAQ INSTALL PUSH SETUP]',pushErr);if(typeof window.v12Toast==='function')window.v12Toast('Izin sudah diberikan, tetapi push belum tersambung. SIMFAQ akan mencoba sinkron setelah login.','warning')}
+        }else{
+          if(typeof window.v12Toast==='function')window.v12Toast('Notifikasi belum diaktifkan. Anda dapat mengaktifkannya nanti di SIMFAQ.','warning');
+        }
+      }catch(err){console.warn('[SIMFAQ INSTALL NOTIFICATION PERMISSION]',err)}finally{
+        closeInstallOffer(false);await installApp();
+      }
+    }
     if(ios)primary.onclick=function(){closeInstallOffer(true)};
-    else primary.onclick=function(){var promptEvent=window.bkfPwaInstallPrompt;if(!promptEvent){closeInstallOffer(true);return}closeInstallOffer(false);installApp()};
+    else primary.onclick=function(){primary.disabled=true;primary.textContent='Memproses izin notifikasi…';activateNotificationBeforeInstall()};
     later.onclick=function(){closeInstallOffer(true)};var installed=document.createElement('button');installed.type='button';installed.textContent='SIMFAQ sudah terpasang';installed.style.cssText='display:block;width:100%;min-height:38px;margin-top:7px;border:0;background:transparent;color:#52705a;font-weight:700;font-size:12px';installed.onclick=function(){try{localStorage.setItem('bkf_pwa_installed_once','1')}catch(_){}closeInstallOffer(false)};panel.appendChild(primary);panel.appendChild(later);panel.appendChild(installed);overlay.appendChild(panel);
     overlay.addEventListener('click',function(e){if(e.target===overlay)closeInstallOffer(true)});document.body.appendChild(overlay);
   }
