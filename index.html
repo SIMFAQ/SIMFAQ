@@ -8187,6 +8187,23 @@ body.bkf-pengujian-no-footer .shell{padding-bottom:20px!important}
   function isIOSDevice(){var ua=navigator.userAgent||'';return /iPhone|iPad|iPod/i.test(ua)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1)}
   function canShowInstallOffer(){if(standalone())return false;try{if(localStorage.getItem('bkf_pwa_installed_once')==='1')return false;var last=Number(localStorage.getItem('bkf_pwa_install_offer_dismissed_at')||0);if(last&&Date.now()-last<INSTALL_OFFER_COOLDOWN)return false}catch(_){}return !document.getElementById('bkfPwaInstallOffer')}
   function closeInstallOffer(dismissed){var modal=document.getElementById('bkfPwaInstallOffer');if(modal)modal.remove();if(dismissed){try{localStorage.setItem('bkf_pwa_install_offer_dismissed_at',String(Date.now()))}catch(_){}}}
+  function showInstallBusy(title,body){
+    var old=document.getElementById('bkfPwaBusy');if(old)old.remove();
+    var overlay=document.createElement('div');overlay.id='bkfPwaBusy';overlay.style.cssText='position:fixed;inset:0;z-index:2147482600;display:flex;align-items:center;justify-content:center;padding:18px;background:rgba(10,35,22,.66);backdrop-filter:blur(3px)';
+    overlay.innerHTML='<section role="status" aria-live="polite" style="width:min(360px,100%);box-sizing:border-box;background:#fff;border-radius:20px;padding:24px 20px;text-align:center;color:#193d29;box-shadow:0 20px 55px rgba(0,0,0,.25)"><div class="bkf-pwa-spinner" aria-hidden="true"></div><h3 style="margin:14px 0 8px;color:#176b3a;font-size:18px">'+title+'</h3><p style="font-size:13px;line-height:1.6;margin:0">'+body+'</p><p style="font-size:11px;color:#708176;margin:12px 0 0">Mohon tunggu, jangan menutup halaman.</p></section>';
+    document.body.appendChild(overlay);return overlay;
+  }
+  function showInstallSuccess(){
+    if(document.getElementById('bkfPwaInstallSuccess'))return;
+    var busy=document.getElementById('bkfPwaBusy');if(busy)busy.remove();
+    var next=document.getElementById('bkfPwaInstallNextStep');if(next)next.remove();
+    var overlay=document.createElement('div');overlay.id='bkfPwaInstallSuccess';overlay.style.cssText='position:fixed;inset:0;z-index:2147482700;display:flex;align-items:center;justify-content:center;padding:18px;background:rgba(10,35,22,.66);backdrop-filter:blur(3px)';
+    var panel=document.createElement('section');panel.setAttribute('role','dialog');panel.setAttribute('aria-modal','true');panel.style.cssText='width:min(420px,100%);box-sizing:border-box;background:linear-gradient(150deg,#fff,#eff8f1);border:1px solid #cfe3d4;border-radius:22px;padding:22px 20px 18px;box-shadow:0 20px 55px rgba(0,0,0,.25);color:#193d29;text-align:center';
+    panel.innerHTML='<div style="font-size:42px;margin:2px 0 10px;color:#258448">✓</div><h3 style="margin:0 0 9px;color:#176b3a;font-size:19px">Instalasi SIMFAQ Berhasil!</h3><p style="font-size:13px;line-height:1.55;margin:0">SIMFAQ sudah terpasang di perangkat Anda.</p><div style="margin-top:13px;padding:12px;border-radius:12px;background:#eaf5ec;text-align:left;font-size:13px;line-height:1.65"><b>Langkah selanjutnya:</b><ol style="margin:5px 0 0;padding-left:20px"><li>Tekan <b>Selesai</b> di bawah.</li><li>Keluar dari browser Chrome.</li><li>Buka SIMFAQ melalui ikon aplikasi berlatar hijau di layar utama.</li></ol></div>';
+    var finish=document.createElement('button');finish.type='button';finish.textContent='SELESAI';finish.style.cssText='display:block;width:100%;min-height:46px;margin-top:15px;border:0;border-radius:12px;background:linear-gradient(135deg,#176b3a,#2d8d58);color:#fff;font-weight:800;font-size:14px';
+    finish.onclick=function(){overlay.remove();try{localStorage.setItem('bkf_pwa_installed_once','1')}catch(_){};if(typeof window.v12Toast==='function')window.v12Toast('Silakan keluar dari browser, lalu buka SIMFAQ dari ikon aplikasi.','success')};panel.appendChild(finish);overlay.appendChild(panel);document.body.appendChild(overlay);
+  }
+  (function(){if(document.getElementById('bkfPwaSpinnerStyle'))return;var st=document.createElement('style');st.id='bkfPwaSpinnerStyle';st.textContent='@keyframes bkfPwaSpin{to{transform:rotate(360deg)}}.bkf-pwa-spinner{width:44px;height:44px;border:4px solid #dcebe0;border-top-color:#23804b;border-radius:50%;margin:0 auto;animation:bkfPwaSpin .8s linear infinite}';document.head.appendChild(st)})();
   function showInstallNextStep(platform){
     var old=document.getElementById('bkfPwaInstallNextStep');if(old)old.remove();
     var ios=platform==='ios',overlay=document.createElement('div');overlay.id='bkfPwaInstallNextStep';overlay.style.cssText='position:fixed;inset:0;z-index:2147482501;display:flex;align-items:center;justify-content:center;padding:18px;background:rgba(10,35,22,.62);backdrop-filter:blur(3px)';
@@ -8212,7 +8229,7 @@ body.bkf-pengujian-no-footer .shell{padding-bottom:20px!important}
     var primary=document.createElement('button');primary.type='button';primary.textContent=ios?'Mengerti':'Aktifkan Notifikasi & Instal';primary.style.cssText='display:block;width:100%;min-height:44px;margin-top:15px;border:0;border-radius:12px;background:linear-gradient(135deg,#176b3a,#2d8d58);color:#fff;font-weight:800;font-size:14px';
     var later=document.createElement('button');later.type='button';later.textContent='Nanti saja';later.style.cssText='display:block;width:100%;min-height:40px;margin-top:8px;border:1px solid #d5e4d8;border-radius:11px;background:#fff;color:#42634c;font-weight:700;font-size:13px';
     async function activateNotificationBeforeInstall(){
-      var permissionResult='unavailable';
+      var permissionResult='unavailable',busy=showInstallBusy('Mengaktifkan Notifikasi','SIMFAQ sedang meminta izin dan menyiapkan notifikasi pada perangkat Anda.');
       try{
         if(!('Notification' in window)||!('serviceWorker' in navigator)||!window.isSecureContext){
           if(typeof window.v12Toast==='function')window.v12Toast('Browser/perangkat belum mendukung notifikasi push. Instalasi tetap dilanjutkan.','warning');
@@ -8235,7 +8252,7 @@ body.bkf-pengujian-no-footer .shell{padding-bottom:20px!important}
           if(typeof window.v12Toast==='function')window.v12Toast('Notifikasi belum diaktifkan. Anda dapat mengaktifkannya nanti di SIMFAQ.','warning');
         }
       }catch(err){console.warn('[SIMFAQ INSTALL NOTIFICATION PERMISSION]',err)}finally{
-        closeInstallOffer(false);showInstallNextStep(platform);
+        if(busy)busy.remove();closeInstallOffer(false);showInstallNextStep(platform);
       }
     }
     if(ios)primary.onclick=function(){closeInstallOffer(false);showInstallNextStep('ios')};
@@ -8245,7 +8262,7 @@ body.bkf-pengujian-no-footer .shell{padding-bottom:20px!important}
   }
   function scheduleInstallOffer(platform){if(installOfferTimer)clearTimeout(installOfferTimer);installOfferTimer=setTimeout(function(){if(!standalone())showInstallOffer(platform)},1400)}
   window.addEventListener('beforeinstallprompt',function(event){event.preventDefault();window.bkfPwaInstallPrompt=event;if(!standalone())scheduleInstallOffer('android')});
-  window.addEventListener('appinstalled',function(){window.bkfPwaInstallPrompt=null;closeInstallOffer(false);try{localStorage.setItem('bkf_pwa_installed_once','1')}catch(_){}if(typeof window.v12Toast==='function')window.v12Toast('SIMFAQ berhasil dipasang. Buka aplikasi untuk mengaktifkan notifikasi.','success')});
+  window.addEventListener('appinstalled',function(){window.bkfPwaInstallPrompt=null;closeInstallOffer(false);try{localStorage.setItem('bkf_pwa_installed_once','1')}catch(_){}showInstallSuccess()});
   if(isIOSDevice()){var startIOSInstallOffer=function(){if(!standalone())scheduleInstallOffer('ios')};if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',startIOSInstallOffer,{once:true});else startIOSInstallOffer()}
   function message(title,body,steps){
     var old=document.getElementById('bkfPwaHelpModal');if(old)old.remove();
@@ -8257,9 +8274,9 @@ body.bkf-pengujian-no-footer .shell{padding-bottom:20px!important}
   async function installApp(){
     var promptEvent=window.bkfPwaInstallPrompt;
     if(!promptEvent){message('Instal SIMFAQ','Untuk memasang aplikasi, gunakan menu browser.','<ol style="padding-left:20px;margin:0"><li>Ketuk menu ⋮ pada Chrome.</li><li>Pilih <strong>Instal aplikasi</strong> atau <strong>Tambahkan ke layar utama</strong>.</li><li>Ikuti petunjuk pada layar.</li></ol>');return}
-    window.bkfPwaInstallPrompt=null;
-    try{await promptEvent.prompt();var choice=await promptEvent.userChoice;if(choice&&choice.outcome==='accepted'){try{localStorage.setItem('bkf_pwa_install_accepted','1')}catch(_){}}}
-    catch(err){console.warn('[SIMFAQ PWA INSTALL]',err);message('Instalasi SIMFAQ','Instalasi belum dapat dimulai. Silakan gunakan menu browser untuk memasang aplikasi.','<p style="margin:0">Buka menu ⋮, lalu pilih <strong>Instal aplikasi</strong> atau <strong>Tambahkan ke layar utama</strong>.</p>')}
+    window.bkfPwaInstallPrompt=null;var busy=showInstallBusy('Menyiapkan Instalasi SIMFAQ','Browser sedang membuka proses instalasi. Silakan ikuti dialog instalasi yang muncul.');
+    try{await promptEvent.prompt();var choice=await promptEvent.userChoice;if(busy)busy.remove();if(choice&&choice.outcome==='accepted'){try{localStorage.setItem('bkf_pwa_install_accepted','1')}catch(_){}showInstallSuccess()}else{showInstallNextStep('android')}}
+    catch(err){if(busy)busy.remove();console.warn('[SIMFAQ PWA INSTALL]',err);message('Instalasi SIMFAQ','Instalasi belum dapat dimulai. Silakan gunakan menu browser untuk memasang aplikasi.','<p style="margin:0">Buka menu ⋮, lalu pilih <strong>Instal aplikasi</strong> atau <strong>Tambahkan ke layar utama</strong>.</p>')}
   }
   async function updateApp(){
     var btn=document.getElementById('bkfUpdateAppBtn');if(btn){btn.disabled=true;btn.dataset.oldText=btn.innerHTML;btn.innerHTML='<span>↻</span><span>Memeriksa…</span>'}
