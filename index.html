@@ -413,11 +413,11 @@ const examComponentLabel=code=>({GERAKAN:'Gerakan',BACAAN:'Bacaan',ADAB:'Adab',N
 const date=v=>v?new Date(v).toLocaleDateString('id-ID',{dateStyle:'medium',timeZone:'Asia/Jakarta'}):'-';
 const can=p=>{const r=state.roles||[];if(r.includes('KETUA'))return true;const m={'activity.view':['KETUA','SEKRETARIS','BENDAHARA','ANGGOTA','OPERATOR'],'exam.view':['KETUA','SEKRETARIS','ANGGOTA','OPERATOR'],'graduation.view':['KETUA','SEKRETARIS','ANGGOTA','OPERATOR'],'finance.view':['KETUA','BENDAHARA','OPERATOR'],'secretariat.view':['KETUA','SEKRETARIS','ANGGOTA'],'distribution.view':['KETUA','SEKRETARIS','BENDAHARA','ANGGOTA','OPERATOR'],'report.view':['KETUA','SEKRETARIS','BENDAHARA','ANGGOTA','OPERATOR'],'management.view':['KETUA','SEKRETARIS','BENDAHARA','ANGGOTA'],'institution.view':['KETUA','SEKRETARIS','BENDAHARA','ANGGOTA','OPERATOR'],'org.view':['KETUA','SEKRETARIS','BENDAHARA','ANGGOTA','OPERATOR'],'settings.manage':['KETUA'],'dashboard.view':['KETUA','SEKRETARIS','BENDAHARA','ANGGOTA','OPERATOR']};return (m[p]||[]).some(x=>r.includes(x));};
 const roleLabel=r=>({KETUA:'Ketua Pengurus',SEKRETARIS:'Sekretaris Pengurus',BENDAHARA:'Bendahara Pengurus',ANGGOTA:'Anggota Pengurus',OPERATOR:'Kepala/Operator Lembaga'})[r]||r;
-const menu=[['home','Beranda'],['activities','Kegiatan'],['exams','Ujian'],['pengujian','Pengujian'],['graduation','Wisuda'],['payments','Pembayaran'],['finance','Keuangan'],['secretariat','Sekretariat'],['distribution','Distribusi'],['reports','Laporan'],['notifications','Notifikasi'],['management','Pengurus'],['institutions','Profil & Data Lembaga'],['organization','Profil Kepengurusan'],['settings','Pengaturan'],['governance','Aturan Ujian & Wisuda'],['pwa-monitoring','Monitoring PWA & Notifikasi'],['about','Tentang SIMFAQ']];
+const menu=[['home','Beranda'],['activities','Kegiatan'],['exams','Ujian'],['pengujian','Pengujian'],['graduation','Wisuda'],['payments','Pembayaran'],['finance','Keuangan'],['secretariat','Sekretariat'],['distribution','Distribusi'],['reports','Laporan'],['notifications','Notifikasi'],['management','Pengurus'],['institutions','Profil & Data Lembaga'],['organization','Profil Kepengurusan'],['settings','Pengaturan'],['governance','Aturan Ujian & Wisuda'],['about','Tentang SIMFAQ']];
 function bkAuthRedirectUrl(){const u=new URL(window.location.href);u.hash='';u.search='';return /^https?:$/.test(u.protocol)?u.toString():null}
 function renderLogin(msg='',notice=''){document.body.classList.add('bkf-ready');app.style.visibility='visible';app.innerHTML=`<main class="login-v2"><section class="login-card"><div class="login-brand"><div class="login-mark">BK</div><div><div class="login-title">BK FUSPAQ NU</div><div class="login-subtitle">Sistem Informasi Badan Khusus FUSPAQ Nahdlatul Ulama</div></div></div><div class="login-welcome"><h1>Selamat datang</h1><p>Masuk untuk melanjutkan ke sistem informasi BK FUSPAQ NU.</p></div>${msg?`<div class="login-message error">${esc(msg)}</div>`:''}${notice?`<div class="login-message success">${esc(notice)}</div>`:''}<form id="login" novalidate><div class="field"><label for="loginEmail">Email</label><div class="login-input"><span>✉</span><input id="loginEmail" name="email" type="email" required autocomplete="username" placeholder="nama@email.com"></div></div><div class="field"><label for="loginPassword">Kata sandi</label><div class="login-input"><span>●</span><input id="loginPassword" name="password" type="password" required autocomplete="current-password" placeholder="Masukkan kata sandi"><button type="button" class="password-toggle" aria-label="Lihat kata sandi" onclick="v12TogglePassword('loginPassword',this)">👁</button></div></div><button id="loginSubmit" class="btn primary login-submit" type="submit">Masuk ke Sistem</button></form><button id="forgotPasswordBtn" class="login-link" type="button">Lupa kata sandi?</button><div class="login-divider"><span>BK FUSPAQ NU</span></div><div class="login-footer"><strong>Deplovemen: Daneva. Studio</strong><span>Founder: Ahmad Fathunnur</span></div></section></main>`;document.getElementById('login').onsubmit=login;document.getElementById('forgotPasswordBtn').onclick=forgotPassword}
 function renderRecovery(msg='',ok=''){app.innerHTML=`<main class="login-v2"><section class="login-card"><div class="login-brand"><div class="login-mark">BK</div><div><div class="login-title">BK FUSPAQ NU</div><div class="login-subtitle">Pemulihan akun</div></div></div><div class="login-welcome"><h1>Buat kata sandi baru</h1><p>Masukkan kata sandi baru untuk akun Anda. Gunakan minimal 8 karakter.</p></div>${msg?`<div class="login-message error">${esc(msg)}</div>`:''}${ok?`<div class="login-message success">${esc(ok)}</div>`:''}<form id="recoveryForm"><div class="field"><label for="newPassword">Kata sandi baru</label><div class="login-input"><span>●</span><input id="newPassword" type="password" minlength="8" required autocomplete="new-password" placeholder="Minimal 8 karakter"><button type="button" class="password-toggle" onclick="v12TogglePassword('newPassword',this)">👁</button></div></div><div class="field"><label for="confirmPassword">Ulangi kata sandi</label><div class="login-input"><span>●</span><input id="confirmPassword" type="password" minlength="8" required autocomplete="new-password" placeholder="Ulangi kata sandi baru"><button type="button" class="password-toggle" onclick="v12TogglePassword('confirmPassword',this)">👁</button></div></div><button id="recoverySubmit" class="btn primary login-submit" type="submit">Simpan Kata Sandi Baru</button></form><button class="login-link" type="button" onclick="renderLogin()">Kembali ke Login</button><div class="login-footer"><strong>Deplovemen: Daneva. Studio</strong><span>Founder: Ahmad Fathunnur</span></div></section></main>`;document.getElementById('recoveryForm').onsubmit=completeRecovery}
-async function login(e){e.preventDefault();sb=window.sb||sb;if(!sb){renderLogin('Layanan sistem belum siap. Silakan tunggu sebentar lalu coba lagi.');return}const f=new FormData(e.target),email=String(f.get('email')||'').trim(),password=String(f.get('password')||'');const btn=document.getElementById('loginSubmit');btn.disabled=true;btn.textContent='Memeriksa akun…';try{try{localStorage.removeItem('bkf_explicit_logout')}catch(_){}const r=await Promise.race([sb.auth.signInWithPassword({email,password}),new Promise((_,reject)=>setTimeout(()=>reject(new Error('Waktu pemeriksaan akun habis (15 detik). Periksa koneksi lalu coba lagi.')),15000))]);if(r.error){renderLogin(friendlyError(r.error));return}await boot();try{await window.bkfRecordSuccessfulLogin?.()}catch(logErr){console.warn('[BK LOGIN AUDIT]',logErr)}}catch(err){renderLogin(err?.message||'Login belum berhasil diselesaikan. Silakan coba lagi.')}}
+async function login(e){e.preventDefault();sb=window.sb||sb;if(!sb){renderLogin('Layanan sistem belum siap. Silakan tunggu sebentar lalu coba lagi.');return}const f=new FormData(e.target),email=String(f.get('email')||'').trim(),password=String(f.get('password')||'');const btn=document.getElementById('loginSubmit');btn.disabled=true;btn.textContent='Memeriksa akun…';try{try{localStorage.removeItem('bkf_explicit_logout')}catch(_){}const r=await Promise.race([sb.auth.signInWithPassword({email,password}),new Promise((_,reject)=>setTimeout(()=>reject(new Error('Waktu pemeriksaan akun habis (15 detik). Periksa koneksi lalu coba lagi.')),15000))]);if(r.error){renderLogin(friendlyError(r.error));return}await boot(r.data?.session||null);try{await window.bkfRecordSuccessfulLogin?.()}catch(logErr){console.warn('[BK LOGIN AUDIT]',logErr)}}catch(err){renderLogin(err?.message||'Login belum berhasil diselesaikan. Silakan coba lagi.')}}
 async function forgotPassword(){if(!sb)return renderLogin('Koneksi layanan belum siap.');const email=String(document.getElementById('loginEmail')?.value||'').trim();if(!email)return renderLogin('Masukkan email akun terlebih dahulu.');const redirectTo=bkAuthRedirectUrl();if(!redirectTo)return renderLogin('Pemulihan kata sandi memerlukan alamat web (http/https). Jika aplikasi dibuka sebagai file HTML langsung, jalankan melalui server lokal terlebih dahulu.');const btn=document.getElementById('forgotPasswordBtn');if(btn){btn.disabled=true;btn.textContent='Mengirim tautan…'}try{const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo});if(error){renderLogin(friendlyError(error));return}renderLogin('',`Tautan pemulihan telah dikirim ke ${email}. Buka tautan tersebut untuk membuat kata sandi baru.`)}catch(err){renderLogin(friendlyError(err)||'Tautan pemulihan gagal dikirim. Periksa koneksi lalu coba lagi.')}}
 async function completeRecovery(e){e.preventDefault();const a=document.getElementById('newPassword')?.value||'',b=document.getElementById('confirmPassword')?.value||'';if(a.length<8)return renderRecovery('Kata sandi minimal 8 karakter.');if(a!==b)return renderRecovery('Konfirmasi kata sandi tidak sama.');const btn=document.getElementById('recoverySubmit');if(btn){btn.disabled=true;btn.textContent='Menyimpan…'}try{const {error}=await sb.auth.updateUser({password:a});if(error){renderRecovery(friendlyError(error));return}const out=await sb.auth.signOut();if(out?.error){renderRecovery('Kata sandi berhasil diperbarui, tetapi sesi belum dapat ditutup. Silakan kembali ke halaman login.');return}renderLogin('', 'Kata sandi berhasil diperbarui. Silakan masuk dengan kata sandi baru.')}catch(err){renderRecovery(friendlyError(err)||'Kata sandi belum berhasil diperbarui. Periksa koneksi lalu coba lagi.')}}
 function initAuthRecovery(){if(!sb)return;sb.auth.onAuthStateChange((event)=>{if(event==='PASSWORD_RECOVERY')setTimeout(()=>renderRecovery(),0)});const hasRecovery=window.location.hash.includes('type=recovery')||new URLSearchParams(window.location.search).get('type')==='recovery';if(hasRecovery)setTimeout(()=>renderRecovery(),0)}
@@ -3196,7 +3196,7 @@ window.v12TogglePassword=function(id,btn){const e=document.getElementById(id);if
       else q=await sb.from(t).select('id',{count:'exact',head:true});
       return [t,q.error?null:(q.count??0)];
     }));
-    results.forEach(([t,v])=>{const el=document.getElementById('metric-'+t);if(!el)return;const previous=Number(String(el.textContent||'').trim());const next=Number(v);el.textContent=v==null?'—':v;if(t==='notifications'){const badge=document.getElementById('metric-notifications-badge');if(badge){const count=Number(v)||0;badge.textContent=count.toLocaleString('id-ID')+' BARU';badge.hidden=!(v!=null&&count>0)}}if(t==='notifications'&&v!=null&&Number.isFinite(previous)&&Number.isFinite(next)&&next>previous){el.classList.remove('bkf-notification-count-spin');void el.offsetWidth;el.classList.add('bkf-notification-count-spin')}});
+    results.forEach(([t,v])=>{const el=document.getElementById('metric-'+t);if(!el)return;const previous=Number(el.dataset.rawCount??String(el.textContent||'').trim());const next=Number(v);if(t==='notifications'&&v!=null&&Number.isFinite(next)){el.dataset.rawCount=String(next);el.textContent=next>99?'99+':next.toLocaleString('id-ID')}else{el.textContent=v==null?'—':v}if(t==='notifications'){const badge=document.getElementById('metric-notifications-badge');if(badge){const count=Number(v)||0;badge.textContent=(count>99?'99+':count.toLocaleString('id-ID'))+' BARU';badge.hidden=!(v!=null&&count>0)}}if(t==='notifications'&&v!=null&&Number.isFinite(previous)&&Number.isFinite(next)&&next>previous){el.classList.remove('bkf-notification-count-spin');void el.offsetWidth;el.classList.add('bkf-notification-count-spin')}});
   };
 
   // Sidebar footer branding + closes as soon as the user touches the active module/content area.
@@ -4238,19 +4238,20 @@ window.bkfRegistrationToast=function(title,missing,detail){const wrap=ensureToas
 window.alert=function(message){const wrap=ensureToastWrap52();const el=document.createElement('div');el.className='toast';el.setAttribute('role','status');const icon=document.createElement('div');icon.className='toast-icon';icon.textContent='☪';const box=document.createElement('div');const title=document.createElement('strong');title.textContent='Informasi';const text=document.createElement('div');text.textContent=String(message??'');box.append(title,text);el.append(icon,box);wrap.appendChild(el);setTimeout(()=>el.remove(),5000)};
 const BKF_NETWORK_PATTERN=/failed to fetch|networkerror|load failed|fetch failed|err_internet_disconnected|network request failed|bkf_network_unavailable|koneksi internet terputus|layanan simfaq belum dapat dijangkau/i;
 window.bkfIsNetworkError=function(error){const message=String(error?.message||error||'');return navigator.onLine===false||error?.code==='BKF_NETWORK_UNAVAILABLE'||BKF_NETWORK_PATTERN.test(message)};
-window.bkfFriendlyNetworkMessage=function(error){return navigator.onLine===false?'Koneksi Internet Terputus. Perangkat tidak terhubung ke internet. Periksa jaringan, lalu coba kembali.':'Layanan SIMFAQ belum dapat dijangkau. Periksa koneksi internet Anda, kemudian coba kembali.'};
+window.bkfFriendlyNetworkMessage=function(error){return navigator.onLine===false?'Koneksi Internet Terputus. Perangkat tidak terhubung ke internet. Periksa jaringan, lalu coba kembali.':'Layanan SIMFAQ sedang mengalami gangguan komunikasi. Kami sedang mencoba memulihkan koneksi.'};
 window.bkfClearCrudNetworkWarning=function(){const el=document.getElementById('bkfPersistentNetworkWarning');if(el)el.remove();window.__bkfNetworkWarningReason=null};
-const oldV12Toast=window.v12Toast;if(typeof oldV12Toast==='function'){window.v12Toast=function(message,type){try{if(type==='error'&&window.bkfIsNetworkError(message)){window.bkfShowCrudNetworkWarning();return}const result=oldV12Toast.apply(this,arguments);const wrap=ensureToastWrap52();wrap.style.left='50%';wrap.style.right='auto';wrap.style.top='50%';wrap.style.bottom='auto';wrap.style.transform='translate(-50%,-50%)';wrap.style.zIndex='2147483647';return result}catch(e){return window.bkAlert(message)}}}
+const oldV12Toast=window.v12Toast;if(typeof oldV12Toast==='function'){window.v12Toast=function(message,type){try{if(type==='error'&&window.bkfIsNetworkError(message)){window.bkfShowCrudNetworkWarning(navigator.onLine===false?'offline':'service');return}const result=oldV12Toast.apply(this,arguments);const wrap=ensureToastWrap52();wrap.style.left='50%';wrap.style.right='auto';wrap.style.top='50%';wrap.style.bottom='auto';wrap.style.transform='translate(-50%,-50%)';wrap.style.zIndex='2147483647';return result}catch(e){return window.bkAlert(message)}}}
 window.bkfShowCrudNetworkWarning=function(reason){
   const offline=navigator.onLine===false||reason==='offline';
-  const message=offline?'Perangkat sedang tidak terhubung ke internet. Pencarian dan pemuatan data belum dapat dilakukan. Periksa jaringan Anda.':'Koneksi ke layanan SIMFAQ sedang terganggu. Data belum dapat dimuat. Periksa jaringan internet, lalu coba kembali.';
+  const message=offline?'Perangkat sedang tidak terhubung ke internet. Periksa jaringan Anda.':'SIMFAQ belum berhasil berkomunikasi dengan layanan data. Sistem akan mencoba kembali secara otomatis.';
   let el=document.getElementById('bkfPersistentNetworkWarning');
   if(!el){el=document.createElement('div');el.id='bkfPersistentNetworkWarning';el.setAttribute('role','alert');el.setAttribute('aria-live','assertive');el.style.cssText='position:fixed;left:12px;right:12px;top:calc(env(safe-area-inset-top,0px) + 10px);z-index:2147483647;display:flex;gap:10px;align-items:flex-start;padding:13px 15px;border:1px solid #e4c6a3;border-left:5px solid #a95a48;border-radius:13px;background:#fff8ef;color:#573b2d;box-shadow:0 8px 26px rgba(35,30,20,.2);font:13px/1.45 system-ui,sans-serif;box-sizing:border-box';document.body.appendChild(el)}
-  el.innerHTML='';const icon=document.createElement('span');icon.textContent='⚠️';icon.setAttribute('aria-hidden','true');const content=document.createElement('div');content.style.minWidth='0';const title=document.createElement('strong');title.textContent=offline?'Koneksi Internet Terputus':'Layanan SIMFAQ Belum Dapat Dijangkau';title.style.cssText='display:block;margin-bottom:3px;font-size:14px';const body=document.createElement('div');body.textContent=message;content.append(title,body);el.append(icon,content);window.__bkfNetworkWarningReason=offline?'offline':'service';
-  return el;
+  el.innerHTML='';const icon=document.createElement('span');icon.textContent='⚠️';icon.setAttribute('aria-hidden','true');const content=document.createElement('div');content.style.minWidth='0';const title=document.createElement('strong');title.textContent=offline?'Koneksi Internet Terputus':'Gangguan Komunikasi SIMFAQ';title.style.cssText='display:block;margin-bottom:3px;font-size:14px';const body=document.createElement('div');body.textContent=message;content.append(title,body);el.append(icon,content);window.__bkfNetworkWarningReason=offline?'offline':'service';return el;
 };
+window.__bkfSupabaseNetworkFailures=0;
+window.__bkfSupabaseNetworkLastFailure=0;
 window.addEventListener('offline',function(){window.bkfShowCrudNetworkWarning('offline')});
-window.addEventListener('online',function(){if(window.__bkfNetworkWarningReason==='offline')window.bkfClearCrudNetworkWarning()});
+window.addEventListener('online',function(){window.__bkfSupabaseNetworkFailures=0;window.__bkfSupabaseNetworkLastFailure=0;window.bkfClearCrudNetworkWarning()});
 if(navigator.onLine===false){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>window.bkfShowCrudNetworkWarning('offline'),{once:true});else window.bkfShowCrudNetworkWarning('offline')}
 (function(){
   if(typeof window.fetch!=="function"||window.fetch.__bkfCrudNetworkWrapped)return;
@@ -4261,16 +4262,20 @@ if(navigator.onLine===false){if(document.readyState==='loading')document.addEven
     var promise=original(input,init);
     if(!isSupabaseApi)return promise;
     return promise.then(function(response){
-      if(response&&[502,503,504].includes(response.status)){window.bkfShowCrudNetworkWarning('service')}else if(response&&response.status<500&&navigator.onLine!==false){window.bkfClearCrudNetworkWarning()}
+      if(response&&[502,503,504].includes(response.status)){
+        var now=Date.now();if(now-window.__bkfSupabaseNetworkLastFailure>20000)window.__bkfSupabaseNetworkFailures=0;
+        window.__bkfSupabaseNetworkLastFailure=now;window.__bkfSupabaseNetworkFailures++;
+        if(window.__bkfSupabaseNetworkFailures>=3)window.bkfShowCrudNetworkWarning('service');
+      }else if(response&&response.status<500){window.__bkfSupabaseNetworkFailures=0;window.__bkfSupabaseNetworkLastFailure=0;window.bkfClearCrudNetworkWarning()}
       return response;
     }).catch(function(error){
-      if(error instanceof TypeError||navigator.onLine===false){window.bkfShowCrudNetworkWarning(navigator.onLine===false?'offline':'service');const friendly=new TypeError(window.bkfFriendlyNetworkMessage(error));friendly.code='BKF_NETWORK_UNAVAILABLE';friendly.cause=error;throw friendly}
+      if(navigator.onLine===false){window.bkfShowCrudNetworkWarning('offline')}
+      else if(error instanceof TypeError){var now=Date.now();if(now-window.__bkfSupabaseNetworkLastFailure>20000)window.__bkfSupabaseNetworkFailures=0;window.__bkfSupabaseNetworkLastFailure=now;window.__bkfSupabaseNetworkFailures++;if(window.__bkfSupabaseNetworkFailures>=3)window.bkfShowCrudNetworkWarning('service')}
       throw error;
     });
   };
   wrapped.__bkfCrudNetworkWrapped=true;window.fetch=wrapped;
 })();
-
 function E52(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 const style=document.createElement('style');style.textContent='#v52GraduationNumberPrint,#v52ExamNumberPrint{background:#fff;color:#111;padding:12mm;min-height:180mm;box-sizing:border-box}#v52GraduationNumberPrint .number-print-head{display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #222;padding-bottom:5mm;margin-bottom:7mm;font-size:16px}#v52GraduationNumberPrint .number-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8mm}#v52GraduationNumberPrint .number-ticket{border:1px solid #222;border-radius:5mm;padding:6mm;text-align:center;min-height:42mm;box-sizing:border-box;break-inside:avoid}#v52GraduationNumberPrint .number-ticket img{max-width:18mm;max-height:12mm;object-fit:contain;margin-bottom:3mm}#v52GraduationNumberPrint .number-badge{font-size:28px;font-weight:800;margin-bottom:2mm}#v52GraduationNumberPrint .ticket-name{font-size:10px}.empty-print{text-align:center;padding:45mm 10mm;border:1px dashed #777}#v52ExamNumberPrint .report-head{text-align:center;border-bottom:2px solid #222;padding-bottom:5mm;margin-bottom:7mm}#v52ExamNumberPrint table{width:100%;border-collapse:collapse;font-size:10px}#v52ExamNumberPrint th,#v52ExamNumberPrint td{border:1px solid #222;padding:5px;text-align:left}#v52ExamNumberPrint th{text-align:center}#v52ExamNumberPrint .empty-cell{text-align:center;padding:20mm}@media print{#v52GraduationNumberPrint,#v52ExamNumberPrint{padding:0}.no-print{display:none!important}}';document.head.appendChild(style);
 window.__BKFUSPAQ_V52_AUDIT__={notification:'center',nativeAlertReplaced:true,emptyPrintTemplates:['graduation_numbers','exam_numbers']};
@@ -4759,8 +4764,7 @@ window.showHome=async function(){
  const counters=visibleCounters.map(x=>`<button type="button" class="card v75-dashboard-counter" data-dashboard-detail="${E(x[1])}" aria-label="${x[1]==='notifications'?'Buka menu Notifikasi':'Lihat detail '+E(x[0])}"><div class="v173-counter-title">${E(x[0])}</div>${x[1]==='notifications'?'<span class="bkf-notification-new-badge" id="metric-notifications-badge" hidden></span>':''}<div class="metric v173-counter-number" id="metric-${E(x[1])}"${x[1]==='bills'?' style="font-size:clamp(13px,3.6vw,20px);overflow-wrap:anywhere"':''}>…</div><div class="v173-counter-help">${x[1]==='bills'?'Total sisa nominal tagihan':'Ringkasan data saat ini'}</div><div class="v173-counter-detail">${x[1]==='notifications'?'Buka menu Notifikasi':'Ketuk untuk detail'}</div></button>`).join('');
  const roleQuick=quickByRole[dashboardPrimaryRole()]||quickByRole.ANGGOTA||[];
  const quickHtml='<div class="module-card-grid">'+roleQuick.map(x=>'<button class="btn secondary menu-item quick-module module-card-btn" type="button" onclick="navigate(\''+x[1]+'\')"><strong>'+E(x[0])+'</strong></button>').join('')+'</div>';
- const pwaMonitoringShortcut=Array.isArray(state?.roles)&&state.roles.some(r=>['KETUA','SEKRETARIS'].includes(String(r).toUpperCase()))?'<div class="card" style="margin-top:12px"><div class="row" style="align-items:center;gap:12px"><div style="flex:1;min-width:0"><strong>Monitoring PWA & Notifikasi</strong><div class="small muted" style="margin-top:4px">Pantau penggunaan PWA dan status langganan notifikasi seluruh lembaga.</div></div><button class="btn primary" type="button" onclick="navigate(\'pwa-monitoring\')">Buka Monitoring</button></div></div>':'';
- host.innerHTML='<div class="card hero v35-welcome"><div style="font-size:14px;color:#6b7c70;font-weight:700">Assalamu\'alaikum Wr. Wb.</div><h2 class="v41-user-name" style="margin:6px 0 2px">'+E(name)+'</h2><div class="row bkf-dashboard-profile-actions" style="justify-content:flex-start;align-items:center;gap:8px;margin:6px 0 0"><span class="status ok">'+E(role)+'</span><span class="status '+(status==='ACTIVE'?'ok':'bad')+'">'+E(status==='ACTIVE'?'Aktif':status)+'</span><button type="button" class="status ok bkf-update-app-link" id="bkfUpdateAppBtn" onclick="window.bkfPwaInstallOrUpdate?.()" aria-label="Instal atau perbarui aplikasi SIMFAQ">Update Aplikasi</button></div><div class="bkf-darus-center"><button type="button" class="darus-quran-link" onclick="openDarusQuranViewer()" aria-label="Buka Darus Al-Qur\'an di dalam aplikasi"><span class="darus-quran-icon" aria-hidden="true">☪</span><span>Darus Al-Qur\'an</span><span class="darus-quran-arrow" aria-hidden="true">↗</span></button></div><div class="bkf-adzan-center"><button type="button" class="bkf-adzan-dashboard-btn" onclick="window.bkfOpenAdzanReminder?.()" aria-label="Buka Pengingat Sholat"><span class="bkf-adzan-dashboard-icon" aria-hidden="true">🕌</span><span class="bkf-adzan-dashboard-content"><span class="bkf-adzan-dashboard-title">Pengingat Sholat</span><span id="bkfAdzanDashboardCountdown" class="bkf-adzan-dashboard-countdown" aria-live="polite">Memuat jadwal sholat…</span></span><span class="bkf-adzan-dashboard-arrow" aria-hidden="true">›</span></button></div><p class="v35-message" style="margin:8px 0 4px">Selamat datang di Sistem Informasi BK FUSPAQ NU.</p><p class="small muted" style="margin:0">'+E(dashboardGreeting())+'</p></div><div class="v75-dashboard-counters" id="dashboardAllCounters">'+counters+'<div id="dashboardExamParticipantCards" style="display:contents"></div></div>'+pwaMonitoringShortcut;
+ host.innerHTML='<div class="card hero v35-welcome"><div style="font-size:14px;color:#6b7c70;font-weight:700">Assalamu\'alaikum Wr. Wb.</div><h2 class="v41-user-name" style="margin:6px 0 2px">'+E(name)+'</h2><div class="row bkf-dashboard-profile-actions" style="justify-content:flex-start;align-items:center;gap:8px;margin:6px 0 0"><span class="status ok">'+E(role)+'</span><span class="status '+(status==='ACTIVE'?'ok':'bad')+'">'+E(status==='ACTIVE'?'Aktif':status)+'</span><button type="button" class="status ok bkf-update-app-link" id="bkfUpdateAppBtn" onclick="window.bkfPwaInstallOrUpdate?.()" aria-label="Instal atau perbarui aplikasi SIMFAQ">Update Aplikasi</button></div><div class="bkf-darus-center"><button type="button" class="darus-quran-link" onclick="openDarusQuranViewer()" aria-label="Buka Darus Al-Qur\'an di dalam aplikasi"><span class="darus-quran-icon" aria-hidden="true">☪</span><span>Darus Al-Qur\'an</span><span class="darus-quran-arrow" aria-hidden="true">↗</span></button></div><div class="bkf-adzan-center"><button type="button" class="bkf-adzan-dashboard-btn" onclick="window.bkfOpenAdzanReminder?.()" aria-label="Buka Pengingat Sholat"><span class="bkf-adzan-dashboard-icon" aria-hidden="true">🕌</span><span class="bkf-adzan-dashboard-content"><span class="bkf-adzan-dashboard-title">Pengingat Sholat</span><span id="bkfAdzanDashboardCountdown" class="bkf-adzan-dashboard-countdown" aria-live="polite">Memuat jadwal sholat…</span></span><span class="bkf-adzan-dashboard-arrow" aria-hidden="true">›</span></button></div><p class="v35-message" style="margin:8px 0 4px">Selamat datang di Sistem Informasi BK FUSPAQ NU.</p><p class="small muted" style="margin:0">'+E(dashboardGreeting())+'</p></div><div class="v75-dashboard-counters" id="dashboardAllCounters">'+counters+'<div id="dashboardExamParticipantCards" style="display:contents"></div></div>';
  const welcomeCard=host.querySelector('.v35-welcome');
  try{
    const orgIdsQ=await sb.rpc('current_organization_ids');
@@ -6057,7 +6061,7 @@ const toast=(m,t='success')=>window.v12Toast?window.v12Toast(m,t):window.bkAlert
 /* Single source of truth for role → route access. Home is explicitly public to every authenticated role. Activity management is separately restricted to Ketua/Sekretaris. */
 const roleMenus={
  KETUA:new Set(menu.map(x=>x[0])),
- SEKRETARIS:new Set(['home','activities','exams','pengujian','graduation','secretariat','distribution','reports','notifications','management','institutions','organization','album','governance','pwa-monitoring']),
+ SEKRETARIS:new Set(['home','activities','exams','pengujian','graduation','secretariat','distribution','reports','notifications','management','institutions','organization','album','governance',]),
  BENDAHARA:new Set(['home','payments','finance','distribution','reports','notifications','management','institutions','organization','album','governance']),
  ANGGOTA:new Set(['home','exams','graduation','reports','notifications','management','institutions','organization','album','governance']),
  OPERATOR:new Set(['home','activities','exams','graduation','finance','distribution','reports','notifications','institutions','organization','album','governance'])
@@ -6168,7 +6172,7 @@ window.showAssistanceModule=async function(institutionIdOverride=null){
  document.getElementById('v625CancelEdit').onclick=()=>{editingDraftId=null;selected.clear();assistForm.reset();teacherBox.querySelectorAll('[data-v625-teacher]').forEach(x=>x.checked=false);document.querySelectorAll('[data-v625-check]').forEach(x=>x.checked=false);document.getElementById('v625CancelEdit').style.display='none';assistForm.querySelector('[type=submit]').textContent='Simpan draft pengajuan';updateReadiness()};
 };
 const routeHandlers={
- home:()=>window.showHome?.(),assistance:()=>window.showAssistanceModule?.(),activities:()=>window.showActivities?.(),payments:()=>window.showPayments?.(),exams:()=>window.showExams?.(),pengujian:()=>window.showPengujian?.(),'pengujian-pra':()=>window.showPengujianPra?.(),'pengujian-tashih':()=>window.showPengujianTashih?.(),graduation:()=>window.showGraduation?.(),finance:()=>window.showFinance?.(),secretariat:()=>window.showSecretariat?.(),distribution:()=>window.showDistribution?.(),reports:()=>window.showReports?.(),notifications:()=>window.showNotifications?.(),management:()=>window.showManagement?.(),institutions:()=>window.showUsers?.(),album:()=>window.showMemoryAlbum?.(),organization:()=>window.showOrganization?.(),auditbackup:()=>window.showAuditBackup?.(),settings:()=>window.showSettings?.(),governance:()=>window.showExamGovernance?.(),'pwa-monitoring':()=>window.showPwaMonitoring?.(),about:()=>window.showAboutSimfaq?.()
+ home:()=>window.showHome?.(),assistance:()=>window.showAssistanceModule?.(),activities:()=>window.showActivities?.(),payments:()=>window.showPayments?.(),exams:()=>window.showExams?.(),pengujian:()=>window.showPengujian?.(),'pengujian-pra':()=>window.showPengujianPra?.(),'pengujian-tashih':()=>window.showPengujianTashih?.(),graduation:()=>window.showGraduation?.(),finance:()=>window.showFinance?.(),secretariat:()=>window.showSecretariat?.(),distribution:()=>window.showDistribution?.(),reports:()=>window.showReports?.(),notifications:()=>window.showNotifications?.(),management:()=>window.showManagement?.(),institutions:()=>window.showUsers?.(),album:()=>window.showMemoryAlbum?.(),organization:()=>window.showOrganization?.(),auditbackup:()=>window.showAuditBackup?.(),settings:()=>window.showSettings?.(),governance:()=>window.showExamGovernance?.(),about:()=>window.showAboutSimfaq?.()
 };
 window.navigate=async function(route){
  const requested=String(route||'home').trim().toLowerCase();
@@ -6210,7 +6214,7 @@ window.loadIdentity=async function(){
  return await Promise.race([run(),new Promise(resolve=>setTimeout(()=>resolve(false),12000))]);
 };
 
-window.boot=async function(){
+window.boot=async function(sessionHint=null){
  window.__BKF_BOOT_READY__=false;
  document.body.classList.add('bkf-ready');app.style.visibility='visible';window.bkfSplash?.status('Menghubungkan layanan...');
  if(cfg.supabasePublishableKey==='REPLACE_WITH_PROJECT_PUBLISHABLE_KEY'){await window.bkfSplash?.hide();return renderLogin('Publishable key belum dikonfigurasi.')}
@@ -6221,17 +6225,23 @@ window.boot=async function(){
  const explicitLogout=()=>{try{return localStorage.getItem('bkf_explicit_logout')==='1'}catch(_){return false}};
  const clearAuthToken=()=>{try{localStorage.removeItem('sb-yhxetkdsuogbehxnarhk-auth-token')}catch(_){}};
  if(explicitLogout()){clearAuthToken();try{await client.auth.signOut({scope:'local'})}catch(_){};await window.bkfSplash?.hide();return renderLogin()}
- let session=null;window.bkfSplash?.status('Memeriksa akun...');try{const r=await client.auth.getSession();if(r.error)throw r.error;session=r.data?.session||null}catch(e){console.warn('[BK SESSION]',e)}
- // Logout mungkin terjadi ketika pemeriksaan sesi sedang berjalan.
+ const authWithTimeout=(promise,label,ms=8000)=>Promise.race([Promise.resolve(promise),new Promise((_,reject)=>setTimeout(()=>reject(new Error(label+' timeout ('+ms+' ms)')),ms))]);
+ let session=sessionHint||null;window.bkfSplash?.status('Memeriksa akun...');
+ // V12: Jika login baru sudah menghasilkan sesi, gunakan langsung dan hindari
+ // getSession() tambahan yang dapat menunggu auth lock/storage initialization.
+ if(!session){try{const r=await authWithTimeout(client.auth.getSession(),'getSession',12000);if(r.error)throw r.error;session=r.data?.session||null}catch(e){console.warn('[BK SESSION CHECK]',e);}
+ }
+ // Jangan menjalankan refreshSession/getUser setelah getSession timeout: Promise
+ // pertama tidak dibatalkan oleh timeout dan panggilan lanjutan dapat saling
+ // menunggu pada auth lock. Biarkan login manual menjadi jalur pemulihan.
  if(explicitLogout()){clearAuthToken();await window.bkfSplash?.hide();return renderLogin()}
- if(!session){try{const r=await client.auth.refreshSession();session=r.data?.session||null}catch(e){console.warn('[BK SESSION REFRESH]',e)}}
- if(explicitLogout()){clearAuthToken();await window.bkfSplash?.hide();return renderLogin()}
- if(!session){try{const r=await client.auth.getUser();if(r.error)throw r.error;state.user=r.data?.user||null}catch(e){state.user=null}if(explicitLogout()){clearAuthToken();await window.bkfSplash?.hide();return renderLogin()}if(!state.user){await window.bkfSplash?.hide();return renderLogin()}}else state.user=session.user;
+ if(!session){await window.bkfSplash?.hide();return renderLogin('Sesi belum dapat diperiksa. Silakan masuk kembali.');}
+ state.user=session.user||null;
+ if(!state.user){await window.bkfSplash?.hide();return renderLogin('Sesi akun tidak lengkap. Silakan masuk kembali.');}
  window.bkfSplash?.status('Memuat profil dan hak akses...');
  const identityOk=await window.loadIdentity();if(explicitLogout()){clearAuthToken();await window.bkfSplash?.hide();return renderLogin()}if(!identityOk){const why=window.__BK_IDENTITY_ERROR__;await window.bkfSplash?.hide();return renderLogin(why?'Login berhasil, tetapi pemeriksaan role gagal: '+why:'Pemeriksaan akun terlalu lama. Silakan coba lagi.')}
  await window.bkfSplash?.hydrate();if(explicitLogout()){clearAuthToken();await window.bkfSplash?.hide();return renderLogin()}window.bkfSplash?.status('Menyiapkan tampilan aplikasi...');renderShell();
  // Catat penggunaan PWA hanya ketika aplikasi benar-benar dibuka dalam mode standalone.
- try{const pwaTrack=window.bkfRecordPwaUsage?.();if(pwaTrack?.catch)pwaTrack.catch(e=>console.warn('[BK PWA MONITOR]',e))}catch(e){console.warn('[BK PWA MONITOR]',e)}
  // Sinkronkan ulang subscription perangkat setelah identitas akun tersedia.
  try{const pushSync=window.bkfSyncPushSubscription?.();if(pushSync?.catch)pushSync.catch(e=>console.warn("[BK PUSH SYNC]",e))}catch(e){console.warn("[BK PUSH SYNC]",e)}
  // Jangan biarkan splash screen menutupi aplikasi tanpa batas jika pemuatan Beranda tersendat.
@@ -8608,106 +8618,7 @@ select:focus,textarea:focus{
 </script>
 
 
-<script id="simfaq-v603-pwa-monitoring">
-(function(){
- 'use strict';
- const db=()=>window.sb||sb;
- const safe=v=>typeof esc==='function'?esc(v):String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
- const isStandalone=()=>{try{return !!(window.matchMedia&&window.matchMedia('(display-mode: standalone)').matches)||window.navigator.standalone===true}catch(_){return false}};
- const fmtTime=v=>{if(!v)return 'Belum pernah terdeteksi';const d=new Date(v);if(Number.isNaN(d.getTime()))return '—';return d.toLocaleString('id-ID',{dateStyle:'medium',timeStyle:'short',timeZone:'Asia/Jakarta'})+' WIB'};
- window.bkfRecordPwaUsage=async function(){
-  if(!isStandalone())return {skipped:'browser-mode'};
-  const rolesNow=Array.isArray(state?.roles)?state.roles.map(x=>String(x).toUpperCase()):[];
-  if(!rolesNow.includes('OPERATOR'))return {skipped:'not-operator'};
-  const userId=state?.profile?.id;if(!userId)return {skipped:'profile-not-ready'};
-  const client=db();if(!client)return {skipped:'database-not-ready'};
-  const orgQ=await client.rpc('current_organization_ids');if(orgQ.error)throw orgQ.error;
-  const orgIds=Array.isArray(orgQ.data)?orgQ.data.filter(Boolean):[];
-  if(!orgIds.length)return {skipped:'organization-not-found'};
-  const ur=await client.from('user_roles').select('organization_id,institution_id,role_id').eq('user_id',userId).eq('status','ACTIVE').in('organization_id',orgIds).not('institution_id','is',null);
-  if(ur.error)throw ur.error;
-  const roleIds=[...new Set((ur.data||[]).map(x=>x.role_id).filter(Boolean))];
-  if(!roleIds.length)return {skipped:'operator-assignment-not-found'};
-  const rq=await client.from('roles').select('id,code,status').in('id',roleIds).eq('status','ACTIVE');
-  if(rq.error)throw rq.error;
-  const operatorRoleIds=new Set((rq.data||[]).filter(x=>String(x.code||'').toUpperCase()==='OPERATOR').map(x=>x.id));
-  const assignments=[...new Map((ur.data||[]).filter(x=>operatorRoleIds.has(x.role_id)&&x.institution_id).map(x=>[x.organization_id+':'+x.institution_id,x])).values()];
-  if(!assignments.length)return {skipped:'operator-institution-not-found'};
-  const now=new Date().toISOString(),ua=String(navigator.userAgent||'').slice(0,500);
-  for(const a of assignments){
-   const q=await client.from('pwa_usage_monitor').upsert({
-    user_id:userId,organization_id:a.organization_id,institution_id:a.institution_id,
-    last_pwa_seen_at:now,user_agent:ua,updated_at:now
-   },{onConflict:'user_id,organization_id,institution_id'});
-   if(q.error)throw q.error;
-  }
-  return {recorded:assignments.length};
- };
- window.showPwaMonitoring=async function(){
-  const host=document.getElementById('page');
-  const rolesNow=Array.isArray(state?.roles)?state.roles.map(x=>String(x).toUpperCase()):[];
-  if(!rolesNow.some(x=>x==='KETUA'||x==='SEKRETARIS')){if(typeof toast==='function')toast('Monitoring PWA hanya dapat dibuka oleh Ketua atau Sekretaris.','error');return}
-  if(!host)return;
-  host.innerHTML='<div class="card"><h2>Monitoring PWA & Notifikasi</h2><p class="small muted">Memuat data penggunaan PWA dan langganan notifikasi lembaga…</p></div>';
-  try{
-   const client=db();if(!client)throw new Error('Koneksi database belum tersedia.');
-   const orgQ=await client.rpc('current_organization_ids');if(orgQ.error)throw orgQ.error;
-   const orgIds=Array.isArray(orgQ.data)?orgQ.data.filter(Boolean):[];
-   if(!orgIds.length)throw new Error('Organisasi aktif akun ini belum ditemukan.');
-   const ur=await client.from('user_roles').select('user_id,organization_id,institution_id,role_id').eq('status','ACTIVE').in('organization_id',orgIds).not('institution_id','is',null);
-   if(ur.error)throw ur.error;
-   const roleIds=[...new Set((ur.data||[]).map(x=>x.role_id).filter(Boolean))];
-   const userIds=[...new Set((ur.data||[]).map(x=>x.user_id).filter(Boolean))];
-   const instIds=[...new Set((ur.data||[]).map(x=>x.institution_id).filter(Boolean))];
-   const [rolesQ,profilesQ,instQ]=await Promise.all([
-    roleIds.length?client.from('roles').select('id,code,status').in('id',roleIds).eq('status','ACTIVE'):Promise.resolve({data:[],error:null}),
-    userIds.length?client.from('profiles').select('id,full_name').in('id',userIds):Promise.resolve({data:[],error:null}),
-    instIds.length?client.from('institutions').select('id,name,status').in('id',instIds):Promise.resolve({data:[],error:null})
-   ]);
-   if(rolesQ.error)throw rolesQ.error;if(profilesQ.error)throw profilesQ.error;if(instQ.error)throw instQ.error;
-   const opRoleIds=new Set((rolesQ.data||[]).filter(x=>String(x.code||'').toUpperCase()==='OPERATOR').map(x=>x.id));
-   const assignments=[...new Map((ur.data||[]).filter(x=>opRoleIds.has(x.role_id)&&x.institution_id).map(x=>[x.user_id+':'+x.institution_id,{...x}])).values()];
-   const validInstIds=[...new Set(assignments.map(x=>x.institution_id))],validUserIds=[...new Set(assignments.map(x=>x.user_id))];
-   const [usageQ,pushQ]=await Promise.all([
-    validUserIds.length?client.from('pwa_usage_monitor').select('user_id,organization_id,institution_id,last_pwa_seen_at').in('organization_id',orgIds).in('user_id',validUserIds):Promise.resolve({data:[],error:null}),
-    validUserIds.length?client.from('push_subscriptions').select('user_id,id,updated_at').in('user_id',validUserIds):Promise.resolve({data:[],error:null})
-   ]);
-   if(usageQ.error)throw usageQ.error;if(pushQ.error)throw pushQ.error;
-   const profileMap=new Map((profilesQ.data||[]).map(x=>[x.id,x]));
-   const instMap=new Map((instQ.data||[]).map(x=>[x.id,x]));
-   const usageMap=new Map((usageQ.data||[]).map(x=>[x.user_id+':'+x.institution_id,x]));
-   const pushMap=new Map();for(const x of pushQ.data||[])pushMap.set(x.user_id,(pushMap.get(x.user_id)||0)+1);
-   const rows=assignments.map(a=>({userId:a.user_id,institutionId:a.institution_id,orgId:a.organization_id,name:profileMap.get(a.user_id)?.full_name||'Nama akun belum tersedia',institution:instMap.get(a.institution_id)?.name||'Lembaga tidak ditemukan',pwa:usageMap.get(a.user_id+':'+a.institution_id)||null,pushCount:pushMap.get(a.user_id)||0})).sort((a,b)=>a.institution.localeCompare(b.institution,'id')||a.name.localeCompare(b.name,'id'));
-   const pwaInst=new Set(rows.filter(x=>x.pwa).map(x=>x.institutionId));
-   const pushInst=new Set(rows.filter(x=>x.pushCount>0).map(x=>x.institutionId));
-   const escv=safe;
-   host.innerHTML=`
-    <div class="card">
-     <div class="row" style="align-items:flex-start;gap:10px;flex-wrap:wrap"><div><h2 style="margin:0">Monitoring PWA & Notifikasi</h2><p class="small muted" style="margin:5px 0 0">Pemantauan akun Operator berdasarkan aktivitas PWA yang benar-benar terdeteksi dan data langganan push.</p></div><button class="btn secondary" id="bkfPwaRefresh" type="button">↻ Perbarui</button></div>
-     <div class="grid grid3" style="margin-top:14px">
-      <div class="metric"><div class="small muted">Lembaga terpantau</div><strong>${new Set(rows.map(x=>x.institutionId)).size}</strong></div>
-      <div class="metric"><div class="small muted">PWA terdeteksi</div><strong>${pwaInst.size}</strong></div>
-      <div class="metric"><div class="small muted">Push terdaftar</div><strong>${pushInst.size}</strong></div>
-     </div>
-     <div class="notice" style="margin-top:12px">Catatan: “Belum terdeteksi” berarti akun belum tercatat membuka SIMFAQ melalui ikon PWA. Ini bukan bukti bahwa PWA belum pernah diinstal. Push terdaftar menunjukkan perangkat memiliki data subscription di sistem, bukan jaminan notifikasi sudah tampil di perangkat.</div>
-    </div>
-    <div class="card">
-     <div class="field"><label for="bkfPwaSearch">Cari lembaga atau nama operator</label><input id="bkfPwaSearch" type="search" placeholder="Ketik nama lembaga atau operator…"></div>
-     <div id="bkfPwaRows">${rows.length?rows.map(x=>`<div class="list-item bkf-pwa-row" data-search="${escv((x.institution+' '+x.name).toLowerCase())}" style="display:block">
-       <div class="row" style="align-items:flex-start"><div style="min-width:0;flex:1"><strong>${escv(x.institution)}</strong><div class="small muted">${escv(x.name)}</div></div><div style="text-align:right"><span class="status" style="background:${x.pwa?'#e8f7ee':'#fff4df'};color:${x.pwa?'#176b3a':'#8a5a12'}">${x.pwa?'PWA terdeteksi':'Belum terdeteksi'}</span><div class="small muted" style="margin-top:5px">${x.pushCount?'Push terdaftar ('+x.pushCount+')':'Push belum terdaftar'}</div></div></div>
-       <div class="small muted" style="margin-top:7px">Terakhir dibuka melalui PWA: ${fmtTime(x.pwa?.last_pwa_seen_at)}</div>
-      </div>`).join(''):'<div class="empty">Belum ada akun Operator lembaga yang ditemukan.</div>'}</div>
-     <div class="small muted" style="margin-top:10px">Data menampilkan ${rows.length} akun Operator aktif dari ${validInstIds.length} lembaga yang memiliki penugasan Operator.</div>
-    </div>`;
-   document.getElementById('bkfPwaRefresh')?.addEventListener('click',()=>window.showPwaMonitoring());
-   document.getElementById('bkfPwaSearch')?.addEventListener('input',e=>{const q=String(e.target.value||'').trim().toLowerCase();document.querySelectorAll('.bkf-pwa-row').forEach(el=>el.style.display=(!q||String(el.dataset.search||'').includes(q))?'block':'none')});
-  }catch(e){
-   console.error('[BK PWA MONITOR PAGE]',e);
-   host.innerHTML=`<div class="card"><div class="row"><div><h2>Monitoring PWA & Notifikasi</h2><p class="error">${safe(e?.message||e||'Data monitoring gagal dimuat.')}</p></div><button class="btn secondary" type="button" onclick="window.showPwaMonitoring()">Coba lagi</button></div></div>`;
-  }
- };
-})();
-</script>
+
 
 <!-- SIMFAQ V611: lengkapi aksi edit data pada tujuh submenu Profil & Data Lembaga. Basis V610. -->
 <script id="simfaq-institution-profile-data-v1">
