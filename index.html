@@ -387,17 +387,15 @@ window.requireActiveSession=requireActiveSession;window.hasPermission=hasPermiss
   function setLogo(url){const img=document.getElementById('bkfSplashLogo'),fallback=document.getElementById('bkfSplashFallback');if(!img||!fallback||!url)return;if(!/^https?:\/\//i.test(String(url)))return;img.src=String(url);img.onload=()=>{img.hidden=false;fallback.hidden=true};img.onerror=()=>{img.hidden=true;fallback.hidden=false};}
   function setDistrict(v){const e=document.getElementById('bkfSplashDistrict');if(e&&v)e.textContent='KECAMATAN '+String(v).trim().toUpperCase();}
   async function hydrate(){
-    try{
-      status('Menyiapkan identitas...');
-      const oq=await sb.from('organizations').select('logo_url').eq('status','ACTIVE').limit(1).maybeSingle();
-      if(!oq.error&&oq.data?.logo_url)setLogo(oq.data.logo_url);
-    }catch(_){}
-    try{
-      const direct=state.profile?.district||state.profile?.kecamatan||state.profile?.kec||'';
-      if(direct){setDistrict(direct);return;}
-      const iid=state.profile?.institution_id||state.profile?.lembaga_id||'';
-      if(iid){const iq=await sb.from('institutions').select('district').eq('id',iid).maybeSingle();if(!iq.error&&iq.data?.district)setDistrict(iq.data.district);}
-    }catch(_){}
+    // Splash metadata is non-critical: start independent lookups concurrently and
+    // never hold the authenticated app boot waiting for logo/district queries.
+    try{status('Menyiapkan identitas...')}catch(_){}
+    const direct=state.profile?.district||state.profile?.kecamatan||state.profile?.kec||'';
+    const iid=state.profile?.institution_id||state.profile?.lembaga_id||'';
+    const logoTask=(async()=>{try{const oq=await sb.from('organizations').select('logo_url').eq('status','ACTIVE').limit(1).maybeSingle();if(!oq.error&&oq.data?.logo_url)setLogo(oq.data.logo_url)}catch(_){}})();
+    const districtTask=(async()=>{try{if(direct){setDistrict(direct);return;}if(iid){const iq=await sb.from('institutions').select('district').eq('id',iid).maybeSingle();if(!iq.error&&iq.data?.district)setDistrict(iq.data.district)}}catch(_){}})();
+    // Tasks are intentionally detached; they update splash only if it still exists.
+    void logoTask;void districtTask;
   }
   async function hide(){
     const el=document.getElementById('bkfSplash');if(!el)return;
@@ -2394,7 +2392,7 @@ window.v12TogglePassword=function(id,btn){const e=document.getElementById(id);if
       const mediaUrl=path=>{const u=String(path||'');if(!u)return '';if(/^https?:/i.test(u))return u;try{return sb.storage.from('bkfuspaq-media').getPublicUrl(u).data?.publicUrl||''}catch(_){return ''}};
       const rows=[...participantMap.values()].filter(p=>registrationMap.has(p.exam_registration_id)).sort((a,b)=>String(a.name||'').localeCompare(String(b.name||''),'id',{sensitivity:'base'}));
       if(!rows.length){reportEl().innerHTML=`<div class="empty">Belum ada peserta terdaftar untuk ujian ${label} pada cakupan akun ini.</div>`;return}
-      reportEl().innerHTML=`<table class="bkf-exam-table"><thead><tr><th class="bkf-exam-identity">Peserta / Lembaga</th><th>tjwd</th><th>Makhorij</th><th>Ghorib</th><th>Surat</th><th>Do'a</th><th>Sholat</th><th>BTA</th><th>Total / Rata-rata</th><th>Status</th><th class="no-print">Tindakan</th></tr></thead><tbody>`+rows.map((participant,index)=>{
+      reportEl().innerHTML=`<table class="bkf-exam-table"><thead><tr><th class="bkf-exam-identity">Peserta / Lembaga</th><th>Makhorij</th><th>Tajwid</th><th>Ghorib</th><th>Surat</th><th>Do'a</th><th>Sholat</th><th>BTA</th><th>Total / Rata-rata</th><th>Status</th><th class="no-print">Tindakan</th></tr></thead><tbody>`+rows.map((participant,index)=>{
         const registration=registrationMap.get(participant.exam_registration_id)||{};
         const institution=institutionMap.get(registration.institution_id)||'-';
         const participantWave=type==='PRA_TASHIH'?Number(registration.wave)||null:(waveMap.get(participant.id)?.wave||null);
@@ -2419,8 +2417,8 @@ window.v12TogglePassword=function(id,btn){const e=document.getElementById(id);if
         else if(finalized&&!actions)actions='<span class="small muted">Hasil sudah difinalisasi.</span>';
         const searchText=`${participant.name||''} ${participant.nis||''} ${participant.exam_number||''} ${institution||''}`.toLowerCase();
         const canonicalMaterials=[
-          {key:'TAJWID',label:'tjwd',match:m=>String(m.code||'').toUpperCase().includes('TAJWID')||String(m.name||'').toLowerCase().includes('tajwid')&&!String(m.name||'').toLowerCase().includes('makhorij')},
           {key:'MAKHORIJ',label:'Makhorij',match:m=>String(m.code||'').toUpperCase().includes('MAKHORIJ')||String(m.name||'').toLowerCase().includes('makhorij')},
+          {key:'TAJWID',label:'Tajwid',match:m=>String(m.code||'').toUpperCase().includes('TAJWID')||String(m.name||'').toLowerCase().includes('tajwid')&&!String(m.name||'').toLowerCase().includes('makhorij')},
           {key:'GHORIB',label:'Ghorib',match:m=>String(m.code||'').toUpperCase().includes('GHORIB')||String(m.name||'').toLowerCase().includes('ghorib')},
           {key:'SURAT_PENDEK',label:'Surat',match:m=>String(m.code||'').toUpperCase().includes('SURAT_PENDEK')||String(m.name||'').toLowerCase().includes('surat pendek')},
           {key:'DOA_HARIAN',label:"Do'a",match:m=>String(m.code||'').toUpperCase().includes('DOA_HARIAN')||String(m.name||'').toLowerCase().includes('doa harian')||String(m.name||'').toLowerCase().includes('doa sehari')},
@@ -3153,20 +3151,16 @@ window.v12TogglePassword=function(id,btn){const e=document.getElementById(id);if
       else if(t==='activities'){q=await sb.from('activities').select('id,status,start_at');if(q.error)return [t,null];const active=(q.data||[]).filter(a=>!['SELESAI','DIBATALKAN'].includes(window.bkfActivityStatus(a)));return [t,active.length]}
       else if(t==='bills'){
         if(isOperator&&!operatorInstitutionId)return [t,'Rp0'];
-        const billRows=[];
+        // V584: use the verified bill-balance view instead of fetching bills then payments in separate batches.
+        // The view aggregates confirmed/locked payments per bill; dashboard still pages results for scale.
+        let remaining=0;
         for(let from=0;;from+=1000){
-          let bq=sb.from('bills').select('id,total_amount').neq('status','PAID').order('bill_date',{ascending:false}).range(from,from+999);
+          let bq=sb.from('v_institution_bill_balance').select('bill_id,outstanding_amount').gt('outstanding_amount',0).order('bill_date',{ascending:false}).range(from,from+999);
           if(isOperator)bq=bq.eq('institution_id',operatorInstitutionId);
           const br=await bq;if(br.error)return [t,null];
-          billRows.push(...(br.data||[]));if((br.data||[]).length<1000)break;
+          remaining+=(br.data||[]).reduce((sum,b)=>sum+Number(b.outstanding_amount||0),0);
+          if((br.data||[]).length<1000)break;
         }
-        const billIds=billRows.map(b=>b.id).filter(Boolean),paidByBill=new Map();
-        for(let i=0;i<billIds.length;i+=400){
-          const pr=await sb.from('payments').select('bill_id,amount,status').in('bill_id',billIds.slice(i,i+400));
-          if(pr.error)return [t,null];
-          (pr.data||[]).forEach(p=>{if(p.status==='CONFIRMED')paidByBill.set(p.bill_id,(paidByBill.get(p.bill_id)||0)+Number(p.amount||0))});
-        }
-        const remaining=billRows.reduce((sum,b)=>sum+Math.max(Number(b.total_amount||0)-(paidByBill.get(b.id)||0),0),0);
         return [t,new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(remaining)];
       }
       else if(isOperator&&t==='payments'){if(!operatorInstitutionId)return [t,0];const bq=await sb.from('bills').select('id').eq('institution_id',operatorInstitutionId);if(bq.error)return [t,null];const ids=(bq.data||[]).map(x=>x.id).filter(Boolean);if(!ids.length)return [t,0];q=await sb.from('payments').select('id',{count:'exact',head:true}).in('bill_id',ids)}
@@ -4659,20 +4653,15 @@ async function fetchDashboardDetail(key){
   let q=sb.from('activities').select('id,activity_number,name,theme,start_at,end_at,venue,status,description,is_published,activity_type_id,host_institution_id,person_in_charge').order('start_at',{ascending:false}).limit(200);q=await q;if(q.error)return q;const rows=(q.data||[]).filter(a=>!['SELESAI','DIBATALKAN'].includes(window.bkfActivityStatus(a)));rows.forEach(a=>{a.status=window.bkfActivityStatus(a)});const typeIds=[...new Set(rows.map(x=>x.activity_type_id).filter(Boolean))],instIds=[...new Set(rows.map(x=>x.host_institution_id).filter(Boolean))],personIds=[...new Set(rows.map(x=>x.person_in_charge).filter(Boolean))];const [types,insts,people]=await Promise.all([typeIds.length?sb.from('activity_types').select('id,name').in('id',typeIds):Promise.resolve({data:[],error:null}),instIds.length?sb.from('institutions').select('id,name').in('id',instIds):Promise.resolve({data:[],error:null}),personIds.length?sb.from('profiles').select('id,full_name').in('id',personIds):Promise.resolve({data:[],error:null})]);if(types.error)return types;if(insts.error)return insts;if(people.error)return people;const tm=new Map((types.data||[]).map(x=>[x.id,x.name])),im=new Map((insts.data||[]).map(x=>[x.id,x.name])),pm=new Map((people.data||[]).map(x=>[x.id,x.full_name]));rows.forEach(x=>{x.activity_type_name=tm.get(x.activity_type_id)||'';x.host_institution_name=im.get(x.host_institution_id)||'';x.person_in_charge_name=pm.get(x.person_in_charge)||''});return {data:rows,error:null};
  }
  if(key==='bills'){
-  let billQuery=sb.from('bills').select('id,bill_number,institution_id,bill_date,due_date,total_amount,status').neq('status','PAID').order('bill_date',{ascending:false}).limit(200);if(isOperator)billQuery=billQuery.eq('institution_id',ownInst);const b=await billQuery;
+  // Use the verified bill-balance view to avoid fetching payment rows and recomputing balances in the browser.
+  let billQuery=sb.from('v_institution_bill_balance').select('bill_id,bill_number,institution_id,bill_date,due_date,total_amount,status,paid_amount,outstanding_amount').gt('outstanding_amount',0).order('bill_date',{ascending:false}).limit(200);if(isOperator)billQuery=billQuery.eq('institution_id',ownInst);const b=await billQuery;
   if(b.error)return b;
   const rows=b.data||[];
-  const ids=[...new Set(rows.map(x=>x.id).filter(Boolean))];
   const instIds=[...new Set(rows.map(x=>x.institution_id).filter(Boolean))];
-  const [pay,inst]=await Promise.all([
-   ids.length?sb.from('payments').select('bill_id,amount,status').in('bill_id',ids):Promise.resolve({data:[],error:null}),
-   instIds.length?sb.from('institutions').select('id,name').in('id',instIds):Promise.resolve({data:[],error:null})
-  ]);
-  if(pay.error)return pay;
+  const inst=instIds.length?await sb.from('institutions').select('id,name').in('id',instIds):{data:[],error:null};
   if(inst.error)return inst;
-  const paidMap=new Map();(pay.data||[]).forEach(x=>{if(x.status==='CONFIRMED')paidMap.set(x.bill_id,(paidMap.get(x.bill_id)||0)+Number(x.amount||0))});
   const instMap=new Map((inst.data||[]).map(x=>[x.id,x.name]));
-  rows.forEach(x=>{x.paid_amount=paidMap.get(x.id)||0;x.outstanding_amount=Math.max(Number(x.total_amount||0)-x.paid_amount,0);x.institution_name=instMap.get(x.institution_id)||''});
+  rows.forEach(x=>{x.id=x.bill_id;x.institution_name=instMap.get(x.institution_id)||''});
   return {data:rows,error:null};
  }
  if(key==='payments'){
@@ -4744,7 +4733,7 @@ window.showHome=async function(){
  const quickHtml='<div class="module-card-grid">'+roleQuick.map(x=>'<button class="btn secondary menu-item quick-module module-card-btn" type="button" onclick="navigate(\''+x[1]+'\')"><strong>'+E(x[0])+'</strong></button>').join('')+'</div>';
  host.innerHTML='<div class="card hero v35-welcome"><div style="font-size:14px;color:#6b7c70;font-weight:700">Assalamu\'alaikum Wr. Wb.</div><h2 class="v41-user-name" style="margin:6px 0 2px">'+E(name)+'</h2><div class="row bkf-dashboard-profile-actions" style="justify-content:flex-start;align-items:center;gap:8px;margin:6px 0 0"><span class="status ok">'+E(role)+'</span><span class="status '+(status==='ACTIVE'?'ok':'bad')+'">'+E(status==='ACTIVE'?'Aktif':status)+'</span><button type="button" class="status ok bkf-update-app-link" id="bkfUpdateAppBtn" onclick="window.bkfPwaInstallOrUpdate?.()" aria-label="Instal atau perbarui aplikasi SIMFAQ">Update Aplikasi</button></div><div class="bkf-darus-center"><button type="button" class="darus-quran-link" onclick="openDarusQuranViewer()" aria-label="Buka Darus Al-Qur\'an di dalam aplikasi"><span class="darus-quran-icon" aria-hidden="true">☪</span><span>Darus Al-Qur\'an</span><span class="darus-quran-arrow" aria-hidden="true">↗</span></button></div><div class="bkf-adzan-center"><button type="button" class="bkf-adzan-dashboard-btn" onclick="window.bkfOpenAdzanReminder?.()" aria-label="Buka Pengingat Sholat"><span class="bkf-adzan-dashboard-icon" aria-hidden="true">🕌</span><span class="bkf-adzan-dashboard-content"><span class="bkf-adzan-dashboard-title">Pengingat Sholat</span><span id="bkfAdzanDashboardCountdown" class="bkf-adzan-dashboard-countdown" aria-live="polite">Memuat jadwal sholat…</span></span><span class="bkf-adzan-dashboard-arrow" aria-hidden="true">›</span></button></div><p class="v35-message" style="margin:8px 0 4px">Selamat datang di Sistem Informasi BK FUSPAQ NU.</p><p class="small muted" style="margin:0">'+E(dashboardGreeting())+'</p></div><div class="v75-dashboard-counters" id="dashboardAllCounters">'+counters+'<div id="dashboardExamParticipantCards" style="display:contents"></div></div>';
  const welcomeCard=host.querySelector('.v35-welcome');
- try{
+ const logoTask=(async()=>{try{
    const orgIdsQ=await sb.rpc('current_organization_ids');
    const orgIds=orgIdsQ.error?[]:(Array.isArray(orgIdsQ.data)?orgIdsQ.data:(orgIdsQ.data?[orgIdsQ.data]:[]));
    if(welcomeCard&&orgIds.length){
@@ -4752,12 +4741,14 @@ window.showHome=async function(){
      const logoUrl=!logoQ.error?logoQ.data?.logo_url:'';
      if(logoUrl){const layer=document.createElement('div');layer.className='v493-welcome-logo';layer.setAttribute('aria-hidden','true');const img=document.createElement('img');img.src=logoUrl;img.alt='';img.loading='eager';img.decoding='async';img.onerror=()=>layer.remove();layer.appendChild(img);welcomeCard.prepend(layer)}
    }
- }catch(e){console.warn('[Dashboard profile logo]',e)}
+ }catch(e){console.warn('[Dashboard profile logo]',e)}})();
  host.querySelectorAll('[data-dashboard-detail]').forEach(card=>card.addEventListener('click',()=>card.dataset.dashboardDetail==='notifications'?window.navigate('notifications'):openDashboardDetail(card.dataset.dashboardDetail)));
- await loadDashboardExamCards();
- try{if(typeof loadMetrics==='function')await loadMetrics()}catch(e){console.warn('[Dashboard metrics]',e)}
- try{await window.bkfRenderDashboardPrayerCountdown?.()}catch(e){console.warn('[Dashboard prayer countdown]',e)}
- try{window.bkfRenderDashboardPushPrompt?.()}catch(e){console.warn('[Dashboard push prompt]',e)}
+ const dashboardTasks=[logoTask];
+ dashboardTasks.push((async()=>{try{await loadDashboardExamCards()}catch(e){console.warn('[Dashboard exam cards]',e)}})());
+ dashboardTasks.push((async()=>{try{if(typeof loadMetrics==='function')await loadMetrics()}catch(e){console.warn('[Dashboard metrics]',e)}})());
+ dashboardTasks.push((async()=>{try{await window.bkfRenderDashboardPrayerCountdown?.()}catch(e){console.warn('[Dashboard prayer countdown]',e)}})());
+ dashboardTasks.push(Promise.resolve().then(()=>{try{window.bkfRenderDashboardPushPrompt?.()}catch(e){console.warn('[Dashboard push prompt]',e)}}));
+ await Promise.all(dashboardTasks);
 };
 })();
 </script>
@@ -5831,11 +5822,16 @@ async function loadPengujianRows(examType,wave=null){
  if(!rows.length)return [];
 
  const mediaIds=[...new Set(rows.map(x=>x.p.media_id).filter(Boolean))];
- let mediaMap=new Map();
- if(mediaIds.length){const mm=await sb.from('participant_media').select('id,storage_path').in('id',mediaIds);if(mm.error)throw mm.error;mediaMap=new Map((mm.data||[]).map(x=>[x.id,mediaUrl(x.storage_path)]));}
  const instIds=[...new Set(rows.map(x=>x.r.institution_id).filter(Boolean))];
- let instMap=new Map();
- if(instIds.length){const iq=await sb.from('institutions').select('id,name').in('id',instIds);if(iq.error)throw iq.error;instMap=new Map((iq.data||[]).map(x=>[x.id,x.name]));}
+ // Foto dan nama lembaga tidak saling bergantung; ambil bersamaan agar
+ // waktu tunggu jaringan tidak menumpuk secara berurutan.
+ const [mediaQ,instQ]=await Promise.all([
+   mediaIds.length?sb.from('participant_media').select('id,storage_path').in('id',mediaIds):Promise.resolve({data:[],error:null}),
+   instIds.length?sb.from('institutions').select('id,name').in('id',instIds):Promise.resolve({data:[],error:null})
+ ]);
+ if(mediaQ.error)throw mediaQ.error;if(instQ.error)throw instQ.error;
+ const mediaMap=new Map((mediaQ.data||[]).map(x=>[x.id,mediaUrl(x.storage_path)]));
+ const instMap=new Map((instQ.data||[]).map(x=>[x.id,x.name]));
  return rows.map(x=>{
    const scoreRows=x.materials.map(m=>scoreMap.get(x.sess.id+'|'+m.id)).filter(Boolean);
    const scores=scoreRows.map(v=>Number(v.score)).filter(Number.isFinite);
@@ -5930,7 +5926,7 @@ window.openParticipantFromPengujian=async function(sessionId,participantId,retur
    if(!activeRule?.id)throw new Error('Aturan ujian aktif untuk periode dan jenis ujian ini tidak ditemukan. Hubungi pengurus sebelum menyimpan nilai.');
    const detailsQ=await sb.from('exam_rule_details').select('exam_material_id,minimum_score').eq('exam_rule_id',activeRule.id);
    if(detailsQ.error)throw detailsQ.error;
-   const mats=matsQ.data||[],sc=scoreQ.data||[],ruleDetails=detailsQ.data||[];
+   const mats=(matsQ.data||[]).slice().sort((a,b)=>{const priority=code=>{const c=String(code||'').toUpperCase();return c==='MAKHORIJ'?0:c==='TAJWID'?1:2};const pa=priority(a.code),pb=priority(b.code);return pa-pb||Number(a.sequence||9999)-Number(b.sequence||9999)}),sc=scoreQ.data||[],ruleDetails=detailsQ.data||[];
    if(!ruleDetails.length)throw new Error('Materi dan batas minimal pada aturan ujian aktif belum dikonfigurasi.');
    const minMap=new Map(ruleDetails.map(x=>[x.exam_material_id,Number(x.minimum_score)]));
    const missingActiveDetails=mats.filter(m=>!minMap.has(m.id)||!Number.isFinite(minMap.get(m.id)));
@@ -6699,6 +6695,20 @@ window.showMemoryAlbum=async function(eventId=''){
   // Web Audio internal to the HTML/WebView is unlocked by the user's first interaction.
   document.addEventListener('pointerdown',unlockAudio,{passive:true});
   document.addEventListener('keydown',unlockAudio);
+  // Realtime notification changes refresh only the notification counter, not every dashboard metric.
+  window.bkfRefreshNotificationMetric=async function(){
+    const el=document.getElementById('metric-notifications');
+    if(!el)return;
+    const pid=state?.profile?.id;if(!pid)return;
+    try{
+      const q=await sb.from('notifications').select('id',{count:'exact',head:true}).eq('user_id',pid).is('read_at',null);
+      if(q.error)return;
+      const count=Number(q.count||0),previous=Number(el.dataset.rawCount??String(el.textContent||'').trim());
+      el.dataset.rawCount=String(count);el.textContent=count>99?'99+':count.toLocaleString('id-ID');
+      const badge=document.getElementById('metric-notifications-badge');if(badge){badge.textContent=(count>99?'99+':count.toLocaleString('id-ID'))+' BARU';badge.hidden=count<=0}
+      if(Number.isFinite(previous)&&count>previous){el.classList.remove('bkf-notification-count-spin');void el.offsetWidth;el.classList.add('bkf-notification-count-spin')}
+    }catch(e){console.warn('[BKF notification metric refresh]',e)}
+  };
   function clearRetry(){if(retryTimer){clearTimeout(retryTimer);retryTimer=null}}
   function schedule(){
     clearRetry();
@@ -6720,11 +6730,11 @@ window.showMemoryAlbum=async function(eventId=''){
     c.on("postgres_changes",{event:"INSERT",schema:"public",table:"notifications",filter:"user_id=eq."+pid},function(payload){
       const n=payload?.new||{};
       try{if(!document.hidden)playInternalNotificationSound()}catch(_){}
-      try{if(typeof window.loadMetrics==='function')window.loadMetrics()}catch(_){}
+      try{if(typeof window.bkfRefreshNotificationMetric==='function')window.bkfRefreshNotificationMetric()}catch(_){}
       try{if(document.hidden&&"Notification" in window&&Notification.permission==="granted"){const pushLines=String(n.message||"").split("\n").map(line=>line.trim()).filter(line=>line&&!/^assalamu[’' -]*alaikum/i.test(line)&&!/^wassalamu[’' -]*alaikum/i.test(line));const isAdzan=String(n.event_type||"").trim().toUpperCase()==="ADZAN_REMINDER";const notice=new Notification(n.title||"BK FUSPAQ NU",{body:pushLines.slice(0,2).join("\n")||"Ada pemberitahuan baru. Silakan buka SIMFAQ untuk membaca rinciannya.",tag:n.id,data:{eventType:n.event_type||"",notificationId:n.id||""}});notice.onclick=function(){try{window.focus()}catch(_){};try{if(isAdzan&&typeof window.bkfHandlePushNavigation==="function")window.bkfHandlePushNavigation({route:"home",eventType:"ADZAN_REMINDER",notificationId:n.id||""});else if(typeof window.navigate==="function")window.navigate("notifications")}catch(error){console.warn("[BKF REALTIME NOTIFICATION CLICK]",error)};try{notice.close()}catch(_){}}}}catch(_){ }
     });
-    c.on("postgres_changes",{event:"UPDATE",schema:"public",table:"notifications",filter:"user_id=eq."+pid},function(){try{if(typeof window.loadMetrics==='function')window.loadMetrics()}catch(_){} });
-    c.on("postgres_changes",{event:"DELETE",schema:"public",table:"notifications",filter:"user_id=eq."+pid},function(){try{if(typeof window.loadMetrics==='function')window.loadMetrics()}catch(_){} });
+    c.on("postgres_changes",{event:"UPDATE",schema:"public",table:"notifications",filter:"user_id=eq."+pid},function(){try{if(typeof window.bkfRefreshNotificationMetric==='function')window.bkfRefreshNotificationMetric()}catch(_){} });
+    c.on("postgres_changes",{event:"DELETE",schema:"public",table:"notifications",filter:"user_id=eq."+pid},function(){try{if(typeof window.bkfRefreshNotificationMetric==='function')window.bkfRefreshNotificationMetric()}catch(_){} });
     c.subscribe(function(status,err){
       if(status==="SUBSCRIBED"){
         bound=true;tries=0;clearRetry();
@@ -7124,17 +7134,10 @@ async function bkfMakeTextPdfV1(html,title,opt={}){
  }finally{iframe.remove()}
 }
 async function makePdf(html,title,opt={},sourceDoc=null){
- // Default dokumen biasa memakai PDF teks/tabel. Jika mesin PDF teks gagal
- // (termasuk VFS/font/CDN), jatuhkan ke renderer raster agar ekspor tetap bisa.
- if(!opt.pageSelector&&!opt.forceRaster){
-  try{return await bkfMakeTextPdfV1(html,title,opt)}
-  catch(textPdfError){
-   console.warn('[BKF PDF TEXT FALLBACK]',textPdfError);
-   return makePdf(html,title,{...opt,forceRaster:true},sourceDoc);
-  }
- }
- // Mesin raster: lembar khusus atau fallback dokumen umum, dipaginasi agar
- // tidak memadatkan seluruh dokumen menjadi satu halaman.
+ // Default semua dokumen biasa ke PDF teks/tabel. Raster hanya dipertahankan
+ // untuk layout khusus yang secara eksplisit memakai pageSelector (kartu/foto/album).
+ if(!opt.pageSelector)return bkfMakeTextPdfV1(html,title,opt);
+ // Mesin raster khusus: hanya lembar eksplisit (kartu/foto/album) dan
  // membagi dokumen panjang menjadi beberapa halaman tanpa mengecilkan seluruh
  // dokumen menjadi satu halaman. Preview yang sudah tampil tetap menjadi sumber.
  let iframe=null,doc=sourceDoc,restorePreviewStyles=[],restoreImageSources=[];
