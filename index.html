@@ -4733,15 +4733,7 @@ window.showHome=async function(){
  const quickHtml='<div class="module-card-grid">'+roleQuick.map(x=>'<button class="btn secondary menu-item quick-module module-card-btn" type="button" onclick="navigate(\''+x[1]+'\')"><strong>'+E(x[0])+'</strong></button>').join('')+'</div>';
  host.innerHTML='<div class="card hero v35-welcome"><div style="font-size:14px;color:#6b7c70;font-weight:700">Assalamu\'alaikum Wr. Wb.</div><h2 class="v41-user-name" style="margin:6px 0 2px">'+E(name)+'</h2><div class="row bkf-dashboard-profile-actions" style="justify-content:flex-start;align-items:center;gap:8px;margin:6px 0 0"><span class="status ok">'+E(role)+'</span><span class="status '+(status==='ACTIVE'?'ok':'bad')+'">'+E(status==='ACTIVE'?'Aktif':status)+'</span><button type="button" class="status ok bkf-update-app-link" id="bkfUpdateAppBtn" onclick="window.bkfPwaInstallOrUpdate?.()" aria-label="Instal atau perbarui aplikasi SIMFAQ">Update Aplikasi</button></div><div class="bkf-darus-center"><button type="button" class="darus-quran-link" onclick="openDarusQuranViewer()" aria-label="Buka Darus Al-Qur\'an di dalam aplikasi"><span class="darus-quran-icon" aria-hidden="true">☪</span><span>Darus Al-Qur\'an</span><span class="darus-quran-arrow" aria-hidden="true">↗</span></button></div><div class="bkf-adzan-center"><button type="button" class="bkf-adzan-dashboard-btn" onclick="window.bkfOpenAdzanReminder?.()" aria-label="Buka Pengingat Sholat"><span class="bkf-adzan-dashboard-icon" aria-hidden="true">🕌</span><span class="bkf-adzan-dashboard-content"><span class="bkf-adzan-dashboard-title">Pengingat Sholat</span><span id="bkfAdzanDashboardCountdown" class="bkf-adzan-dashboard-countdown" aria-live="polite">Memuat jadwal sholat…</span></span><span class="bkf-adzan-dashboard-arrow" aria-hidden="true">›</span></button></div><p class="v35-message" style="margin:8px 0 4px">Selamat datang di Sistem Informasi BK FUSPAQ NU.</p><p class="small muted" style="margin:0">'+E(dashboardGreeting())+'</p></div><div class="v75-dashboard-counters" id="dashboardAllCounters">'+counters+'<div id="dashboardExamParticipantCards" style="display:contents"></div></div>';
  const welcomeCard=host.querySelector('.v35-welcome');
- const logoTask=(async()=>{try{
-   const orgIdsQ=await sb.rpc('current_organization_ids');
-   const orgIds=orgIdsQ.error?[]:(Array.isArray(orgIdsQ.data)?orgIdsQ.data:(orgIdsQ.data?[orgIdsQ.data]:[]));
-   if(welcomeCard&&orgIds.length){
-     const logoQ=await sb.from('organizations').select('logo_url').in('id',orgIds).eq('status','ACTIVE').limit(1).maybeSingle();
-     const logoUrl=!logoQ.error?logoQ.data?.logo_url:'';
-     if(logoUrl){const layer=document.createElement('div');layer.className='v493-welcome-logo';layer.setAttribute('aria-hidden','true');const img=document.createElement('img');img.src=logoUrl;img.alt='';img.loading='eager';img.decoding='async';img.onerror=()=>layer.remove();layer.appendChild(img);welcomeCard.prepend(layer)}
-   }
- }catch(e){console.warn('[Dashboard profile logo]',e)}})();
+ const logoTask=Promise.resolve(); // Logo BK FUSPAQ dihilangkan dari slide dashboard agar lebih ringkas.
  host.querySelectorAll('[data-dashboard-detail]').forEach(card=>card.addEventListener('click',()=>card.dataset.dashboardDetail==='notifications'?window.navigate('notifications'):openDashboardDetail(card.dataset.dashboardDetail)));
  const dashboardTasks=[logoTask];
  dashboardTasks.push((async()=>{try{await loadDashboardExamCards()}catch(e){console.warn('[Dashboard exam cards]',e)}})());
@@ -4749,6 +4741,7 @@ window.showHome=async function(){
  dashboardTasks.push((async()=>{try{await window.bkfRenderDashboardPrayerCountdown?.()}catch(e){console.warn('[Dashboard prayer countdown]',e)}})());
  dashboardTasks.push(Promise.resolve().then(()=>{try{window.bkfRenderDashboardPushPrompt?.()}catch(e){console.warn('[Dashboard push prompt]',e)}}));
  await Promise.all(dashboardTasks);
+ try{await window.bkfInitDashboardBannerSlider?.(welcomeCard)}catch(e){console.warn('[Dashboard banner slider]',e)}
 };
 })();
 </script>
@@ -6041,7 +6034,7 @@ const toast=(m,t='success')=>window.v12Toast?window.v12Toast(m,t):window.bkAlert
 /* Single source of truth for role → route access. Home is explicitly public to every authenticated role. Activity management is separately restricted to Ketua/Sekretaris. */
 const roleMenus={
  KETUA:new Set(menu.map(x=>x[0])),
- SEKRETARIS:new Set(['home','activities','exams','pengujian','graduation','secretariat','distribution','reports','notifications','management','institutions','organization','album','governance']),
+ SEKRETARIS:new Set(['home','activities','exams','pengujian','graduation','secretariat','distribution','reports','notifications','management','institutions','organization','album','governance','settings']),
  BENDAHARA:new Set(['home','payments','finance','distribution','reports','notifications','management','institutions','organization','album','governance']),
  ANGGOTA:new Set(['home','exams','graduation','reports','notifications','management','institutions','organization','album','governance']),
  OPERATOR:new Set(['home','activities','exams','graduation','finance','distribution','reports','notifications','institutions','organization','album','governance'])
@@ -8027,15 +8020,21 @@ window.showExamGovernance=async function(){const host=document.getElementById('p
   // V471: Pengaturan menjadi pusat kategori kas, Audit & Backup, dan Riwayat Login.
   try{for(let i=menu.length-1;i>=0;i--)if(menu[i]?.[0]==='auditbackup')menu.splice(i,1)}catch(_){}
   window.showSettings=async function(){
-    if(!Array.isArray(state.roles)||!state.roles.includes('KETUA')){toast('Pengaturan ini hanya dapat dibuka oleh Ketua.','error');return;}
+    const roles=Array.isArray(state.roles)?state.roles.map(r=>String(r).toUpperCase()):[];
+    const isChair=roles.includes('KETUA'),isSecretary=roles.includes('SEKRETARIS');
+    if(!isChair&&!isSecretary){toast('Pengaturan ini hanya dapat dibuka oleh Ketua atau Sekretaris.','error');return;}
     const host=document.getElementById('page');if(!host)return;
-    host.innerHTML=`<div class="card"><div class="module-head"><div><h2>Pengaturan</h2><div class="small muted">Pengaturan administrasi dan pemeliharaan aplikasi.</div></div></div><div class="menu-grid" style="margin-top:12px">
+    const adminCards=isChair?`
       <button class="btn secondary menu-item" type="button" id="bkfOpenThemeSettings"><strong>Tampilan & Warna Aplikasi</strong><span class="small">Pilih tema siap pakai atau atur warna sendiri.</span></button>
       <button class="btn secondary menu-item" type="button" id="v471FinanceCategories"><strong>Kategori Kas Masuk dan Kas Keluar</strong><span class="small">Kelola kategori transaksi kas.</span></button>
       <button class="btn secondary menu-item" type="button" id="v471AuditBackup"><strong>Audit & Backup</strong><span class="small">Jejak perubahan, ekspor, dan pemulihan cadangan.</span></button>
       <button class="btn secondary menu-item" type="button" id="v471LoginHistory"><strong>Riwayat Login</strong><span class="small">Lihat akun yang berhasil masuk dan waktu login.</span></button>
-      <button class="btn danger menu-item" type="button" id="v528OrphanPhotos"><strong>Penghapus Foto Yatim</strong><span class="small">Pindai foto Storage yang tidak lagi dirujuk data, lalu pilih yang akan dihapus.</span></button>
+      <button class="btn danger menu-item" type="button" id="v528OrphanPhotos"><strong>Penghapus Foto Yatim</strong><span class="small">Pindai foto Storage yang tidak lagi dirujuk data, lalu pilih yang akan dihapus.</span></button>`:'';
+    host.innerHTML=`<div class="card"><div class="module-head"><div><h2>Pengaturan</h2><div class="small muted">Pengaturan administrasi dan pemeliharaan aplikasi.</div></div></div><div class="menu-grid" style="margin-top:12px">
+      <button class="btn secondary menu-item" type="button" id="bkfOpenDashboardBannerManager"><strong>Kelola Foto Banner</strong><span class="small">Unggah, atur urutan, aktifkan, atau hapus foto slider dashboard.</span></button>
+      ${adminCards}
     </div></div>`;
+    document.getElementById('bkfOpenDashboardBannerManager')?.addEventListener('click',()=>window.bkfOpenDashboardBannerManager?.());
     document.getElementById('bkfOpenThemeSettings')?.addEventListener('click',()=>window.bkfOpenThemeSettings?.());
     document.getElementById('v471FinanceCategories')?.addEventListener('click',()=>window.openSettingsFinanceCategories?.());
     document.getElementById('v471AuditBackup')?.addEventListener('click',()=>window.showAuditBackup?.());
@@ -9118,3 +9117,189 @@ window.addEventListener('pageshow',function(){recheckOnActivation()});
 <!-- V563: Countdown jam-menit-detik diintegrasikan ke tombol Pengingat Sholat; tidak menambah tombol baru. -->
 
 <!-- SIMFAQ V594: perbaikan pemetaan jenis ujian Pra Tashih/Tashih pada tombol ekspor PDF/Excel; validasi jenis eksplisit agar tidak fallback ke Tashih. -->
+
+
+<style id="bkf-dashboard-banner-slider-v1">
+.v35-welcome{position:relative;overflow:hidden;padding:0!important}
+.bkf-banner-viewport{position:relative;width:100%;height:40vh;height:40svh;min-height:210px;max-height:340px;overflow:hidden;border-radius:16px;touch-action:pan-y;outline:none}
+.bkf-banner-track{display:flex;width:100%;height:100%;transition:transform .48s cubic-bezier(.22,.72,.25,1);will-change:transform}
+.bkf-banner-slide{box-sizing:border-box;flex:0 0 100%;width:100%;min-width:100%;height:100%;min-height:0;position:relative;overflow:hidden}
+.bkf-banner-slide--welcome{padding:12px 18px;display:flex;flex-direction:column;justify-content:center;gap:2px}
+.bkf-banner-slide--welcome .v493-welcome-logo{display:none!important}
+.bkf-banner-slide--welcome .v41-user-name{font-size:clamp(18px,4.5vw,25px)!important;margin:3px 0 1px!important}
+.bkf-banner-slide--welcome .v35-message{margin:5px 0 2px!important}
+.bkf-banner-slide--photo{display:flex;align-items:flex-end;border-radius:14px;background:#064b2d}
+.bkf-banner-slide--photo>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.bkf-banner-slide--photo:after{content:"";position:absolute;inset:35% 0 0;background:linear-gradient(180deg,transparent,rgba(0,25,13,.88));pointer-events:none}
+.bkf-banner-caption{position:relative;z-index:1;width:100%;box-sizing:border-box;padding:22px 18px 18px;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.35)}
+.bkf-banner-caption h3{margin:0 0 7px;font-size:clamp(19px,4vw,25px);line-height:1.2;color:#fff}
+.bkf-banner-caption p{margin:0;font-size:14px;line-height:1.45;color:#f0fff5}
+.bkf-banner-controls{position:absolute;inset:0;display:flex;align-items:center;justify-content:space-between;padding:0 9px;pointer-events:none;z-index:5}
+.bkf-banner-controls[hidden]{display:none}
+.bkf-banner-arrow{pointer-events:auto;display:grid;place-items:center;border:1px solid rgba(255,255,255,.65);background:rgba(0,35,20,.58);color:#fff;border-radius:999px;width:36px;height:36px;font-size:25px;line-height:1;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+.bkf-banner-arrow:focus-visible{outline:3px solid #facc15;outline-offset:2px}
+.bkf-banner-manager{border:1px solid rgba(255,255,255,.5);background:rgba(0,48,27,.38);color:#fff;border-radius:999px;padding:7px 12px;font:700 12px system-ui;cursor:pointer}
+.bkf-banner-modal{position:fixed;inset:0;z-index:1500;background:rgba(0,0,0,.55);display:flex;align-items:flex-end;justify-content:center;padding:12px;box-sizing:border-box}
+.bkf-banner-modal-card{background:var(--card,#fff);color:var(--text,#18231d);width:min(680px,100%);max-height:88dvh;overflow:auto;border-radius:20px;padding:16px;box-shadow:0 16px 48px rgba(0,0,0,.25)}
+.bkf-banner-modal-head{display:flex;justify-content:space-between;align-items:center;gap:12px;position:sticky;top:-16px;background:var(--card,#fff);padding:4px 0 12px;z-index:2}
+.bkf-banner-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.bkf-banner-form-grid .full{grid-column:1/-1}
+.bkf-banner-modal input,.bkf-banner-modal textarea{width:100%;box-sizing:border-box;border:1px solid var(--line,#dce5df);border-radius:10px;padding:10px;font:inherit;background:var(--card,#fff);color:var(--text,#18231d)}
+.bkf-banner-item{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--line,#dce5df)}
+.bkf-banner-item img{width:66px;height:52px;object-fit:cover;border-radius:8px}
+.bkf-banner-item-main{flex:1;min-width:0}
+.bkf-banner-item-main strong{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bkf-banner-item-actions{display:flex;gap:5px;flex-wrap:wrap}
+.bkf-banner-item-actions button,.bkf-banner-action{border:1px solid var(--line,#dce5df);border-radius:9px;padding:7px 10px;background:var(--card,#fff);color:var(--text,#18231d);font-weight:700;cursor:pointer}
+.bkf-banner-action.primary{background:#176b3a;color:#fff;border-color:#176b3a}
+.bkf-banner-help{font-size:12px;color:var(--muted,#66756d);line-height:1.45}
+@media(max-width:620px){
+ .bkf-banner-viewport{height:40vh;height:40svh;min-height:200px;max-height:none}
+ .bkf-banner-slide--welcome{padding:9px 14px}
+ .bkf-banner-slide--welcome .bkf-dashboard-profile-actions{gap:5px!important;margin-top:3px!important;flex-wrap:wrap}
+ .bkf-banner-slide--welcome .bkf-darus-center,.bkf-banner-slide--welcome .bkf-adzan-center{margin-top:4px!important}
+ .bkf-banner-slide--welcome .bkf-adzan-dashboard-btn{min-height:36px!important;padding:6px 10px!important}
+ .bkf-banner-form-grid{grid-template-columns:1fr}
+ .bkf-banner-form-grid .full{grid-column:auto}
+ .bkf-banner-arrow{width:33px;height:33px;font-size:23px}
+}
+@media(prefers-reduced-motion:reduce){.bkf-banner-track{transition:none}}
+</style>
+<script id="bkf-dashboard-banner-slider-v1">
+(function(){
+ 'use strict';
+ const BUCKET='dashboard-banners', INTERVAL=6000;
+ let activeModal=null;
+ const safeText=(v)=>String(v??'');
+ const escapeHtml=(v)=>typeof esc==='function'?esc(safeText(v)):safeText(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ function canManage(){return Array.isArray(state?.roles)&&state.roles.some(r=>['KETUA','SEKRETARIS'].includes(String(r).toUpperCase()))}
+ function publicUrl(path){const r=sb.storage.from(BUCKET).getPublicUrl(path);return r?.data?.publicUrl||''}
+ function createPhotoSlide(row){
+  const slide=document.createElement('section');slide.className='bkf-banner-slide bkf-banner-slide--photo';slide.setAttribute('aria-label',row.title||'Foto kegiatan');
+  const img=document.createElement('img');img.src=publicUrl(row.storage_path);img.alt=row.title||'Dokumentasi kegiatan';img.loading='lazy';img.decoding='async';img.onerror=()=>{slide.remove();};
+  const caption=document.createElement('div');caption.className='bkf-banner-caption';
+  const title=document.createElement('h3');title.textContent=row.title||'Dokumentasi Kegiatan';
+  const desc=document.createElement('p');desc.textContent=row.description||'BK FUSPAQ NU Kecamatan Rowosari';
+  caption.append(title,desc);slide.append(img,caption);return slide;
+ }
+ function renderDots(dots,index,count){
+  dots.innerHTML='';
+  for(let i=0;i<count;i++){const b=document.createElement('button');b.type='button';b.className='bkf-banner-dot';b.setAttribute('aria-label','Tampilkan slide '+(i+1));b.setAttribute('aria-current',i===index?'true':'false');b.addEventListener('click',()=>dots.dispatchEvent(new CustomEvent('bkf-goto',{detail:i})));dots.appendChild(b)}
+ }
+ async function loadBanners(){
+  const {data,error}=await sb.from('dashboard_banners').select('id,title,description,storage_path,display_order,start_at,end_at,is_active').eq('is_active',true).order('display_order',{ascending:true}).order('created_at',{ascending:false});
+  if(error)throw error;const now=Date.now();
+  return (data||[]).filter(x=>(!x.start_at||new Date(x.start_at).getTime()<=now)&&(!x.end_at||new Date(x.end_at).getTime()>now));
+ }
+ function openManager(){
+  if(!canManage())return;
+  closeManager();
+  const modal=document.createElement('div');modal.className='bkf-banner-modal';modal.id='bkfDashboardBannerModal';modal.innerHTML=`
+   <section class="bkf-banner-modal-card" role="dialog" aria-modal="true" aria-labelledby="bkfBannerModalTitle">
+    <div class="bkf-banner-modal-head"><div><h3 id="bkfBannerModalTitle" style="margin:0">Kelola Banner Dashboard</h3><div class="bkf-banner-help">Unggah foto kegiatan untuk ditampilkan pada slider dashboard.</div></div><button type="button" class="bkf-banner-action" data-close>✕</button></div>
+    <form id="bkfBannerUploadForm">
+     <div class="bkf-banner-form-grid">
+      <label>Judul foto<input name="title" maxlength="120" required placeholder="Contoh: Kegiatan Pembinaan TPQ"></label>
+      <label>Urutan tampil<input name="display_order" type="number" min="1" step="1" value="1" required></label>
+      <label class="full">Keterangan<textarea name="description" maxlength="500" rows="2" placeholder="Keterangan singkat kegiatan"></textarea></label>
+      <label class="full">Pilih foto (JPG, PNG, WebP; maksimal 5 MB)<input name="photo" type="file" accept="image/jpeg,image/png,image/webp" required></label>
+     </div>
+     <p class="bkf-banner-help">Foto yang diaktifkan akan menjadi slide setelah panel salam dan identitas Ketua. Pastikan memiliki izin penggunaan foto.</p>
+     <button class="bkf-banner-action primary" type="submit">Unggah dan Aktifkan</button>
+     <span id="bkfBannerUploadStatus" class="bkf-banner-help" aria-live="polite"></span>
+    </form>
+    <hr style="border:0;border-top:1px solid var(--line,#dce5df);margin:16px 0">
+    <h4 style="margin:0 0 8px">Daftar Banner</h4><div id="bkfBannerManagerList" class="bkf-banner-help">Memuat daftar...</div>
+   </section>`;
+  document.body.appendChild(modal);activeModal=modal;
+  modal.addEventListener('click',e=>{if(e.target===modal||e.target.closest('[data-close]'))closeManager()});
+  modal.querySelector('#bkfBannerUploadForm').addEventListener('submit',uploadBanner);
+  loadManagerList();
+ }
+ function closeManager(){if(activeModal){activeModal.remove();activeModal=null}}
+ async function loadManagerList(){
+  const host=activeModal?.querySelector('#bkfBannerManagerList');if(!host)return;
+  const {data,error}=await sb.from('dashboard_banners').select('id,title,description,storage_path,display_order,is_active,created_at').order('display_order',{ascending:true}).order('created_at',{ascending:false});
+  if(error){host.textContent='Daftar banner belum dapat dimuat: '+error.message;return}
+  if(!data?.length){host.textContent='Belum ada foto banner.';return}
+  host.innerHTML='';
+  data.forEach(row=>{
+   const item=document.createElement('div');item.className='bkf-banner-item';
+   const img=document.createElement('img');img.src=publicUrl(row.storage_path);img.alt='';
+   const main=document.createElement('div');main.className='bkf-banner-item-main';
+   const title=document.createElement('strong');title.textContent=row.title;
+   const info=document.createElement('span');info.className='bkf-banner-help';info.textContent='Urutan '+row.display_order+' · '+(row.is_active?'Aktif':'Nonaktif');
+   main.append(title,info);
+   const actions=document.createElement('div');actions.className='bkf-banner-item-actions';
+   const toggle=document.createElement('button');toggle.type='button';toggle.textContent=row.is_active?'Nonaktifkan':'Aktifkan';toggle.addEventListener('click',()=>toggleBanner(row));
+   const del=document.createElement('button');del.type='button';del.textContent='Hapus';del.addEventListener('click',()=>deleteBanner(row));
+   actions.append(toggle,del);item.append(img,main,actions);host.appendChild(item);
+  });
+ }
+ async function uploadBanner(event){
+  event.preventDefault();if(!canManage())return;
+  const form=event.currentTarget,button=form.querySelector('button[type="submit"]'),status=activeModal?.querySelector('#bkfBannerUploadStatus');
+  const file=form.elements.photo.files?.[0],title=form.elements.title.value.trim(),description=form.elements.description.value.trim(),order=Number(form.elements.display_order.value||1);
+  if(!file||!title){status.textContent='Lengkapi judul dan pilih foto.';return}
+  if(!['image/jpeg','image/png','image/webp'].includes(file.type)||file.size>5*1024*1024){status.textContent='Format harus JPG, PNG, atau WebP dengan ukuran maksimal 5 MB.';return}
+  button.disabled=true;status.textContent='Mengunggah foto...';
+  const path='dashboard/'+crypto.randomUUID()+'-'+file.name.normalize('NFKD').replace(/[^a-zA-Z0-9._-]+/g,'-').slice(-90);
+  try{
+   const up=await sb.storage.from(BUCKET).upload(path,file,{cacheControl:'3600',upsert:false,contentType:file.type});
+   if(up.error)throw up.error;
+   const me=await sb.rpc('current_profile_id');if(me.error||!me.data)throw(me.error||new Error('Profil pengguna tidak ditemukan.'));
+   const ins=await sb.from('dashboard_banners').insert({title,description,storage_path:path,display_order:order,is_active:true,uploaded_by:me.data});
+   if(ins.error){await sb.storage.from(BUCKET).remove([path]);throw ins.error}
+   form.reset();form.elements.display_order.value='1';status.textContent='Foto berhasil diunggah dan diaktifkan.';
+   await loadManagerList();window.bkfRefreshDashboardBannerSlider?.();
+  }catch(e){status.textContent='Gagal mengunggah: '+(e?.message||'Kesalahan tidak diketahui')}
+  finally{button.disabled=false}
+ }
+ async function toggleBanner(row){
+  if(!canManage())return;
+  const {error}=await sb.from('dashboard_banners').update({is_active:!row.is_active,updated_at:new Date().toISOString()}).eq('id',row.id);
+  if(error){window.bkAlert?.('Gagal mengubah status banner: '+error.message);return}
+  await loadManagerList();window.bkfRefreshDashboardBannerSlider?.();
+ }
+ async function deleteBanner(row){
+  if(!canManage()||!(await window.bkfSystemConfirm?.('Hapus banner "'+row.title+'" beserta file fotonya?')))return;
+  const del=await sb.from('dashboard_banners').delete().eq('id',row.id);
+  if(del.error){window.bkAlert?.('Gagal menghapus banner: '+del.error.message);return}
+  const rm=await sb.storage.from(BUCKET).remove([row.storage_path]);
+  if(rm.error)console.warn('[Banner storage cleanup]',rm.error);
+  await loadManagerList();window.bkfRefreshDashboardBannerSlider?.();
+ }
+ async function init(card){
+  if(!card||!window.sb)return;
+  if(card.dataset.bkfBannerReady==='1')return;card.dataset.bkfBannerReady='1';
+  const original=[...card.childNodes];
+  const viewport=document.createElement('div');viewport.className='bkf-banner-viewport';viewport.tabIndex=0;viewport.setAttribute('aria-roledescription','carousel');viewport.setAttribute('aria-label','Slider informasi dan dokumentasi kegiatan SIMFAQ');
+  const track=document.createElement('div');track.className='bkf-banner-track';
+  const welcome=document.createElement('section');welcome.className='bkf-banner-slide bkf-banner-slide--welcome';welcome.setAttribute('aria-label','Salam dan identitas pengurus');
+  original.forEach(n=>welcome.appendChild(n));track.appendChild(welcome);viewport.appendChild(track);
+  const controls=document.createElement('div');controls.className='bkf-banner-controls';controls.hidden=true;
+  const prev=document.createElement('button');prev.type='button';prev.className='bkf-banner-arrow';prev.textContent='‹';prev.setAttribute('aria-label','Slide sebelumnya');
+  const next=document.createElement('button');next.type='button';next.className='bkf-banner-arrow';next.textContent='›';next.setAttribute('aria-label','Slide berikutnya');
+  controls.append(prev,next);viewport.appendChild(controls);
+  card.replaceChildren(viewport);
+  let index=0,slides=[welcome],timer=null;
+  const go=(n,manual=false)=>{if(!slides.length)return;index=(n+slides.length)%slides.length;track.style.transform='translateX(-'+(index*100)+'%)';[...dots.children].forEach((b,i)=>b.setAttribute('aria-current',i===index?'true':'false'));if(manual)restart()};
+  const restart=()=>{if(timer)clearInterval(timer);if(slides.length>1)timer=setInterval(()=>go(index+1),INTERVAL)};
+  prev.addEventListener('click',()=>go(index-1,true));next.addEventListener('click',()=>go(index+1,true));
+  let touchX=0;viewport.addEventListener('touchstart',e=>{touchX=e.changedTouches?.[0]?.clientX||0},{passive:true});
+  viewport.addEventListener('touchend',e=>{const end=e.changedTouches?.[0]?.clientX||0,delta=end-touchX;if(Math.abs(delta)>45)go(index+(delta<0?1:-1),true)},{passive:true});
+  viewport.addEventListener('keydown',e=>{if(e.key==='ArrowRight'){e.preventDefault();go(index+1,true)}if(e.key==='ArrowLeft'){e.preventDefault();go(index-1,true)}});
+  async function refresh(){
+   const old=slides.slice(1);old.forEach(x=>x.remove());slides=[welcome];
+   try{const rows=await loadBanners();rows.forEach(row=>{const slide=createPhotoSlide(row);slides.push(slide);track.appendChild(slide)})}
+   catch(e){console.warn('[Dashboard banner data]',e)}
+   controls.hidden=slides.length<2;go(Math.min(index,slides.length-1));restart();
+  }
+  window.bkfRefreshDashboardBannerSlider=refresh;
+  await refresh();
+ }
+ window.bkfInitDashboardBannerSlider=init;
+ window.bkfOpenDashboardBannerManager=openManager;
+})();
+</script>
+
