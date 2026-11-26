@@ -6723,18 +6723,34 @@ window.showMemoryAlbum=async function(eventId=''){
   document.addEventListener('pointerdown',unlockAudio,{passive:true});
   document.addEventListener('keydown',unlockAudio);
   // Realtime notification changes refresh only the notification counter, not every dashboard metric.
-  window.bkfRefreshNotificationMetric=async function(){
+  // Debounce bursty Realtime events so one notification burst produces one count query.
+  let notificationMetricRefreshTimer=null;
+  let notificationMetricRefreshInFlight=false;
+  let notificationMetricRefreshPending=false;
+  window.bkfRefreshNotificationMetric=function(){
     const el=document.getElementById('metric-notifications');
     if(!el)return;
     const pid=state?.profile?.id;if(!pid)return;
-    try{
-      const q=await sb.from('notifications').select('id',{count:'exact',head:true}).eq('user_id',pid).is('read_at',null);
-      if(q.error)return;
-      const count=Number(q.count||0),previous=Number(el.dataset.rawCount??String(el.textContent||'').trim());
-      el.dataset.rawCount=String(count);el.textContent=count>99?'99+':count.toLocaleString('id-ID');
-      const badge=document.getElementById('metric-notifications-badge');if(badge){badge.textContent=(count>99?'99+':count.toLocaleString('id-ID'))+' BARU';badge.hidden=count<=0}
-      if(Number.isFinite(previous)&&count>previous){el.classList.remove('bkf-notification-count-spin');void el.offsetWidth;el.classList.add('bkf-notification-count-spin')}
-    }catch(e){console.warn('[BKF notification metric refresh]',e)}
+    if(notificationMetricRefreshInFlight){notificationMetricRefreshPending=true;return;}
+    if(notificationMetricRefreshTimer)clearTimeout(notificationMetricRefreshTimer);
+    notificationMetricRefreshTimer=setTimeout(async function(){
+      notificationMetricRefreshTimer=null;
+      if(notificationMetricRefreshInFlight){notificationMetricRefreshPending=true;return;}
+      notificationMetricRefreshInFlight=true;
+      try{
+        const q=await sb.from('notifications').select('id',{count:'exact',head:true}).eq('user_id',pid).is('read_at',null);
+        if(!q.error){
+          const count=Number(q.count||0),previous=Number(el.dataset.rawCount??String(el.textContent||'').trim());
+          el.dataset.rawCount=String(count);el.textContent=count>99?'99+':count.toLocaleString('id-ID');
+          const badge=document.getElementById('metric-notifications-badge');if(badge){badge.textContent=(count>99?'99+':count.toLocaleString('id-ID'))+' BARU';badge.hidden=count<=0}
+          if(Number.isFinite(previous)&&count>previous){el.classList.remove('bkf-notification-count-spin');void el.offsetWidth;el.classList.add('bkf-notification-count-spin')}
+        }
+      }catch(e){console.warn('[BKF notification metric refresh]',e)}
+      finally{
+        notificationMetricRefreshInFlight=false;
+        if(notificationMetricRefreshPending){notificationMetricRefreshPending=false;window.bkfRefreshNotificationMetric();}
+      }
+    },400);
   };
   function clearRetry(){if(retryTimer){clearTimeout(retryTimer);retryTimer=null}}
   function schedule(){
