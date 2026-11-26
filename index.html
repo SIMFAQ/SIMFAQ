@@ -1,3 +1,4 @@
+<!-- SIMFAQ PENILAIAN OPTIMASI V1: antrean penilaian tidak memuat foto; foto tetap dimuat saat hasil peserta dibuka dari notifikasi/nilai. Basis SIMFAQ_SLIDER_DASHBOARD_REVISI_40PCT. -->
 <!-- SIMFAQ V631: Lampiran absensi dan jadwal print-first di Profil & Data Lembaga, draft Supabase + fallback lokal; basis source V624. -->
 <!-- SIMFAQ baseline V12 Notifikasi 99+ dengan monitoring PWA dibersihkan. -->
 <!-- SIMFAQ V582: tombol WhatsApp penagihan per lembaga pada daftar tagihan; pesan merangkum seluruh sisa tagihan lembaga dan memakai nomor kontak institusi. Tanpa perubahan data/database. -->
@@ -312,6 +313,20 @@ html[data-bkf-theme-mode="light"] .secondary{color:var(--bkf-theme-accent-dark)!
 .bkf-theme-preview{padding:14px;border-radius:13px;background:var(--bkf-theme-accent);color:#fff}
 @media(max-width:420px){.bkf-theme-presets{grid-template-columns:repeat(2,minmax(0,1fr))}}
 </style>
+
+<style id="bkf-banner-photo-color-isolation-v2">
+/* V2: Pisahkan warna kartu salam dari area slider; foto tidak mewarisi latar hijau dashboard. */
+.v35-welcome{background:#151a18!important;background-image:none!important;isolation:isolate!important}
+.v35-welcome>.bkf-banner-viewport{position:relative!important;isolation:isolate!important;background:#151a18!important;background-image:none!important;filter:none!important;mix-blend-mode:normal!important}
+.bkf-banner-track{isolation:isolate!important;background:#151a18!important;background-image:none!important;filter:none!important;mix-blend-mode:normal!important}
+.bkf-banner-slide--welcome{background:linear-gradient(135deg,#063b2d 0%,#0b5d46 58%,#7b5a16 100%)!important;background-blend-mode:normal!important}
+.bkf-banner-slide--photo{position:relative!important;isolation:isolate!important;overflow:hidden!important;background:#151a18!important;background-image:none!important;filter:none!important;mix-blend-mode:normal!important;opacity:1!important}
+.bkf-banner-slide--photo>img{position:absolute!important;z-index:0!important;inset:0!important;display:block!important;width:100%!important;height:100%!important;object-fit:cover!important;object-position:center center!important;background:#151a18!important;filter:none!important;-webkit-filter:none!important;mix-blend-mode:normal!important;opacity:1!important;transform:none!important;backface-visibility:visible!important}
+.bkf-banner-slide--photo:after{z-index:1!important;mix-blend-mode:normal!important;filter:none!important}
+.bkf-banner-caption{z-index:2!important}
+/* Efek warna penghitung hanya boleh berlaku pada kartu penghitungnya sendiri. */
+#dashboardAllCounters,#dashboardAllCounters .v75-dashboard-counter{isolation:isolate}
+</style>
 </head><body><div id="app"></div><!-- V238: Loader aturan ujian memuat rincian rule sekali, bukan query detail per tahap. -->
 <script id="bk-supabase-loader">
 window.BKF_CONFIG={supabaseUrl:'https://yhxetkdsuogbehxnarhk.supabase.co',supabasePublishableKey:'sb_publishable_ZnikYPnzJtTD_H8wUq2aiw_4hecYQW_'};
@@ -461,7 +476,12 @@ function openParticipant(p){
    <div id="examMsg"></div>
  </div>`;
  const ms=document.getElementById('materials');
- ms.innerHTML=(p.assigned_materials||[]).map(m=>{
+ // Urutan khusus form penilaian: Makhorijul Huruf lebih dahulu, lalu Tajwid.
+ // Materi lain mempertahankan urutan relatif dari penugasan aslinya.
+ const assignedMaterials=[...(p.assigned_materials||[])];
+ const priorityCode=m=>{const code=String(m?.code||'').toUpperCase(),name=String(m?.name||'').toLowerCase();if(code.includes('MAKHORIJ')||name.includes('makhorij'))return 0;if(code.includes('TAJWID')||name.includes('tajwid'))return 1;return 2};
+ assignedMaterials.sort((a,b)=>priorityCode(a)-priorityCode(b));
+ ms.innerHTML=assignedMaterials.map(m=>{
    const code=String(m.code||'').toUpperCase();
    const sh=code==='SHOLAT';
    const sumMaterial=code==='SURAT_PENDEK'||code==='DOA_HARIAN';
@@ -1314,7 +1334,7 @@ async function v10ExamTab(tab){if(tab==='seleksi'&&!v10CanOpenSelection()){const
   return;
  }
  if(tab==='seleksi'){const canDecide=v10IsSelectionManager();a.innerHTML=`<div class="card"><h3>Seleksi 10 Besar Tashih</h3><p class="muted">Peserta dibandingkan lintas seluruh lembaga dalam satu kegiatan. Urutan: nilai rata-rata tertinggi → Tajwid → Makhorijul Huruf → Ghorib. Semua peserta yang seri pada batas 10 besar tetap masuk tinjauan Ketua. Keputusan final dan notifikasi lembaga dilakukan setelah disahkan.</p><div class="field"><label>Kegiatan Tashih</label><select id="selActivity"><option value="">Memuat kegiatan Tashih…</option></select></div><div class="compact-actions">${v10IsSelectionManager()?'<button class="btn primary" onclick="v10RunSelection()">Hitung / Perbarui 10 Besar</button>':''}${canDecide?'<button class="btn success" onclick="v10PublishSelection()">Sahkan Hasil & Kirim Notifikasi</button>':''}</div><div id="selectionExports" class="compact-actions" style="margin-top:10px"></div><div id="selectionStatus" class="small muted" style="margin-top:8px">Pilih kegiatan untuk melihat hasil.</div><div id="selectionList" class="list data-list-scroll" style="margin-top:10px"></div></div>`;selActivity.onchange=v10LoadSelection;v10LoadSelectionActivities();return}
- if(tab==='remedial'){if(!hasPermission('exam.remedial.manage')){a.innerHTML='<div class="card"><div class="empty">Anda tidak memiliki hak untuk mengelola daftar remedial.</div></div>';return}a.innerHTML=`<div class="card"><div class="row"><div><h3>Remedial Pra Tashih</h3><p class="small muted">Daftar dibuat dari nilai final di bawah batas minimal sesuai aturan ujian aktif. Pilih gelombang yang akan diproses.</p></div><button class="btn secondary" type="button" onclick="window.showExams?.()">Kembali</button></div><div class="field"><label>Jenis ujian</label><select id="remActivity"><option value="PRA_TASHIH" selected>Pra Tashih</option></select></div><div class="field"><label>Kegiatan / Gelombang</label><select id="remActivityId"><option value="">Memuat kegiatan...</option></select></div><button id="remCreateBtn" class="btn primary" type="button" onclick="v10CreateRemedial()">Buat daftar remedial dari nilai final di bawah minimal</button><div id="remedialMsg" class="small muted" style="margin-top:8px"></div><div class="field" style="margin-top:14px"><label for="remSearch">Cari peserta (nama atau nomor ujian)</label><input id="remSearch" type="search" placeholder="Ketik nama atau nomor ujian..." oninput="window.__bkfRemedialPageV547.page=0;v10RenderRemedial()"></div><div class="field"><label for="remInstitution">Cetak data remedial per lembaga</label><div class="compact-actions"><select id="remInstitution" style="flex:1;min-width:180px"><option value="">Pilih lembaga</option></select><button class="btn secondary" type="button" onclick="v10PrintRemedialInstitution()">Cetak data</button></div></div><div id="remInstitutionWhatsAppList" class="list" style="margin-top:8px"></div><div id="remedialList" class="list data-list-scroll" style="margin-top:10px"></div></div>`;remActivity.onchange=()=>v10LoadRemedialActivities();v10LoadRemedialActivities();return}
+ if(tab==='remedial'){if(!hasPermission('exam.remedial.manage')){a.innerHTML='<div class="card"><div class="empty">Anda tidak memiliki hak untuk mengelola daftar remedial.</div></div>';return}a.innerHTML=`<div class="card"><div class="row"><div><h3>Remedial Pra Tashih</h3><p class="small muted">Daftar dibuat dari nilai final di bawah batas minimal sesuai aturan ujian aktif. Pilih gelombang yang akan diproses.</p></div><button class="btn secondary" type="button" onclick="window.showExams?.()">Kembali</button></div><div class="field"><label>Jenis ujian</label><select id="remActivity"><option value="PRA_TASHIH" selected>Pra Tashih</option></select></div><div class="field"><label>Kegiatan / Gelombang</label><select id="remActivityId"><option value="">Memuat kegiatan...</option></select></div><button id="remCreateBtn" class="btn primary" type="button" onclick="v10CreateRemedial()">Buat daftar remedial dari nilai final di bawah minimal</button><div id="remedialMsg" class="small muted" style="margin-top:8px"></div><div class="field" style="margin-top:14px"><label for="remSearch">Cari peserta (nama atau nomor ujian)</label><input id="remSearch" type="search" placeholder="Ketik nama atau nomor ujian..." oninput="window.__bkfRemedialPageV547.page=0;v10RenderRemedial()"></div><div class="field"><label for="remInstitution">Cetak data remedial per lembaga</label><div class="compact-actions"><select id="remInstitution" style="flex:1;min-width:180px"><option value="">Pilih lembaga</option></select><button class="btn secondary" type="button" onclick="v10PrintRemedialInstitution()">Cetak data</button><button class="btn primary" type="button" onclick="v10PrintRemedialAllInstitutions()">Cetak seluruh lembaga</button><button class="btn info" type="button" onclick="v10DownloadRemedialExcel()">Unduh Excel</button></div><div class="small muted" style="margin-top:6px">Cetak seluruh lembaga menggabungkan semua peserta pada gelombang yang sedang dipilih dan tetap mencantumkan asal lembaganya.</div></div><div id="remInstitutionWhatsAppList" class="list" style="margin-top:8px"></div><div id="remedialList" class="list data-list-scroll" style="margin-top:10px"></div></div>`;remActivity.onchange=()=>v10LoadRemedialActivities();v10LoadRemedialActivities();return}
  if(tab==='riwayat'){
   a.innerHTML=`<div class="card"><h3>Riwayat Peserta</h3><p class="muted">Satu profil peserta dilihat lintas ujian dan wisuda.</p><div class="field"><label>Cari nama / NIS</label><input id="historySearch" placeholder="Nama atau NIS"></div><div id="historyList" class="list data-list-scroll"></div></div>`;
   window.__bkfParticipantHistoryPageV547=window.__bkfParticipantHistoryPageV547||{page:0,term:''};
@@ -1442,6 +1462,16 @@ function v10RemedialInstitutionWhatsApp(institutionId){
  const detail=[...groups.values()].map((p,i)=>`${i+1}. ${p.name}\n${p.materials.map(m=>`   • ${m.name}: nilai ${m.score??'tidak ditemukan'} (minimal ${m.minimum??'-'}, kekurangan ${m.shortfall??'-'})`).join('\n')}`).join('\n\n');
  const msg=`Assalamu’alaikum warahmatullahi wabarakatuh.\n\nYth. Pengurus/Pembimbing ${inst._institutionName}.\n\nKami informasikan dengan hormat bahwa terdapat peserta dari lembaga panjenengan yang masuk daftar remedial hasil ujian Pra Tashih. Berikut nama peserta, jenis mata uji, dan nilai yang menjadi dasar remedial:\n\n${detail}\n\nMohon kiranya informasi ini dapat disampaikan kepada peserta yang bersangkutan agar mempersiapkan diri mengikuti remedial sesuai ketentuan. Semoga Allah SWT memberikan kemudahan, kelancaran, dan hasil terbaik. Aamiin.\n\nWassalamu’alaikum warahmatullahi wabarakatuh.`;
  window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`,'_blank');
+}
+function v10PrintRemedialAllInstitutions(){
+ const all=window.__bkfRemedialRowsV600||[];
+ if(!all.length)return window.bkAlert('Belum ada data remedial untuk dicetak. Pilih gelombang atau Semua Gelombang terlebih dahulu.');
+ const rows=[...all].sort((a,b)=>String(a._institutionName||'Lembaga tidak diketahui').localeCompare(String(b._institutionName||'Lembaga tidak diketahui'),'id',{sensitivity:'base'})||String(a._person?.name||'').localeCompare(String(b._person?.name||''),'id',{sensitivity:'base'})||String(a.exam_materials?.name||'').localeCompare(String(b.exam_materials?.name||''),'id',{sensitivity:'base'}));
+ const activity=document.getElementById('remActivityId')?.selectedOptions?.[0]?.textContent||'Pra Tashih';
+ const body=rows.map((x,i)=>{const p=x._person||{},original=x._originalScore==null?'Data nilai asli tidak ditemukan':x._originalScore,minimum=x._minimumScore==null?'-':x._minimumScore,shortfall=x._shortfall==null?'-':x._shortfall,remedial=x.status==='DRAFT'&&Number(x.score||0)===0?'Belum dinilai':(x.score??'Belum dinilai');return `<tr><td>${i+1}</td><td>${esc(x._institutionName||'Lembaga tidak diketahui')}</td><td>${esc(p.name||'-')}</td><td>${esc(p.exam_number||'-')}</td><td>${esc(p.nis||'-')}</td><td>${esc(x.exam_materials?.name||'-')}</td><td>${esc(original)}</td><td>${esc(minimum)}</td><td>${esc(shortfall)}</td><td>${esc(remedial)}</td><td>${esc(x.status||'-')}</td></tr>`}).join('');
+ const institutions=[...new Set(rows.map(x=>x._institutionId||x._institutionName||'unknown'))].length;
+ const html=`<!doctype html><html lang="id"><head><meta charset="utf-8"><title>Daftar Remedial Seluruh Lembaga</title><style>@page{size:A4 landscape;margin:11mm}body{font-family:Arial,sans-serif;color:#222}h2,p{text-align:center;margin:4px}.meta{font-size:10px;color:#444;margin-top:8px}table{width:100%;border-collapse:collapse;margin-top:16px;font-size:9px}th,td{border:1px solid #777;padding:5px;text-align:left}th{background:#e9eee9}td:first-child,td:nth-child(7),td:nth-child(8),td:nth-child(9),td:nth-child(10){text-align:center}thead{display:table-header-group}tr{break-inside:avoid}.foot{margin-top:16px;font-size:10px;color:#555}@media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}</style></head><body><h2>DAFTAR REMEDIAL PRA TASHIH</h2><p><strong>SELURUH LEMBAGA</strong></p><p>${esc(activity)}</p><p class="meta">Jumlah lembaga: ${institutions} · Jumlah data remedial: ${rows.length}</p><table><thead><tr><th>No.</th><th>Asal Lembaga</th><th>Nama Peserta</th><th>Nomor Ujian</th><th>NIS</th><th>Materi Remedial</th><th>Nilai Asli Pra Tashih</th><th>Batas Minimal</th><th>Kekurangan</th><th>Nilai Remedial</th><th>Status</th></tr></thead><tbody>${body}</tbody></table><div class="foot">Dicetak melalui SIMFAQ · ${new Date().toLocaleString('id-ID')}</div></body></html>`;
+ if(typeof window.bkfPrintDocumentV183==='function'){window.bkfPrintDocumentV183(html,'Daftar_Remedial_Seluruh_Lembaga',{orientation:'landscape'}).catch(e=>window.bkAlert(v10Err(e)));}else{const w=window.open('','_blank');if(!w)return window.bkAlert('Izinkan pop-up untuk mencetak.');w.document.open();w.document.write(html);w.document.close();w.focus();w.print();}
 }
 function v10PrintRemedialInstitution(){
  const institutionId=document.getElementById('remInstitution')?.value;if(!institutionId)return window.bkAlert('Pilih lembaga terlebih dahulu.');const all=window.__bkfRemedialRowsV600||[],rows=all.filter(x=>x._institutionId===institutionId);if(!rows.length)return window.bkAlert('Belum ada data remedial untuk lembaga tersebut.');
@@ -2392,7 +2422,7 @@ window.v12TogglePassword=function(id,btn){const e=document.getElementById(id);if
       const mediaUrl=path=>{const u=String(path||'');if(!u)return '';if(/^https?:/i.test(u))return u;try{return sb.storage.from('bkfuspaq-media').getPublicUrl(u).data?.publicUrl||''}catch(_){return ''}};
       const rows=[...participantMap.values()].filter(p=>registrationMap.has(p.exam_registration_id)).sort((a,b)=>String(a.name||'').localeCompare(String(b.name||''),'id',{sensitivity:'base'}));
       if(!rows.length){reportEl().innerHTML=`<div class="empty">Belum ada peserta terdaftar untuk ujian ${label} pada cakupan akun ini.</div>`;return}
-      reportEl().innerHTML=`<table class="bkf-exam-table"><thead><tr><th class="bkf-exam-identity">Peserta / Lembaga</th><th>tjwd</th><th>Makhorij</th><th>Ghorib</th><th>Surat</th><th>Do'a</th><th>Sholat</th><th>BTA</th><th>Total / Rata-rata</th><th>Status</th><th class="no-print">Tindakan</th></tr></thead><tbody>`+rows.map((participant,index)=>{
+      reportEl().innerHTML=`<table class="bkf-exam-table"><thead><tr><th class="bkf-exam-identity">Peserta / Lembaga</th><th>Makhorijul Huruf</th><th>Tajwid</th><th>Ghorib</th><th>Surat</th><th>Do'a</th><th>Sholat</th><th>BTA</th><th>Total / Rata-rata</th><th>Status</th><th class="no-print">Tindakan</th></tr></thead><tbody>`+rows.map((participant,index)=>{
         const registration=registrationMap.get(participant.exam_registration_id)||{};
         const institution=institutionMap.get(registration.institution_id)||'-';
         const participantWave=type==='PRA_TASHIH'?Number(registration.wave)||null:(waveMap.get(participant.id)?.wave||null);
@@ -2417,8 +2447,8 @@ window.v12TogglePassword=function(id,btn){const e=document.getElementById(id);if
         else if(finalized&&!actions)actions='<span class="small muted">Hasil sudah difinalisasi.</span>';
         const searchText=`${participant.name||''} ${participant.nis||''} ${participant.exam_number||''} ${institution||''}`.toLowerCase();
         const canonicalMaterials=[
-          {key:'TAJWID',label:'tjwd',match:m=>String(m.code||'').toUpperCase().includes('TAJWID')||String(m.name||'').toLowerCase().includes('tajwid')&&!String(m.name||'').toLowerCase().includes('makhorij')},
-          {key:'MAKHORIJ',label:'Makhorij',match:m=>String(m.code||'').toUpperCase().includes('MAKHORIJ')||String(m.name||'').toLowerCase().includes('makhorij')},
+          {key:'MAKHORIJ',label:'Makhorijul Huruf',match:m=>String(m.code||'').toUpperCase().includes('MAKHORIJ')||String(m.name||'').toLowerCase().includes('makhorij')},
+          {key:'TAJWID',label:'Tajwid',match:m=>String(m.code||'').toUpperCase().includes('TAJWID')||String(m.name||'').toLowerCase().includes('tajwid')&&!String(m.name||'').toLowerCase().includes('makhorij')},
           {key:'GHORIB',label:'Ghorib',match:m=>String(m.code||'').toUpperCase().includes('GHORIB')||String(m.name||'').toLowerCase().includes('ghorib')},
           {key:'SURAT_PENDEK',label:'Surat',match:m=>String(m.code||'').toUpperCase().includes('SURAT_PENDEK')||String(m.name||'').toLowerCase().includes('surat pendek')},
           {key:'DOA_HARIAN',label:"Do'a",match:m=>String(m.code||'').toUpperCase().includes('DOA_HARIAN')||String(m.name||'').toLowerCase().includes('doa harian')||String(m.name||'').toLowerCase().includes('doa sehari')},
@@ -5741,7 +5771,7 @@ window.bkfPreparePrintWindowV151=function(w){actions(w);return w};
 .bkf-peng-search input{width:100%;min-height:48px;padding:12px 14px 12px 42px;border:1px solid var(--line);border-radius:14px;background:#fff;font-size:15px;box-sizing:border-box}
 .bkf-peng-search .ico{position:absolute;left:14px;top:14px;font-size:18px;opacity:.65}
 .bkf-peng-count{margin-top:8px;font-size:12px;color:#68756e}
-.bkf-peng-person{display:flex;align-items:center;gap:11px;min-width:0}
+.bkf-peng-person{display:flex;align-items:center;gap:0;min-width:0}
 .bkf-peng-photo{width:42px;height:54px;flex:0 0 42px;border-radius:8px;object-fit:cover;border:1px solid #d8e2dc;background:#eef4f0;display:flex;align-items:center;justify-content:center;font-size:10px;color:#718078;text-align:center;overflow:hidden}
 .bkf-peng-photo img{width:100%;height:100%;object-fit:cover}
 .bkf-peng-info{min-width:0}
@@ -5789,7 +5819,7 @@ async function loadPengujianRows(examType,wave=null){
    'exam_session_id,exam_material_id,examiner_user_id,status,'+
    'exam_sessions!inner(id,participant_id,exam_registration_id,status,'+
    'exam_registrations!inner(id,exam_type,institution_id,wave),' +
-   'exam_participants:participant_id(id,name,nis,exam_number,status,media_id))'
+   'exam_participants:participant_id(id,name,nis,exam_number,status))'
  ).eq('status','ACTIVE').eq('examiner_user_id',uid)
   .eq('exam_sessions.exam_registrations.exam_type',type)
   .eq('exam_sessions.exam_registrations.wave',selectedWave);
@@ -5820,16 +5850,14 @@ async function loadPengujianRows(examType,wave=null){
  const rows=[...grouped.values()].filter(x=>x.materials.length);
  if(!rows.length)return [];
 
- const mediaIds=[...new Set(rows.map(x=>x.p.media_id).filter(Boolean))];
  const instIds=[...new Set(rows.map(x=>x.r.institution_id).filter(Boolean))];
- // Foto dan nama lembaga tidak saling bergantung; ambil bersamaan agar
- // waktu tunggu jaringan tidak menumpuk secara berurutan.
- const [mediaQ,instQ]=await Promise.all([
-   mediaIds.length?sb.from('participant_media').select('id,storage_path').in('id',mediaIds):Promise.resolve({data:[],error:null}),
-   instIds.length?sb.from('institutions').select('id,name').in('id',instIds):Promise.resolve({data:[],error:null})
- ]);
- if(mediaQ.error)throw mediaQ.error;if(instQ.error)throw instQ.error;
- const mediaMap=new Map((mediaQ.data||[]).map(x=>[x.id,mediaUrl(x.storage_path)]));
+ // Daftar antrean penilaian hanya memuat identitas ringkas dan status.
+ // Foto peserta sengaja tidak diminta di sini; foto diambil satu kali saat
+ // halaman hasil/nilai peserta dibuka melalui bkfShowExamResultForm().
+ const instQ=instIds.length
+   ?await sb.from('institutions').select('id,name').in('id',instIds)
+   :{data:[],error:null};
+ if(instQ.error)throw instQ.error;
  const instMap=new Map((instQ.data||[]).map(x=>[x.id,x.name]));
  return rows.map(x=>{
    const scoreRows=x.materials.map(m=>scoreMap.get(x.sess.id+'|'+m.id)).filter(Boolean);
@@ -5841,7 +5869,7 @@ async function loadPengujianRows(examType,wave=null){
    const average=result.average_score!=null?Number(result.average_score):(completeScore&&scores.length?scores.reduce((a,b)=>a+b,0)/scores.length:null);
    const finishedCount=x.materials.filter(m=>window.bkfIsFinishedScore(scoreMap.get(x.sess.id+'|'+m.id)?.status)).length;
    const assignedMaterialScores=x.materials.map(m=>{const sc=scoreMap.get(x.sess.id+'|'+m.id);return{id:m.id,name:m.name,code:m.code,score:sc?.score??null,status:sc?.status||'BELUM_DINILAI'}});
-   return {...x,photo_url:mediaMap.get(x.p.media_id)||'',institution_name:instMap.get(x.r.institution_id)||'-',hasAnyScore:scoredCount>0,completeScore,total_score:completeScore?total:null,average_score:completeScore?average:null,scored_count:scoredCount,finished_count:finishedCount,assignedMaterialScores};
+   return {...x,institution_name:instMap.get(x.r.institution_id)||'-',hasAnyScore:scoredCount>0,completeScore,total_score:completeScore?total:null,average_score:completeScore?average:null,scored_count:scoredCount,finished_count:finishedCount,assignedMaterialScores};
  }).sort((a,b)=>String(a.p.exam_number||'').localeCompare(String(b.p.exam_number||''),undefined,{numeric:true})||String(a.p.name||'').localeCompare(String(b.p.name||'')));
 }
 
@@ -5879,7 +5907,7 @@ async function showPengujianStage(examType,wave=1){
        const statusClass=complete?'ok':'';
        const valueLine=x.scored_count>0?`<div style="margin-top:8px"><strong>Nilai materi tugas:</strong><div style="margin-top:6px;display:flex;flex-wrap:wrap;gap:6px">${(x.assignedMaterialScores||[]).filter(m=>m.score!=null).map(m=>`<span class="status ok" style="display:inline-flex;gap:5px;align-items:center"><span>${E(m.name||m.code||'-')}</span><strong>${E(Number(m.score).toFixed(2))}</strong></span>`).join('')||'<span class="small muted">Belum ada nilai.</span>'}</div></div>`:`<div class="small muted" style="margin-top:8px">Belum ada nilai pada materi yang ditugaskan kepada Anda.</div>`;
        const action=complete?'':`<button class="btn primary bkf-peng-open" type="button" onclick="window.openParticipantFromPengujian('${E(x.sess.id)}','${E(x.p.id)}','${route}',${selectedWave})">Nilai ›</button>`;
-       return `<div class="list-item"><div class="row"><div class="bkf-peng-person">${photoHtml(x.photo_url)}<div class="bkf-peng-info"><strong>${E(x.p.name||'-')}</strong><div class="bkf-peng-meta">No. Ujian: ${E(x.p.exam_number||'-')} · NIS: ${E(x.p.nis||'-')}</div><span class="bkf-peng-type ${examTypeClass(x.r.exam_type)}">${examLabel(x.r.exam_type)}</span></div></div>${action}</div><div class="small" style="margin-top:8px">Lembaga: <strong>${E(x.institution_name)}</strong> · Gelombang: <strong>${x.r.wave==null?'Belum ditetapkan':E('Gelombang '+x.r.wave)}</strong> · ${x.materials.length} materi</div><div style="margin-top:10px;padding:10px 12px;border-radius:12px;background:var(--soft,#f4f8f5);border:1px solid var(--line)"><div class="row"><strong>${complete?'Hasil Penilaian':'Status Penilaian'}</strong><span class="status ${statusClass}">${statusText}</span></div>${valueLine}</div></div>`;
+       return `<div class="list-item"><div class="row"><div class="bkf-peng-person"><div class="bkf-peng-info"><strong>${E(x.p.name||'-')}</strong><div class="bkf-peng-meta">No. Ujian: ${E(x.p.exam_number||'-')} · NIS: ${E(x.p.nis||'-')}</div><span class="bkf-peng-type ${examTypeClass(x.r.exam_type)}">${examLabel(x.r.exam_type)}</span></div></div>${action}</div><div class="small" style="margin-top:8px">Lembaga: <strong>${E(x.institution_name)}</strong> · Gelombang: <strong>${x.r.wave==null?'Belum ditetapkan':E('Gelombang '+x.r.wave)}</strong> · ${x.materials.length} materi</div><div style="margin-top:10px;padding:10px 12px;border-radius:12px;background:var(--soft,#f4f8f5);border:1px solid var(--line)"><div class="row"><strong>${complete?'Hasil Penilaian':'Status Penilaian'}</strong><span class="status ${statusClass}">${statusText}</span></div>${valueLine}</div></div>`;
      }).join('')||(q?`<div class="empty">Peserta yang Anda cari tidak ditemukan pada Gelombang ${selectedWave}. Periksa nama atau nomor ujian, atau pilih gelombang lain.</div>`:`<div class="empty">Tidak ada peserta yang masih perlu dinilai pada Gelombang ${selectedWave}.</div>`)}</div>`;
    };
    search.oninput=render;render();search.focus();
@@ -9091,6 +9119,47 @@ window.addEventListener('pageshow',function(){recheckOnActivation()});
 })();
 
 </script>
+
+<!-- V12: cetak remedial mengisi halaman secara berurutan dan ekspor Excel. -->
+<script>
+function v10PrintRemedialDocument(rows, title, includeInstitution){
+ const activity=document.getElementById('remActivityId')?.selectedOptions?.[0]?.textContent||'Pra Tashih';
+ const body=rows.map((x,i)=>{const p=x._person||{},original=x._originalScore==null?'Tidak ditemukan':x._originalScore,minimum=x._minimumScore==null?'-':x._minimumScore,shortfall=x._shortfall==null?'-':x._shortfall,remedial=x.status==='DRAFT'&&Number(x.score||0)===0?'Belum dinilai':(x.score??'Belum dinilai');return `<tr><td>${i+1}</td>${includeInstitution?`<td>${esc(x._institutionName||'Lembaga tidak diketahui')}</td>`:''}<td>${esc(p.name||'-')}</td><td>${esc(p.exam_number||'-')}</td><td>${esc(p.nis||'-')}</td><td>${esc(x.exam_materials?.name||'-')}</td><td>${esc(original)}</td><td>${esc(minimum)}</td><td>${esc(shortfall)}</td><td>${esc(remedial)}</td><td>${esc(x.status||'-')}</td></tr>`}).join('');
+ const institutions=[...new Set(rows.map(x=>x._institutionId||x._institutionName||'unknown'))].length;
+ const html=`<!doctype html><html lang="id"><head><meta charset="utf-8"><title>${esc(title)}</title><style>
+ @page{size:A4 landscape;margin:8mm}*{box-sizing:border-box}body{font-family:Arial,sans-serif;color:#222;margin:0;font-size:8pt}h2,p{text-align:center;margin:3px 0}.meta{font-size:8pt;color:#444;margin:5px 0 8px}table{width:100%;border-collapse:collapse;table-layout:auto;margin-top:7px;font-size:7.2pt}thead{display:table-header-group}tfoot{display:table-footer-group}tr{break-inside:avoid;page-break-inside:avoid}th,td{border:1px solid #777;padding:3px 4px;text-align:left;vertical-align:top;overflow-wrap:anywhere}th{background:#e9eee9;font-weight:700}td:first-child,td:nth-child(7),td:nth-child(8),td:nth-child(9),td:nth-child(10){text-align:center}.foot{margin-top:8px;font-size:7.5pt;color:#555}.note{font-size:7.5pt;margin:5px 0}@media print{html,body{height:auto}body{-webkit-print-color-adjust:exact;print-color-adjust:exact}table{break-inside:auto}thead{break-inside:avoid}tr{break-inside:avoid;page-break-inside:avoid}}
+ </style></head><body><h2>DAFTAR REMEDIAL PRA TASHIH</h2><p><strong>${esc(title)}</strong></p><p>${esc(activity)}</p><p class="meta">Jumlah lembaga: ${institutions} · Jumlah data remedial: ${rows.length}</p><p class="note">Urutan data berlanjut memenuhi ruang halaman terlebih dahulu sebelum berpindah ke halaman berikutnya.</p><table><thead><tr><th>No.</th>${includeInstitution?'<th>Asal Lembaga</th>':''}<th>Nama Peserta</th><th>Nomor Ujian</th><th>NIS</th><th>Materi Remedial</th><th>Nilai Asli</th><th>Batas Minimal</th><th>Kekurangan</th><th>Nilai Remedial</th><th>Status</th></tr></thead><tbody>${body}</tbody></table><div class="foot">Dicetak melalui SIMFAQ · ${new Date().toLocaleString('id-ID')}</div></body></html>`;
+ if(typeof window.bkfPrintDocumentV183==='function'){window.bkfPrintDocumentV183(html,'Daftar_Remedial_'+String(title).replace(/[^a-z0-9]+/gi,'_'),{orientation:'landscape'}).catch(e=>window.bkAlert(v10Err(e)));}
+ else{const w=window.open('','_blank');if(!w)return window.bkAlert('Izinkan pop-up untuk mencetak.');w.document.open();w.document.write(html);w.document.close();w.focus();setTimeout(()=>w.print(),300)}
+}
+function v10PrintRemedialAllInstitutions(){
+ const all=window.__bkfRemedialRowsV600||[];if(!all.length)return window.bkAlert('Belum ada data remedial untuk dicetak. Pilih gelombang terlebih dahulu.');
+ const rows=[...all].sort((a,b)=>String(a._institutionName||'').localeCompare(String(b._institutionName||''),'id',{sensitivity:'base'})||String(a._person?.name||'').localeCompare(String(b._person?.name||''),'id',{sensitivity:'base'})||String(a.exam_materials?.name||'').localeCompare(String(b.exam_materials?.name||''),'id'));
+ v10PrintRemedialDocument(rows,'SELURUH LEMBAGA',true);
+}
+function v10PrintRemedialInstitution(){
+ const id=document.getElementById('remInstitution')?.value;if(!id)return window.bkAlert('Pilih lembaga terlebih dahulu.');
+ const rows=(window.__bkfRemedialRowsV600||[]).filter(x=>x._institutionId===id);if(!rows.length)return window.bkAlert('Belum ada data remedial untuk lembaga tersebut.');
+ const name=rows[0]._institutionName||'Lembaga';v10PrintRemedialDocument(rows,name,false);
+}
+async function v10DownloadRemedialExcel(){
+ const all=window.__bkfRemedialRowsV600||[];if(!all.length)return window.bkAlert('Belum ada data remedial untuk diunduh. Pilih gelombang terlebih dahulu.');
+ const btn=[...document.querySelectorAll('button')].find(b=>b.getAttribute('onclick')==='v10DownloadRemedialExcel()');if(btn){btn.disabled=true;btn.textContent='Menyiapkan Excel...'}
+ try{
+  let Excel=window.ExcelJS;if(!Excel){Excel=await new Promise((resolve,reject)=>{const sc=document.createElement('script');sc.src='https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js';sc.onload=()=>resolve(window.ExcelJS);sc.onerror=()=>reject(new Error('Pustaka Excel tidak dapat dimuat. Periksa koneksi internet lalu coba lagi.'));document.head.appendChild(sc)})}
+  if(!Excel)throw new Error('Pustaka Excel tidak tersedia.');
+  const rows=[...all].sort((a,b)=>String(a._institutionName||'').localeCompare(String(b._institutionName||''),'id',{sensitivity:'base'})||String(a._person?.name||'').localeCompare(String(b._person?.name||''),'id',{sensitivity:'base'}));
+  const wb=new Excel.Workbook();wb.creator='SIMFAQ';wb.subject='Daftar remedial Pra Tashih';wb.created=new Date();
+  const ws=wb.addWorksheet('Data Remedial',{views:[{state:'frozen',ySplit:1}]});
+  const headers=['No.','Asal Lembaga','Nama Peserta','Nomor Ujian','NIS','Materi Remedial','Percobaan','Nilai Asli Pra Tashih','Batas Minimal','Kekurangan','Nilai Remedial','Status','Keterangan'];
+  ws.addRow(headers);ws.getRow(1).font={bold:true,color:{argb:'FFFFFFFF'}};ws.getRow(1).fill={type:'pattern',pattern:'solid',fgColor:{argb:'FF176B45'}};ws.getRow(1).alignment={vertical:'middle',horizontal:'center',wrapText:true};ws.getRow(1).height=32;
+  rows.forEach((x,i)=>{const p=x._person||{};const remedial=x.status==='DRAFT'&&Number(x.score||0)===0?'Belum dinilai':(x.score??'Belum dinilai');ws.addRow([i+1,x._institutionName||'Lembaga tidak diketahui',p.name||'-',p.exam_number||'-',p.nis||'-',x.exam_materials?.name||'-',x.attempt_number??'',x._originalScore??'',x._minimumScore??'',x._shortfall??'',remedial,x.status||'-',x.reason||''])});
+  [7,24,26,16,14,24,12,18,15,14,18,16,34].forEach((w,i)=>ws.getColumn(i+1).width=w);ws.autoFilter={from:{row:1,column:1},to:{row:1,column:headers.length}};ws.eachRow((row,n)=>{if(n>1){row.alignment={vertical:'top',wrapText:true};if(n%2===0)row.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFF4F8F5'}}}});
+  const buffer=await wb.xlsx.writeBuffer();const url=URL.createObjectURL(new Blob([buffer],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}));const a=document.createElement('a');a.href=url;a.download='SIMFAQ_Daftar_Remedial_Seluruh_Lembaga.xlsx';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000);
+ }catch(e){window.bkAlert(e.message||'Gagal membuat file Excel.')}finally{if(btn){btn.disabled=false;btn.textContent='Unduh Excel'}}
+}
+</script>
+
 </body>
 </html>
 
@@ -9128,9 +9197,9 @@ window.addEventListener('pageshow',function(){recheckOnActivation()});
 .bkf-banner-slide--welcome .v493-welcome-logo{display:none!important}
 .bkf-banner-slide--welcome .v41-user-name{font-size:clamp(18px,4.5vw,25px)!important;margin:3px 0 1px!important}
 .bkf-banner-slide--welcome .v35-message{margin:5px 0 2px!important}
-.bkf-banner-slide--photo{display:flex;align-items:flex-end;border-radius:14px;background:#064b2d}
-.bkf-banner-slide--photo>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.bkf-banner-slide--photo:after{content:"";position:absolute;inset:35% 0 0;background:linear-gradient(180deg,transparent,rgba(0,25,13,.88));pointer-events:none}
+.bkf-banner-slide--photo{display:flex;align-items:flex-end;border-radius:14px;background:#263238}
+.bkf-banner-slide--photo>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:none!important;mix-blend-mode:normal!important;opacity:1!important}
+.bkf-banner-slide--photo:after{content:"";position:absolute;inset:35% 0 0;background:linear-gradient(180deg,transparent,rgba(0,0,0,.62));pointer-events:none}
 .bkf-banner-caption{position:relative;z-index:1;width:100%;box-sizing:border-box;padding:22px 18px 18px;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.35)}
 .bkf-banner-caption h3{margin:0 0 7px;font-size:clamp(19px,4vw,25px);line-height:1.2;color:#fff}
 .bkf-banner-caption p{margin:0;font-size:14px;line-height:1.45;color:#f0fff5}
@@ -9176,7 +9245,7 @@ window.addEventListener('pageshow',function(){recheckOnActivation()});
  function publicUrl(path){const r=sb.storage.from(BUCKET).getPublicUrl(path);return r?.data?.publicUrl||''}
  function createPhotoSlide(row){
   const slide=document.createElement('section');slide.className='bkf-banner-slide bkf-banner-slide--photo';slide.setAttribute('aria-label',row.title||'Foto kegiatan');
-  const img=document.createElement('img');img.src=publicUrl(row.storage_path);img.alt=row.title||'Dokumentasi kegiatan';img.loading='lazy';img.decoding='async';img.onerror=()=>{slide.remove();};
+  const img=document.createElement('img');img.src=publicUrl(row.storage_path);img.alt=row.title||'Dokumentasi kegiatan';img.loading='lazy';img.decoding='async';img.style.filter='none';img.onerror=()=>{slide.remove();};
   const caption=document.createElement('div');caption.className='bkf-banner-caption';
   const title=document.createElement('h3');title.textContent=row.title||'Dokumentasi Kegiatan';
   const desc=document.createElement('p');desc.textContent=row.description||'BK FUSPAQ NU Kecamatan Rowosari';
@@ -9283,7 +9352,7 @@ window.addEventListener('pageshow',function(){recheckOnActivation()});
   controls.append(prev,next);viewport.appendChild(controls);
   card.replaceChildren(viewport);
   let index=0,slides=[welcome],timer=null;
-  const go=(n,manual=false)=>{if(!slides.length)return;index=(n+slides.length)%slides.length;track.style.transform='translateX(-'+(index*100)+'%)';[...dots.children].forEach((b,i)=>b.setAttribute('aria-current',i===index?'true':'false'));if(manual)restart()};
+  const go=(n,manual=false)=>{if(!slides.length)return;index=(n+slides.length)%slides.length;track.style.transform='translateX(-'+(index*100)+'%)';slides.forEach((slide,i)=>{slide.setAttribute('aria-hidden',i===index?'false':'true')});if(manual)restart()};
   const restart=()=>{if(timer)clearInterval(timer);if(slides.length>1)timer=setInterval(()=>go(index+1),INTERVAL)};
   prev.addEventListener('click',()=>go(index-1,true));next.addEventListener('click',()=>go(index+1,true));
   let touchX=0;viewport.addEventListener('touchstart',e=>{touchX=e.changedTouches?.[0]?.clientX||0},{passive:true});
