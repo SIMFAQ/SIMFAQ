@@ -313,20 +313,6 @@ html[data-bkf-theme-mode="light"] .secondary{color:var(--bkf-theme-accent-dark)!
 .bkf-theme-preview{padding:14px;border-radius:13px;background:var(--bkf-theme-accent);color:#fff}
 @media(max-width:420px){.bkf-theme-presets{grid-template-columns:repeat(2,minmax(0,1fr))}}
 </style>
-
-<style id="bkf-banner-photo-color-isolation-v2">
-/* V2: Pisahkan warna kartu salam dari area slider; foto tidak mewarisi latar hijau dashboard. */
-.v35-welcome{background:#151a18!important;background-image:none!important;isolation:isolate!important}
-.v35-welcome>.bkf-banner-viewport{position:relative!important;isolation:isolate!important;background:#151a18!important;background-image:none!important;filter:none!important;mix-blend-mode:normal!important}
-.bkf-banner-track{isolation:isolate!important;background:#151a18!important;background-image:none!important;filter:none!important;mix-blend-mode:normal!important}
-.bkf-banner-slide--welcome{background:linear-gradient(135deg,#063b2d 0%,#0b5d46 58%,#7b5a16 100%)!important;background-blend-mode:normal!important}
-.bkf-banner-slide--photo{position:relative!important;isolation:isolate!important;overflow:hidden!important;background:#151a18!important;background-image:none!important;filter:none!important;mix-blend-mode:normal!important;opacity:1!important}
-.bkf-banner-slide--photo>img{position:absolute!important;z-index:0!important;inset:0!important;display:block!important;width:100%!important;height:100%!important;object-fit:cover!important;object-position:center center!important;background:#151a18!important;filter:none!important;-webkit-filter:none!important;mix-blend-mode:normal!important;opacity:1!important;transform:none!important;backface-visibility:visible!important}
-.bkf-banner-slide--photo:after{z-index:1!important;mix-blend-mode:normal!important;filter:none!important}
-.bkf-banner-caption{z-index:2!important}
-/* Efek warna penghitung hanya boleh berlaku pada kartu penghitungnya sendiri. */
-#dashboardAllCounters,#dashboardAllCounters .v75-dashboard-counter{isolation:isolate}
-</style>
 </head><body><div id="app"></div><!-- V238: Loader aturan ujian memuat rincian rule sekali, bukan query detail per tahap. -->
 <script id="bk-supabase-loader">
 window.BKF_CONFIG={supabaseUrl:'https://yhxetkdsuogbehxnarhk.supabase.co',supabasePublishableKey:'sb_publishable_ZnikYPnzJtTD_H8wUq2aiw_4hecYQW_'};
@@ -476,12 +462,7 @@ function openParticipant(p){
    <div id="examMsg"></div>
  </div>`;
  const ms=document.getElementById('materials');
- // Urutan khusus form penilaian: Makhorijul Huruf lebih dahulu, lalu Tajwid.
- // Materi lain mempertahankan urutan relatif dari penugasan aslinya.
- const assignedMaterials=[...(p.assigned_materials||[])];
- const priorityCode=m=>{const code=String(m?.code||'').toUpperCase(),name=String(m?.name||'').toLowerCase();if(code.includes('MAKHORIJ')||name.includes('makhorij'))return 0;if(code.includes('TAJWID')||name.includes('tajwid'))return 1;return 2};
- assignedMaterials.sort((a,b)=>priorityCode(a)-priorityCode(b));
- ms.innerHTML=assignedMaterials.map(m=>{
+ ms.innerHTML=(p.assigned_materials||[]).map(m=>{
    const code=String(m.code||'').toUpperCase();
    const sh=code==='SHOLAT';
    const sumMaterial=code==='SURAT_PENDEK'||code==='DOA_HARIAN';
@@ -1334,7 +1315,7 @@ async function v10ExamTab(tab){if(tab==='seleksi'&&!v10CanOpenSelection()){const
   return;
  }
  if(tab==='seleksi'){const canDecide=v10IsSelectionManager();a.innerHTML=`<div class="card"><h3>Seleksi 10 Besar Tashih</h3><p class="muted">Peserta dibandingkan lintas seluruh lembaga dalam satu kegiatan. Urutan: nilai rata-rata tertinggi → Tajwid → Makhorijul Huruf → Ghorib. Semua peserta yang seri pada batas 10 besar tetap masuk tinjauan Ketua. Keputusan final dan notifikasi lembaga dilakukan setelah disahkan.</p><div class="field"><label>Kegiatan Tashih</label><select id="selActivity"><option value="">Memuat kegiatan Tashih…</option></select></div><div class="compact-actions">${v10IsSelectionManager()?'<button class="btn primary" onclick="v10RunSelection()">Hitung / Perbarui 10 Besar</button>':''}${canDecide?'<button class="btn success" onclick="v10PublishSelection()">Sahkan Hasil & Kirim Notifikasi</button>':''}</div><div id="selectionExports" class="compact-actions" style="margin-top:10px"></div><div id="selectionStatus" class="small muted" style="margin-top:8px">Pilih kegiatan untuk melihat hasil.</div><div id="selectionList" class="list data-list-scroll" style="margin-top:10px"></div></div>`;selActivity.onchange=v10LoadSelection;v10LoadSelectionActivities();return}
- if(tab==='remedial'){if(!hasPermission('exam.remedial.manage')){a.innerHTML='<div class="card"><div class="empty">Anda tidak memiliki hak untuk mengelola daftar remedial.</div></div>';return}a.innerHTML=`<div class="card"><div class="row"><div><h3>Remedial Pra Tashih</h3><p class="small muted">Daftar dibuat dari nilai final di bawah batas minimal sesuai aturan ujian aktif. Pilih gelombang yang akan diproses.</p></div><button class="btn secondary" type="button" onclick="window.showExams?.()">Kembali</button></div><div class="field"><label>Jenis ujian</label><select id="remActivity"><option value="PRA_TASHIH" selected>Pra Tashih</option></select></div><div class="field"><label>Kegiatan / Gelombang</label><select id="remActivityId"><option value="">Memuat kegiatan...</option></select></div><button id="remCreateBtn" class="btn primary" type="button" onclick="v10CreateRemedial()">Buat daftar remedial dari nilai final di bawah minimal</button><div id="remedialMsg" class="small muted" style="margin-top:8px"></div><div class="field" style="margin-top:14px"><label for="remSearch">Cari peserta (nama atau nomor ujian)</label><input id="remSearch" type="search" placeholder="Ketik nama atau nomor ujian..." oninput="window.__bkfRemedialPageV547.page=0;v10RenderRemedial()"></div><div class="field"><label for="remInstitution">Cetak data remedial per lembaga</label><div class="compact-actions"><select id="remInstitution" style="flex:1;min-width:180px"><option value="">Pilih lembaga</option></select><button class="btn secondary" type="button" onclick="v10PrintRemedialInstitution()">Cetak data</button><button class="btn primary" type="button" onclick="v10PrintRemedialAllInstitutions()">Cetak seluruh lembaga</button><button class="btn info" type="button" onclick="v10DownloadRemedialExcel()">Unduh Excel</button></div><div class="small muted" style="margin-top:6px">Cetak seluruh lembaga menggabungkan semua peserta pada gelombang yang sedang dipilih dan tetap mencantumkan asal lembaganya.</div></div><div id="remInstitutionWhatsAppList" class="list" style="margin-top:8px"></div><div id="remedialList" class="list data-list-scroll" style="margin-top:10px"></div></div>`;remActivity.onchange=()=>v10LoadRemedialActivities();v10LoadRemedialActivities();return}
+ if(tab==='remedial'){if(!hasPermission('exam.remedial.manage')){a.innerHTML='<div class="card"><div class="empty">Anda tidak memiliki hak untuk mengelola daftar remedial.</div></div>';return}a.innerHTML=`<div class="card"><div class="row"><div><h3>Remedial Pra Tashih</h3><p class="small muted">Daftar dibuat dari nilai final di bawah batas minimal sesuai aturan ujian aktif. Pilih gelombang yang akan diproses.</p></div><button class="btn secondary" type="button" onclick="window.showExams?.()">Kembali</button></div><div class="field"><label>Jenis ujian</label><select id="remActivity"><option value="PRA_TASHIH" selected>Pra Tashih</option></select></div><div class="field"><label>Kegiatan / Gelombang</label><select id="remActivityId"><option value="">Memuat kegiatan...</option></select></div><button id="remCreateBtn" class="btn primary" type="button" onclick="v10CreateRemedial()">Buat daftar remedial dari nilai final di bawah minimal</button><div id="remedialMsg" class="small muted" style="margin-top:8px"></div><div class="field" style="margin-top:14px"><label for="remSearch">Cari peserta (nama atau nomor ujian)</label><input id="remSearch" type="search" placeholder="Ketik nama atau nomor ujian..." oninput="window.__bkfRemedialPageV547.page=0;v10RenderRemedial()"></div><div class="field"><label for="remInstitution">Cetak data remedial per lembaga</label><div class="compact-actions"><select id="remInstitution" style="flex:1;min-width:180px"><option value="">Pilih lembaga</option></select><button class="btn secondary" type="button" onclick="v10PrintRemedialInstitution()">Cetak data</button></div></div><div id="remInstitutionWhatsAppList" class="list" style="margin-top:8px"></div><div id="remedialList" class="list data-list-scroll" style="margin-top:10px"></div></div>`;remActivity.onchange=()=>v10LoadRemedialActivities();v10LoadRemedialActivities();return}
  if(tab==='riwayat'){
   a.innerHTML=`<div class="card"><h3>Riwayat Peserta</h3><p class="muted">Satu profil peserta dilihat lintas ujian dan wisuda.</p><div class="field"><label>Cari nama / NIS</label><input id="historySearch" placeholder="Nama atau NIS"></div><div id="historyList" class="list data-list-scroll"></div></div>`;
   window.__bkfParticipantHistoryPageV547=window.__bkfParticipantHistoryPageV547||{page:0,term:''};
@@ -1462,16 +1443,6 @@ function v10RemedialInstitutionWhatsApp(institutionId){
  const detail=[...groups.values()].map((p,i)=>`${i+1}. ${p.name}\n${p.materials.map(m=>`   • ${m.name}: nilai ${m.score??'tidak ditemukan'} (minimal ${m.minimum??'-'}, kekurangan ${m.shortfall??'-'})`).join('\n')}`).join('\n\n');
  const msg=`Assalamu’alaikum warahmatullahi wabarakatuh.\n\nYth. Pengurus/Pembimbing ${inst._institutionName}.\n\nKami informasikan dengan hormat bahwa terdapat peserta dari lembaga panjenengan yang masuk daftar remedial hasil ujian Pra Tashih. Berikut nama peserta, jenis mata uji, dan nilai yang menjadi dasar remedial:\n\n${detail}\n\nMohon kiranya informasi ini dapat disampaikan kepada peserta yang bersangkutan agar mempersiapkan diri mengikuti remedial sesuai ketentuan. Semoga Allah SWT memberikan kemudahan, kelancaran, dan hasil terbaik. Aamiin.\n\nWassalamu’alaikum warahmatullahi wabarakatuh.`;
  window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`,'_blank');
-}
-function v10PrintRemedialAllInstitutions(){
- const all=window.__bkfRemedialRowsV600||[];
- if(!all.length)return window.bkAlert('Belum ada data remedial untuk dicetak. Pilih gelombang atau Semua Gelombang terlebih dahulu.');
- const rows=[...all].sort((a,b)=>String(a._institutionName||'Lembaga tidak diketahui').localeCompare(String(b._institutionName||'Lembaga tidak diketahui'),'id',{sensitivity:'base'})||String(a._person?.name||'').localeCompare(String(b._person?.name||''),'id',{sensitivity:'base'})||String(a.exam_materials?.name||'').localeCompare(String(b.exam_materials?.name||''),'id',{sensitivity:'base'}));
- const activity=document.getElementById('remActivityId')?.selectedOptions?.[0]?.textContent||'Pra Tashih';
- const body=rows.map((x,i)=>{const p=x._person||{},original=x._originalScore==null?'Data nilai asli tidak ditemukan':x._originalScore,minimum=x._minimumScore==null?'-':x._minimumScore,shortfall=x._shortfall==null?'-':x._shortfall,remedial=x.status==='DRAFT'&&Number(x.score||0)===0?'Belum dinilai':(x.score??'Belum dinilai');return `<tr><td>${i+1}</td><td>${esc(x._institutionName||'Lembaga tidak diketahui')}</td><td>${esc(p.name||'-')}</td><td>${esc(p.exam_number||'-')}</td><td>${esc(p.nis||'-')}</td><td>${esc(x.exam_materials?.name||'-')}</td><td>${esc(original)}</td><td>${esc(minimum)}</td><td>${esc(shortfall)}</td><td>${esc(remedial)}</td><td>${esc(x.status||'-')}</td></tr>`}).join('');
- const institutions=[...new Set(rows.map(x=>x._institutionId||x._institutionName||'unknown'))].length;
- const html=`<!doctype html><html lang="id"><head><meta charset="utf-8"><title>Daftar Remedial Seluruh Lembaga</title><style>@page{size:A4 landscape;margin:11mm}body{font-family:Arial,sans-serif;color:#222}h2,p{text-align:center;margin:4px}.meta{font-size:10px;color:#444;margin-top:8px}table{width:100%;border-collapse:collapse;margin-top:16px;font-size:9px}th,td{border:1px solid #777;padding:5px;text-align:left}th{background:#e9eee9}td:first-child,td:nth-child(7),td:nth-child(8),td:nth-child(9),td:nth-child(10){text-align:center}thead{display:table-header-group}tr{break-inside:avoid}.foot{margin-top:16px;font-size:10px;color:#555}@media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}</style></head><body><h2>DAFTAR REMEDIAL PRA TASHIH</h2><p><strong>SELURUH LEMBAGA</strong></p><p>${esc(activity)}</p><p class="meta">Jumlah lembaga: ${institutions} · Jumlah data remedial: ${rows.length}</p><table><thead><tr><th>No.</th><th>Asal Lembaga</th><th>Nama Peserta</th><th>Nomor Ujian</th><th>NIS</th><th>Materi Remedial</th><th>Nilai Asli Pra Tashih</th><th>Batas Minimal</th><th>Kekurangan</th><th>Nilai Remedial</th><th>Status</th></tr></thead><tbody>${body}</tbody></table><div class="foot">Dicetak melalui SIMFAQ · ${new Date().toLocaleString('id-ID')}</div></body></html>`;
- if(typeof window.bkfPrintDocumentV183==='function'){window.bkfPrintDocumentV183(html,'Daftar_Remedial_Seluruh_Lembaga',{orientation:'landscape'}).catch(e=>window.bkAlert(v10Err(e)));}else{const w=window.open('','_blank');if(!w)return window.bkAlert('Izinkan pop-up untuk mencetak.');w.document.open();w.document.write(html);w.document.close();w.focus();w.print();}
 }
 function v10PrintRemedialInstitution(){
  const institutionId=document.getElementById('remInstitution')?.value;if(!institutionId)return window.bkAlert('Pilih lembaga terlebih dahulu.');const all=window.__bkfRemedialRowsV600||[],rows=all.filter(x=>x._institutionId===institutionId);if(!rows.length)return window.bkAlert('Belum ada data remedial untuk lembaga tersebut.');
@@ -2337,7 +2308,17 @@ window.v12TogglePassword=function(id,btn){const e=document.getElementById(id);if
 </style></div>`;
     const reportEl=()=>document.getElementById(reportElId);
     const setError=m=>{const el=reportEl();if(el)el.innerHTML=`<p class="error">${_E(m||'Rekap peserta belum dapat dimuat.')}</p>`};
-    const waitQuery=async(promise,labelText)=>await Promise.race([promise,new Promise(resolve=>setTimeout(()=>resolve({data:null,error:{message:labelText+' melebihi batas waktu 15 detik.'}}),15000))]);
+    const waitQuery=async(query,labelText)=>{
+      const controller=typeof AbortController==='function'?new AbortController():null;
+      const request=controller&&typeof query?.abortSignal==='function'?query.abortSignal(controller.signal):query;
+      let timer=null;
+      try{
+        return await Promise.race([
+          request,
+          new Promise(resolve=>{timer=setTimeout(()=>{resolve({data:null,error:{message:labelText+' melebihi batas waktu 15 detik.'}});try{controller?.abort()}catch(_){}},15000)})
+        ]);
+      }finally{if(timer!==null)clearTimeout(timer)}
+    };
     const fetchAll=async(build,labelText)=>{const all=[];for(let from=0;;from+=1000){const r=await waitQuery(build().range(from,from+999),labelText);if(r.error)throw r.error;const chunk=r.data||[];all.push(...chunk);if(chunk.length<1000)break;}return all};
     try{
       let institutions=[];
@@ -2375,28 +2356,32 @@ window.v12TogglePassword=function(id,btn){const e=document.getElementById(id);if
         if(audit.unmapped||audit.conflicts){const note=document.createElement('div');note.className='notice';note.style.marginTop='10px';note.textContent=`Pemetaan gelombang Tashih: ${audit.unmapped} peserta belum dapat dipetakan ke gelombang dan ${audit.conflicts} peserta memiliki perbedaan antara gelombang sumber Pra Tashih dan gelombang pendaftaran Tashih. Peserta yang belum terpetakan tidak dimasukkan ke Gelombang 1 atau 2 sampai datanya diverifikasi.`;reportEl().parentNode.insertBefore(note,reportEl());}
       }
       const selectedParticipantIds=new Set(participantsRows.map(p=>p.id));
-      const selectedRegistrationIds=[...new Set(participantsRows.map(p=>p.exam_registration_id).filter(Boolean))];
-      if(!selectedRegistrationIds.length){reportEl().innerHTML=`<div class="empty">Belum ada peserta pada ${waveLabel.toLowerCase()} untuk ujian ${label}. Peserta Tashih tanpa gelombang yang dapat dipastikan tidak otomatis dimasukkan.</div>`;return}
-      const sessions=await fetchAll(()=>sb.from('exam_sessions').select('id,exam_registration_id,participant_id,status,exam_rule_id,rule_snapshot').in('exam_registration_id',selectedRegistrationIds).order('id',{ascending:false}),'Pemuatan sesi ujian');
-      const selectedSessions=sessions.filter(x=>x.participant_id&&selectedParticipantIds.has(x.participant_id));
-      sessions.splice(0,sessions.length,...selectedSessions);
-      const participantMap=new Map(participantsRows.map(x=>[x.id,x]));
-      const sessionParticipantIds=[...new Set(sessions.map(x=>x.participant_id).filter(Boolean))];
-      const missingParticipantIds=sessionParticipantIds.filter(id=>!participantMap.has(id));
-      if(missingParticipantIds.length){
-        const extra=await fetchAll(()=>sb.from('exam_participants').select('id,exam_registration_id,name,nis,exam_number,media_id,status').in('id',missingParticipantIds).order('id',{ascending:true}),'Pemuatan peserta dari sesi ujian');
-        extra.forEach(x=>participantMap.set(x.id,x));
+      if(!selectedParticipantIds.size){reportEl().innerHTML=`<div class="empty">Belum ada peserta pada ${waveLabel.toLowerCase()} untuk ujian ${label}. Peserta Tashih tanpa gelombang yang dapat dipastikan tidak otomatis dimasukkan.</div>`;return}
+      // V584: batasi pencarian sesi langsung ke ID peserta yang sudah lolos cakupan/gelombang.
+      // Ini menghindari scan sesi berdasarkan seluruh pendaftaran lalu menyaring ulang di browser.
+      const participantIds=[...selectedParticipantIds];
+      // Potong daftar ID agar URL PostgREST tetap aman untuk gelombang besar.
+      const sessionChunks=[];
+      for(let i=0;i<participantIds.length;i+=150){
+        const ids=participantIds.slice(i,i+150);
+        sessionChunks.push(fetchAll(()=>sb.from('exam_sessions').select('id,exam_registration_id,participant_id,status,exam_rule_id,rule_snapshot').in('participant_id',ids).order('id',{ascending:false}),'Pemuatan sesi ujian'));
       }
+      const sessions=(await Promise.all(sessionChunks)).flat();
+      const participantMap=new Map(participantsRows.map(x=>[x.id,x]));
       const sessionByParticipant=new Map();
       sessions.forEach(x=>{if(x.participant_id&&!sessionByParticipant.has(x.participant_id))sessionByParticipant.set(x.participant_id,x)});
       const sessionIds=sessions.map(x=>x.id).filter(Boolean);
       let results=[],scoreRows=[],ruleDetails=[],currentRuleIdByPeriod=new Map();
       if(sessionIds.length){
-        results=await fetchAll(()=>sb.from('exam_results').select('id,exam_session_id,total_score,average_score,status,finalized_at,locked_at').in('exam_session_id',sessionIds).order('id',{ascending:true}),'Pemuatan hasil ujian');
-        scoreRows=await fetchAll(()=>sb.from('exam_scores').select('id,exam_session_id,exam_material_id,score,attempt_number,status,submitted_at,created_at,exam_materials:exam_material_id(name,code,sequence),exam_score_components(id,component_code,score)').in('exam_session_id',sessionIds).order('attempt_number',{ascending:false}).order('submitted_at',{ascending:false,nullsFirst:false}).order('created_at',{ascending:false}).order('id',{ascending:true}),'Pemuatan rincian nilai');
+        // V584: hasil, rincian nilai, dan aturan aktif tidak saling bergantung; muat paralel.
         const periodIds=[...new Set(registrations.map(x=>x.management_period_id).filter(Boolean))];
-        let activeRules=[];
-        if(periodIds.length)activeRules=await fetchAll(()=>sb.from('exam_rules').select('id,management_period_id,exam_type,overall_minimum,version').eq('status','ACTIVE').eq('exam_type',type).in('management_period_id',periodIds).order('version',{ascending:false}),'Pemuatan aturan ujian aktif');
+        const [loadedResults,loadedScores,activeRules]=await Promise.all([
+          fetchAll(()=>sb.from('exam_results').select('id,exam_session_id,total_score,average_score,status,finalized_at,locked_at').in('exam_session_id',sessionIds).order('id',{ascending:true}),'Pemuatan hasil ujian'),
+          fetchAll(()=>sb.from('exam_scores').select('id,exam_session_id,exam_material_id,score,attempt_number,status,submitted_at,created_at,exam_materials:exam_material_id(name,code,sequence),exam_score_components(id,component_code,score)').in('exam_session_id',sessionIds).order('attempt_number',{ascending:false}).order('submitted_at',{ascending:false,nullsFirst:false}).order('created_at',{ascending:false}).order('id',{ascending:true}),'Pemuatan rincian nilai'),
+          periodIds.length?fetchAll(()=>sb.from('exam_rules').select('id,management_period_id,exam_type,overall_minimum,version').eq('status','ACTIVE').eq('exam_type',type).in('management_period_id',periodIds).order('version',{ascending:false}),'Pemuatan aturan ujian aktif'):Promise.resolve([])
+        ]);
+        results=loadedResults;
+        scoreRows=loadedScores;
         activeRules.forEach(rule=>{if(!currentRuleIdByPeriod.has(rule.management_period_id))currentRuleIdByPeriod.set(rule.management_period_id,rule.id)});
         const activeRuleIds=[...new Set(activeRules.map(x=>x.id).filter(Boolean))];
         if(activeRuleIds.length)ruleDetails=await fetchAll(()=>sb.from('exam_rule_details').select('exam_rule_id,exam_material_id,minimum_score,exam_materials:exam_material_id(id,code,name,sequence,status)').in('exam_rule_id',activeRuleIds).order('exam_material_id',{ascending:true}),'Pemuatan tujuh materi dari aturan aktif');
@@ -2415,11 +2400,7 @@ window.v12TogglePassword=function(id,btn){const e=document.getElementById(id);if
       });
       const scoreMap=new Map();
       scoreRows.forEach(x=>{const key=x.exam_session_id+'|'+x.exam_material_id;if(!scoreMap.has(key))scoreMap.set(key,x)});
-      const mediaIds=[...new Set([...participantMap.values()].map(x=>x.media_id).filter(Boolean))];
-      let media=[];
-      if(mediaIds.length)media=await fetchAll(()=>sb.from('participant_media').select('id,storage_path').in('id',mediaIds).order('id',{ascending:true}),'Pemuatan foto peserta');
-      const mediaMap=new Map(media.map(x=>[x.id,x.storage_path]));
-      const mediaUrl=path=>{const u=String(path||'');if(!u)return '';if(/^https?:/i.test(u))return u;try{return sb.storage.from('bkfuspaq-media').getPublicUrl(u).data?.publicUrl||''}catch(_){return ''}};
+      // V584: tidak meminta metadata foto di rekap; foto tidak ditampilkan pada tabel ini.
       const rows=[...participantMap.values()].filter(p=>registrationMap.has(p.exam_registration_id)).sort((a,b)=>String(a.name||'').localeCompare(String(b.name||''),'id',{sensitivity:'base'}));
       if(!rows.length){reportEl().innerHTML=`<div class="empty">Belum ada peserta terdaftar untuk ujian ${label} pada cakupan akun ini.</div>`;return}
       reportEl().innerHTML=`<table class="bkf-exam-table"><thead><tr><th class="bkf-exam-identity">Peserta / Lembaga</th><th>Makhorijul Huruf</th><th>Tajwid</th><th>Ghorib</th><th>Surat</th><th>Do'a</th><th>Sholat</th><th>BTA</th><th>Total / Rata-rata</th><th>Status</th><th class="no-print">Tindakan</th></tr></thead><tbody>`+rows.map((participant,index)=>{
@@ -6723,34 +6704,18 @@ window.showMemoryAlbum=async function(eventId=''){
   document.addEventListener('pointerdown',unlockAudio,{passive:true});
   document.addEventListener('keydown',unlockAudio);
   // Realtime notification changes refresh only the notification counter, not every dashboard metric.
-  // Debounce bursty Realtime events so one notification burst produces one count query.
-  let notificationMetricRefreshTimer=null;
-  let notificationMetricRefreshInFlight=false;
-  let notificationMetricRefreshPending=false;
-  window.bkfRefreshNotificationMetric=function(){
+  window.bkfRefreshNotificationMetric=async function(){
     const el=document.getElementById('metric-notifications');
     if(!el)return;
     const pid=state?.profile?.id;if(!pid)return;
-    if(notificationMetricRefreshInFlight){notificationMetricRefreshPending=true;return;}
-    if(notificationMetricRefreshTimer)clearTimeout(notificationMetricRefreshTimer);
-    notificationMetricRefreshTimer=setTimeout(async function(){
-      notificationMetricRefreshTimer=null;
-      if(notificationMetricRefreshInFlight){notificationMetricRefreshPending=true;return;}
-      notificationMetricRefreshInFlight=true;
-      try{
-        const q=await sb.from('notifications').select('id',{count:'exact',head:true}).eq('user_id',pid).is('read_at',null);
-        if(!q.error){
-          const count=Number(q.count||0),previous=Number(el.dataset.rawCount??String(el.textContent||'').trim());
-          el.dataset.rawCount=String(count);el.textContent=count>99?'99+':count.toLocaleString('id-ID');
-          const badge=document.getElementById('metric-notifications-badge');if(badge){badge.textContent=(count>99?'99+':count.toLocaleString('id-ID'))+' BARU';badge.hidden=count<=0}
-          if(Number.isFinite(previous)&&count>previous){el.classList.remove('bkf-notification-count-spin');void el.offsetWidth;el.classList.add('bkf-notification-count-spin')}
-        }
-      }catch(e){console.warn('[BKF notification metric refresh]',e)}
-      finally{
-        notificationMetricRefreshInFlight=false;
-        if(notificationMetricRefreshPending){notificationMetricRefreshPending=false;window.bkfRefreshNotificationMetric();}
-      }
-    },400);
+    try{
+      const q=await sb.from('notifications').select('id',{count:'exact',head:true}).eq('user_id',pid).is('read_at',null);
+      if(q.error)return;
+      const count=Number(q.count||0),previous=Number(el.dataset.rawCount??String(el.textContent||'').trim());
+      el.dataset.rawCount=String(count);el.textContent=count>99?'99+':count.toLocaleString('id-ID');
+      const badge=document.getElementById('metric-notifications-badge');if(badge){badge.textContent=(count>99?'99+':count.toLocaleString('id-ID'))+' BARU';badge.hidden=count<=0}
+      if(Number.isFinite(previous)&&count>previous){el.classList.remove('bkf-notification-count-spin');void el.offsetWidth;el.classList.add('bkf-notification-count-spin')}
+    }catch(e){console.warn('[BKF notification metric refresh]',e)}
   };
   function clearRetry(){if(retryTimer){clearTimeout(retryTimer);retryTimer=null}}
   function schedule(){
@@ -9135,47 +9100,6 @@ window.addEventListener('pageshow',function(){recheckOnActivation()});
 })();
 
 </script>
-
-<!-- V12: cetak remedial mengisi halaman secara berurutan dan ekspor Excel. -->
-<script>
-function v10PrintRemedialDocument(rows, title, includeInstitution){
- const activity=document.getElementById('remActivityId')?.selectedOptions?.[0]?.textContent||'Pra Tashih';
- const body=rows.map((x,i)=>{const p=x._person||{},original=x._originalScore==null?'Tidak ditemukan':x._originalScore,minimum=x._minimumScore==null?'-':x._minimumScore,shortfall=x._shortfall==null?'-':x._shortfall,remedial=x.status==='DRAFT'&&Number(x.score||0)===0?'Belum dinilai':(x.score??'Belum dinilai');return `<tr><td>${i+1}</td>${includeInstitution?`<td>${esc(x._institutionName||'Lembaga tidak diketahui')}</td>`:''}<td>${esc(p.name||'-')}</td><td>${esc(p.exam_number||'-')}</td><td>${esc(p.nis||'-')}</td><td>${esc(x.exam_materials?.name||'-')}</td><td>${esc(original)}</td><td>${esc(minimum)}</td><td>${esc(shortfall)}</td><td>${esc(remedial)}</td><td>${esc(x.status||'-')}</td></tr>`}).join('');
- const institutions=[...new Set(rows.map(x=>x._institutionId||x._institutionName||'unknown'))].length;
- const html=`<!doctype html><html lang="id"><head><meta charset="utf-8"><title>${esc(title)}</title><style>
- @page{size:A4 landscape;margin:8mm}*{box-sizing:border-box}body{font-family:Arial,sans-serif;color:#222;margin:0;font-size:8pt}h2,p{text-align:center;margin:3px 0}.meta{font-size:8pt;color:#444;margin:5px 0 8px}table{width:100%;border-collapse:collapse;table-layout:auto;margin-top:7px;font-size:7.2pt}thead{display:table-header-group}tfoot{display:table-footer-group}tr{break-inside:avoid;page-break-inside:avoid}th,td{border:1px solid #777;padding:3px 4px;text-align:left;vertical-align:top;overflow-wrap:anywhere}th{background:#e9eee9;font-weight:700}td:first-child,td:nth-child(7),td:nth-child(8),td:nth-child(9),td:nth-child(10){text-align:center}.foot{margin-top:8px;font-size:7.5pt;color:#555}.note{font-size:7.5pt;margin:5px 0}@media print{html,body{height:auto}body{-webkit-print-color-adjust:exact;print-color-adjust:exact}table{break-inside:auto}thead{break-inside:avoid}tr{break-inside:avoid;page-break-inside:avoid}}
- </style></head><body><h2>DAFTAR REMEDIAL PRA TASHIH</h2><p><strong>${esc(title)}</strong></p><p>${esc(activity)}</p><p class="meta">Jumlah lembaga: ${institutions} · Jumlah data remedial: ${rows.length}</p><p class="note">Urutan data berlanjut memenuhi ruang halaman terlebih dahulu sebelum berpindah ke halaman berikutnya.</p><table><thead><tr><th>No.</th>${includeInstitution?'<th>Asal Lembaga</th>':''}<th>Nama Peserta</th><th>Nomor Ujian</th><th>NIS</th><th>Materi Remedial</th><th>Nilai Asli</th><th>Batas Minimal</th><th>Kekurangan</th><th>Nilai Remedial</th><th>Status</th></tr></thead><tbody>${body}</tbody></table><div class="foot">Dicetak melalui SIMFAQ · ${new Date().toLocaleString('id-ID')}</div></body></html>`;
- if(typeof window.bkfPrintDocumentV183==='function'){window.bkfPrintDocumentV183(html,'Daftar_Remedial_'+String(title).replace(/[^a-z0-9]+/gi,'_'),{orientation:'landscape'}).catch(e=>window.bkAlert(v10Err(e)));}
- else{const w=window.open('','_blank');if(!w)return window.bkAlert('Izinkan pop-up untuk mencetak.');w.document.open();w.document.write(html);w.document.close();w.focus();setTimeout(()=>w.print(),300)}
-}
-function v10PrintRemedialAllInstitutions(){
- const all=window.__bkfRemedialRowsV600||[];if(!all.length)return window.bkAlert('Belum ada data remedial untuk dicetak. Pilih gelombang terlebih dahulu.');
- const rows=[...all].sort((a,b)=>String(a._institutionName||'').localeCompare(String(b._institutionName||''),'id',{sensitivity:'base'})||String(a._person?.name||'').localeCompare(String(b._person?.name||''),'id',{sensitivity:'base'})||String(a.exam_materials?.name||'').localeCompare(String(b.exam_materials?.name||''),'id'));
- v10PrintRemedialDocument(rows,'SELURUH LEMBAGA',true);
-}
-function v10PrintRemedialInstitution(){
- const id=document.getElementById('remInstitution')?.value;if(!id)return window.bkAlert('Pilih lembaga terlebih dahulu.');
- const rows=(window.__bkfRemedialRowsV600||[]).filter(x=>x._institutionId===id);if(!rows.length)return window.bkAlert('Belum ada data remedial untuk lembaga tersebut.');
- const name=rows[0]._institutionName||'Lembaga';v10PrintRemedialDocument(rows,name,false);
-}
-async function v10DownloadRemedialExcel(){
- const all=window.__bkfRemedialRowsV600||[];if(!all.length)return window.bkAlert('Belum ada data remedial untuk diunduh. Pilih gelombang terlebih dahulu.');
- const btn=[...document.querySelectorAll('button')].find(b=>b.getAttribute('onclick')==='v10DownloadRemedialExcel()');if(btn){btn.disabled=true;btn.textContent='Menyiapkan Excel...'}
- try{
-  let Excel=window.ExcelJS;if(!Excel){Excel=await new Promise((resolve,reject)=>{const sc=document.createElement('script');sc.src='https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js';sc.onload=()=>resolve(window.ExcelJS);sc.onerror=()=>reject(new Error('Pustaka Excel tidak dapat dimuat. Periksa koneksi internet lalu coba lagi.'));document.head.appendChild(sc)})}
-  if(!Excel)throw new Error('Pustaka Excel tidak tersedia.');
-  const rows=[...all].sort((a,b)=>String(a._institutionName||'').localeCompare(String(b._institutionName||''),'id',{sensitivity:'base'})||String(a._person?.name||'').localeCompare(String(b._person?.name||''),'id',{sensitivity:'base'}));
-  const wb=new Excel.Workbook();wb.creator='SIMFAQ';wb.subject='Daftar remedial Pra Tashih';wb.created=new Date();
-  const ws=wb.addWorksheet('Data Remedial',{views:[{state:'frozen',ySplit:1}]});
-  const headers=['No.','Asal Lembaga','Nama Peserta','Nomor Ujian','NIS','Materi Remedial','Percobaan','Nilai Asli Pra Tashih','Batas Minimal','Kekurangan','Nilai Remedial','Status','Keterangan'];
-  ws.addRow(headers);ws.getRow(1).font={bold:true,color:{argb:'FFFFFFFF'}};ws.getRow(1).fill={type:'pattern',pattern:'solid',fgColor:{argb:'FF176B45'}};ws.getRow(1).alignment={vertical:'middle',horizontal:'center',wrapText:true};ws.getRow(1).height=32;
-  rows.forEach((x,i)=>{const p=x._person||{};const remedial=x.status==='DRAFT'&&Number(x.score||0)===0?'Belum dinilai':(x.score??'Belum dinilai');ws.addRow([i+1,x._institutionName||'Lembaga tidak diketahui',p.name||'-',p.exam_number||'-',p.nis||'-',x.exam_materials?.name||'-',x.attempt_number??'',x._originalScore??'',x._minimumScore??'',x._shortfall??'',remedial,x.status||'-',x.reason||''])});
-  [7,24,26,16,14,24,12,18,15,14,18,16,34].forEach((w,i)=>ws.getColumn(i+1).width=w);ws.autoFilter={from:{row:1,column:1},to:{row:1,column:headers.length}};ws.eachRow((row,n)=>{if(n>1){row.alignment={vertical:'top',wrapText:true};if(n%2===0)row.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFF4F8F5'}}}});
-  const buffer=await wb.xlsx.writeBuffer();const url=URL.createObjectURL(new Blob([buffer],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}));const a=document.createElement('a');a.href=url;a.download='SIMFAQ_Daftar_Remedial_Seluruh_Lembaga.xlsx';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000);
- }catch(e){window.bkAlert(e.message||'Gagal membuat file Excel.')}finally{if(btn){btn.disabled=false;btn.textContent='Unduh Excel'}}
-}
-</script>
-
 </body>
 </html>
 
