@@ -2308,17 +2308,7 @@ window.v12TogglePassword=function(id,btn){const e=document.getElementById(id);if
 </style></div>`;
     const reportEl=()=>document.getElementById(reportElId);
     const setError=m=>{const el=reportEl();if(el)el.innerHTML=`<p class="error">${_E(m||'Rekap peserta belum dapat dimuat.')}</p>`};
-    const waitQuery=async(query,labelText)=>{
-      const controller=typeof AbortController==='function'?new AbortController():null;
-      const request=controller&&typeof query?.abortSignal==='function'?query.abortSignal(controller.signal):query;
-      let timer=null;
-      try{
-        return await Promise.race([
-          request,
-          new Promise(resolve=>{timer=setTimeout(()=>{resolve({data:null,error:{message:labelText+' melebihi batas waktu 15 detik.'}});try{controller?.abort()}catch(_){}},15000)})
-        ]);
-      }finally{if(timer!==null)clearTimeout(timer)}
-    };
+    const waitQuery=async(promise,labelText)=>await Promise.race([promise,new Promise(resolve=>setTimeout(()=>resolve({data:null,error:{message:labelText+' melebihi batas waktu 15 detik.'}}),15000))]);
     const fetchAll=async(build,labelText)=>{const all=[];for(let from=0;;from+=1000){const r=await waitQuery(build().range(from,from+999),labelText);if(r.error)throw r.error;const chunk=r.data||[];all.push(...chunk);if(chunk.length<1000)break;}return all};
     try{
       let institutions=[];
@@ -2356,32 +2346,28 @@ window.v12TogglePassword=function(id,btn){const e=document.getElementById(id);if
         if(audit.unmapped||audit.conflicts){const note=document.createElement('div');note.className='notice';note.style.marginTop='10px';note.textContent=`Pemetaan gelombang Tashih: ${audit.unmapped} peserta belum dapat dipetakan ke gelombang dan ${audit.conflicts} peserta memiliki perbedaan antara gelombang sumber Pra Tashih dan gelombang pendaftaran Tashih. Peserta yang belum terpetakan tidak dimasukkan ke Gelombang 1 atau 2 sampai datanya diverifikasi.`;reportEl().parentNode.insertBefore(note,reportEl());}
       }
       const selectedParticipantIds=new Set(participantsRows.map(p=>p.id));
-      if(!selectedParticipantIds.size){reportEl().innerHTML=`<div class="empty">Belum ada peserta pada ${waveLabel.toLowerCase()} untuk ujian ${label}. Peserta Tashih tanpa gelombang yang dapat dipastikan tidak otomatis dimasukkan.</div>`;return}
-      // V584: batasi pencarian sesi langsung ke ID peserta yang sudah lolos cakupan/gelombang.
-      // Ini menghindari scan sesi berdasarkan seluruh pendaftaran lalu menyaring ulang di browser.
-      const participantIds=[...selectedParticipantIds];
-      // Potong daftar ID agar URL PostgREST tetap aman untuk gelombang besar.
-      const sessionChunks=[];
-      for(let i=0;i<participantIds.length;i+=150){
-        const ids=participantIds.slice(i,i+150);
-        sessionChunks.push(fetchAll(()=>sb.from('exam_sessions').select('id,exam_registration_id,participant_id,status,exam_rule_id,rule_snapshot').in('participant_id',ids).order('id',{ascending:false}),'Pemuatan sesi ujian'));
-      }
-      const sessions=(await Promise.all(sessionChunks)).flat();
+      const selectedRegistrationIds=[...new Set(participantsRows.map(p=>p.exam_registration_id).filter(Boolean))];
+      if(!selectedRegistrationIds.length){reportEl().innerHTML=`<div class="empty">Belum ada peserta pada ${waveLabel.toLowerCase()} untuk ujian ${label}. Peserta Tashih tanpa gelombang yang dapat dipastikan tidak otomatis dimasukkan.</div>`;return}
+      const sessions=await fetchAll(()=>sb.from('exam_sessions').select('id,exam_registration_id,participant_id,status,exam_rule_id,rule_snapshot').in('exam_registration_id',selectedRegistrationIds).order('id',{ascending:false}),'Pemuatan sesi ujian');
+      const selectedSessions=sessions.filter(x=>x.participant_id&&selectedParticipantIds.has(x.participant_id));
+      sessions.splice(0,sessions.length,...selectedSessions);
       const participantMap=new Map(participantsRows.map(x=>[x.id,x]));
+      const sessionParticipantIds=[...new Set(sessions.map(x=>x.participant_id).filter(Boolean))];
+      const missingParticipantIds=sessionParticipantIds.filter(id=>!participantMap.has(id));
+      if(missingParticipantIds.length){
+        const extra=await fetchAll(()=>sb.from('exam_participants').select('id,exam_registration_id,name,nis,exam_number,media_id,status').in('id',missingParticipantIds).order('id',{ascending:true}),'Pemuatan peserta dari sesi ujian');
+        extra.forEach(x=>participantMap.set(x.id,x));
+      }
       const sessionByParticipant=new Map();
       sessions.forEach(x=>{if(x.participant_id&&!sessionByParticipant.has(x.participant_id))sessionByParticipant.set(x.participant_id,x)});
       const sessionIds=sessions.map(x=>x.id).filter(Boolean);
       let results=[],scoreRows=[],ruleDetails=[],currentRuleIdByPeriod=new Map();
       if(sessionIds.length){
-        // V584: hasil, rincian nilai, dan aturan aktif tidak saling bergantung; muat paralel.
+        results=await fetchAll(()=>sb.from('exam_results').select('id,exam_session_id,total_score,average_score,status,finalized_at,locked_at').in('exam_session_id',sessionIds).order('id',{ascending:true}),'Pemuatan hasil ujian');
+        scoreRows=await fetchAll(()=>sb.from('exam_scores').select('id,exam_session_id,exam_material_id,score,attempt_number,status,submitted_at,created_at,exam_materials:exam_material_id(name,code,sequence),exam_score_components(id,component_code,score)').in('exam_session_id',sessionIds).order('attempt_number',{ascending:false}).order('submitted_at',{ascending:false,nullsFirst:false}).order('created_at',{ascending:false}).order('id',{ascending:true}),'Pemuatan rincian nilai');
         const periodIds=[...new Set(registrations.map(x=>x.management_period_id).filter(Boolean))];
-        const [loadedResults,loadedScores,activeRules]=await Promise.all([
-          fetchAll(()=>sb.from('exam_results').select('id,exam_session_id,total_score,average_score,status,finalized_at,locked_at').in('exam_session_id',sessionIds).order('id',{ascending:true}),'Pemuatan hasil ujian'),
-          fetchAll(()=>sb.from('exam_scores').select('id,exam_session_id,exam_material_id,score,attempt_number,status,submitted_at,created_at,exam_materials:exam_material_id(name,code,sequence),exam_score_components(id,component_code,score)').in('exam_session_id',sessionIds).order('attempt_number',{ascending:false}).order('submitted_at',{ascending:false,nullsFirst:false}).order('created_at',{ascending:false}).order('id',{ascending:true}),'Pemuatan rincian nilai'),
-          periodIds.length?fetchAll(()=>sb.from('exam_rules').select('id,management_period_id,exam_type,overall_minimum,version').eq('status','ACTIVE').eq('exam_type',type).in('management_period_id',periodIds).order('version',{ascending:false}),'Pemuatan aturan ujian aktif'):Promise.resolve([])
-        ]);
-        results=loadedResults;
-        scoreRows=loadedScores;
+        let activeRules=[];
+        if(periodIds.length)activeRules=await fetchAll(()=>sb.from('exam_rules').select('id,management_period_id,exam_type,overall_minimum,version').eq('status','ACTIVE').eq('exam_type',type).in('management_period_id',periodIds).order('version',{ascending:false}),'Pemuatan aturan ujian aktif');
         activeRules.forEach(rule=>{if(!currentRuleIdByPeriod.has(rule.management_period_id))currentRuleIdByPeriod.set(rule.management_period_id,rule.id)});
         const activeRuleIds=[...new Set(activeRules.map(x=>x.id).filter(Boolean))];
         if(activeRuleIds.length)ruleDetails=await fetchAll(()=>sb.from('exam_rule_details').select('exam_rule_id,exam_material_id,minimum_score,exam_materials:exam_material_id(id,code,name,sequence,status)').in('exam_rule_id',activeRuleIds).order('exam_material_id',{ascending:true}),'Pemuatan tujuh materi dari aturan aktif');
@@ -2400,7 +2386,11 @@ window.v12TogglePassword=function(id,btn){const e=document.getElementById(id);if
       });
       const scoreMap=new Map();
       scoreRows.forEach(x=>{const key=x.exam_session_id+'|'+x.exam_material_id;if(!scoreMap.has(key))scoreMap.set(key,x)});
-      // V584: tidak meminta metadata foto di rekap; foto tidak ditampilkan pada tabel ini.
+      const mediaIds=[...new Set([...participantMap.values()].map(x=>x.media_id).filter(Boolean))];
+      let media=[];
+      if(mediaIds.length)media=await fetchAll(()=>sb.from('participant_media').select('id,storage_path').in('id',mediaIds).order('id',{ascending:true}),'Pemuatan foto peserta');
+      const mediaMap=new Map(media.map(x=>[x.id,x.storage_path]));
+      const mediaUrl=path=>{const u=String(path||'');if(!u)return '';if(/^https?:/i.test(u))return u;try{return sb.storage.from('bkfuspaq-media').getPublicUrl(u).data?.publicUrl||''}catch(_){return ''}};
       const rows=[...participantMap.values()].filter(p=>registrationMap.has(p.exam_registration_id)).sort((a,b)=>String(a.name||'').localeCompare(String(b.name||''),'id',{sensitivity:'base'}));
       if(!rows.length){reportEl().innerHTML=`<div class="empty">Belum ada peserta terdaftar untuk ujian ${label} pada cakupan akun ini.</div>`;return}
       reportEl().innerHTML=`<table class="bkf-exam-table"><thead><tr><th class="bkf-exam-identity">Peserta / Lembaga</th><th>Makhorijul Huruf</th><th>Tajwid</th><th>Ghorib</th><th>Surat</th><th>Do'a</th><th>Sholat</th><th>BTA</th><th>Total / Rata-rata</th><th>Status</th><th class="no-print">Tindakan</th></tr></thead><tbody>`+rows.map((participant,index)=>{
@@ -6703,19 +6693,46 @@ window.showMemoryAlbum=async function(eventId=''){
   // Web Audio internal to the HTML/WebView is unlocked by the user's first interaction.
   document.addEventListener('pointerdown',unlockAudio,{passive:true});
   document.addEventListener('keydown',unlockAudio);
-  // Realtime notification changes refresh only the notification counter, not every dashboard metric.
-  window.bkfRefreshNotificationMetric=async function(){
-    const el=document.getElementById('metric-notifications');
-    if(!el)return;
-    const pid=state?.profile?.id;if(!pid)return;
+  // Coalesce Realtime bursts so several row changes trigger at most one badge query.
+  // Debounce 400 ms and enforce a 1-second minimum between count queries.
+  var metricRefreshTimer=null,metricRefreshInFlight=false,metricRefreshPending=false,metricLastQueryAt=0;
+  function scheduleNotificationMetricRefresh(delay){
+    if(metricRefreshTimer)clearTimeout(metricRefreshTimer);
+    metricRefreshTimer=setTimeout(runNotificationMetricRefresh,Math.max(0,delay||0));
+  }
+  async function runNotificationMetricRefresh(){
+    metricRefreshTimer=null;
+    if(!metricRefreshPending)return;
+    if(metricRefreshInFlight)return; // finally block will schedule the pending refresh.
+    var wait=1000-(Date.now()-metricLastQueryAt);
+    if(metricLastQueryAt&&wait>0){scheduleNotificationMetricRefresh(wait);return}
+    var el=document.getElementById('metric-notifications');
+    var pid=state?.profile?.id;
+    if(!el||!pid){metricRefreshPending=false;return}
+    metricRefreshPending=false;
+    metricRefreshInFlight=true;
+    metricLastQueryAt=Date.now();
     try{
       const q=await sb.from('notifications').select('id',{count:'exact',head:true}).eq('user_id',pid).is('read_at',null);
-      if(q.error)return;
+      // Ignore a response if the user changed account while the query was running.
+      if(q.error||state?.profile?.id!==pid)return;
       const count=Number(q.count||0),previous=Number(el.dataset.rawCount??String(el.textContent||'').trim());
-      el.dataset.rawCount=String(count);el.textContent=count>99?'99+':count.toLocaleString('id-ID');
-      const badge=document.getElementById('metric-notifications-badge');if(badge){badge.textContent=(count>99?'99+':count.toLocaleString('id-ID'))+' BARU';badge.hidden=count<=0}
+      el.dataset.rawCount=String(count);
+      const display=count>99?'99+':count.toLocaleString('id-ID');
+      if(el.textContent!==display)el.textContent=display;
+      const badge=document.getElementById('metric-notifications-badge');
+      if(badge){const badgeText=display+' BARU';if(badge.textContent!==badgeText)badge.textContent=badgeText;badge.hidden=count<=0}
       if(Number.isFinite(previous)&&count>previous){el.classList.remove('bkf-notification-count-spin');void el.offsetWidth;el.classList.add('bkf-notification-count-spin')}
     }catch(e){console.warn('[BKF notification metric refresh]',e)}
+    finally{
+      metricRefreshInFlight=false;
+      if(metricRefreshPending)scheduleNotificationMetricRefresh(400);
+    }
+  }
+  window.bkfRefreshNotificationMetric=function(){
+    if(!document.getElementById('metric-notifications')||!state?.profile?.id)return;
+    metricRefreshPending=true;
+    scheduleNotificationMetricRefresh(400);
   };
   function clearRetry(){if(retryTimer){clearTimeout(retryTimer);retryTimer=null}}
   function schedule(){
